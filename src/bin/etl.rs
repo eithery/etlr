@@ -6,13 +6,14 @@ use etlr::{load_files, export_files, anonymize_files, create_database, drop_data
 const DEFAULT_HELP_TEMPLATE: &str = "\n\
 {before-help}
 {about-with-newline}
-USAGE: etl <COMMAND> [OPTIONS]...
+USAGE: etl [COMMAND] [OPTIONS]...
 
 COMMANDS:
 {subcommands}
 
 OPTIONS:
-{options}
+  -h, --help     Print help
+  -V, --version  Print version
 \u{200B}";
 
 const COMMAND_HELP_TEMPLATE: &str = "\n\
@@ -24,13 +25,12 @@ OPTIONS:
 {options}
 \u{200B}";
 
-const APP_TITLE: &str = concat!("\x1b[36mETL Toolkit, version ", env!("CARGO_PKG_VERSION"), "\x1b[0m");
+const APP_TITLE: &str = concat!("\x1b[96mETL Toolkit, version ", env!("CARGO_PKG_VERSION"), "\x1b[0m");
 
 #[derive(Parser)]
 #[command(
     name = "etl",
     version,
-    propagate_version = true,
     about = APP_TITLE,
     long_about = None,
     disable_help_subcommand = true,
@@ -41,7 +41,7 @@ pub struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
 
-    #[arg(short = 'V', long, global = true, help = "Print version")]
+    #[arg(short = 'V', long, help = "Print version", hide = true)]
     version: bool
 }
 
@@ -75,7 +75,7 @@ pub enum Commands {
     },
     #[command(
         about = "The set of database related subcommands",
-        help_template = DEFAULT_HELP_TEMPLATE
+        help_template = COMMAND_HELP_TEMPLATE
     )]
     Db {
         #[command(subcommand)]
@@ -85,18 +85,18 @@ pub enum Commands {
 
 
 #[derive(Subcommand)]
-#[command(help_template = DEFAULT_HELP_TEMPLATE)]
+#[command(help_template =COMMAND_HELP_TEMPLATE)]
 pub enum DbCommands {
-    #[command(about = "Create ETL database.")]
+    #[command(about = "Create ETL database")]
     Create,
-    #[command(about = "Drop ETL database.")]
+    #[command(about = "Drop ETL database")]
     Drop,
-    #[command(about = "Create database tables for the given template.")]
+    #[command(about = "Create database tables for the given template")]
     CreateTables {
         #[arg(short, long, value_name = "TEMPLATE_NAME")]
         template: String
     },
-    #[command(about = "Drop database tables for the given template.")]
+    #[command(about = "Drop database tables for the given template")]
     DropTables {
         #[arg(short, long, value_name = "TEMPLATE_NAME")]
         template: String
