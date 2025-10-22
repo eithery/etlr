@@ -23,17 +23,46 @@ fn main() -> Result<()> {
             postprocess,
             all_stages,
             force_update,
-            preserve_inbox
+            preserve_inbox,
+            update_only,
+            skip_audit
         }) =>
-            load_files(template, config.as_deref(), *postprocess, *all_stages, *force_update, *preserve_inbox),
+            load_files(
+                template,
+                config.as_deref(),
+                *postprocess,
+                *all_stages,
+                *force_update,
+                *update_only,
+                *preserve_inbox,
+                *skip_audit
+            ),
 
-        Some(Commands::Export { template }) => export_files(template),
+        Some(Commands::Export {
+            template,
+            config,
+            files,
+            file_prefix,
+            skip_column_names
+        }) =>
+            export_files(
+                template,
+                config.as_deref(),
+                files.as_deref(),
+                file_prefix.as_deref(),
+                *skip_column_names
+            ),
 
-        Some(Commands::Anonify { template }) => anonymize_files(&template),
+        Some(Commands::Anonify { template, config }) => anonymize_files(template, config.as_deref()),
 
         Some(Commands::Db { command }) =>
             match command {
-                db::Commands::CreateTables { template } => create_tables(template),
+                db::Commands::CreateTables {
+                    template,
+                    config,
+                    force
+                } => create_tables(template, config.as_deref(), *force),
+
                 db::Commands::DropTables { template } => drop_tables(template),
                 db::Commands::Create => create_database(),
                 db::Commands::Drop => drop_database()

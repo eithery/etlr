@@ -19,8 +19,12 @@ pub(crate) enum Commands {
         all_stages: bool,
         #[arg(short, long, help = "Force update data in target tables")]
         force_update: bool,
+        #[arg(short, long, help = "Perform only update of existing data")]
+        update_only: bool,
         #[arg(long, help = "Preserve data files in the inbox after load")]
-        preserve_inbox: bool
+        preserve_inbox: bool,
+        #[arg(long, help = "Skip audit trail")]
+        skip_audit: bool
     },
 
     #[command(
@@ -29,7 +33,15 @@ pub(crate) enum Commands {
     )]
     Export {
         #[arg(short, long, value_name = "TEMPLATE_NAME", help = "Template used to the file(s) being exported")]
-        template: String
+        template: String,
+        #[arg(short, long, value_name = "CONFIG_PATH", help = "Path to the custom app configuration file")]
+        config: Option<String>,
+        #[arg(short, long, value_name = "FILES;...", help = "List of files to export separated by ';'")]
+        files: Option<String>,
+        #[arg(long, value_name = "FILE_NAME_PREFIX", help = "Add the prefix into outbound file names")]
+        file_prefix: Option<String>,
+        #[arg(long, help = "Skip column names in the exported file(s)")]
+        skip_column_names: bool
     },
 
     #[command(
@@ -38,7 +50,9 @@ pub(crate) enum Commands {
     )]
     Anonify {
         #[arg(short, long, value_name = "TEMPLATE_NAME", help = "Template used to the file(s) being anonymized")]
-        template: String
+        template: String,
+        #[arg(short, long, value_name = "CONFIG_PATH", help = "Path to the custom app configuration file")]
+        config: Option<String>
     },
 
     #[command(about = "The set of database related subcommands")]

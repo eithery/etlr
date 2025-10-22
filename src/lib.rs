@@ -4,42 +4,59 @@ pub fn load_files(
     postprocess: bool,
     all_stages: bool,
     force_update: bool,
-    preserve_inbox: bool
+    update_only: bool,
+    preserve_inbox: bool,
+    skip_audit: bool
 ) {
     println!("\nLoad files for the template '{template_name}'.");
     println!("{config_path:?}");
     println!("{postprocess}");
     println!("{all_stages}");
     println!("{force_update}");
+    println!("{update_only}");
     println!("{preserve_inbox}");
+    println!("{skip_audit}");
 }
 
 
-pub fn export_files(template_name: &str) {
-    println!("\nExport files for the template: '{template_name}'.\n");
+pub fn export_files(
+    template_name: &str,
+    config_path: Option<&str>,
+    files: Option<&str>,
+    file_prefix: Option<&str>,
+    skip_column_names: bool
+) {
+    println!("\nExport files for the template: '{template_name}'.");
+    println!("{config_path:?}");
+    println!("{files:?}");
+    println!("{file_prefix:?}");
+    println!("{skip_column_names}");
 }
 
 
-pub fn anonymize_files(template_name: &str) {
-    println!("\nAnonymize files for the template: '{template_name}'.\n");
+pub fn anonymize_files(template_name: &str, config_path: Option<&str>) {
+    println!("\nAnonymize files for the template: '{template_name}'.");
+    println!("{config_path:?}");
 }
 
 
 pub fn create_database() {
-    println!("\nCreate internal ETL database.\n")
+    println!("\nCreate internal ETL database.")
 }
 
 
 pub fn drop_database() {
-    println!("\nDrop internal ETL database.\n")
+    println!("\nDrop internal ETL database.")
 }
 
 
-pub fn create_tables(template_name: &str) {
-    println!("\nCreate DB tables for the template: '{template_name}'.\n");
+pub fn create_tables(template_name: &str, config_path: Option<&str>, force: bool) {
+    println!("\nCreate DB tables for the template: '{template_name}'.");
+    println!("{config_path:?}");
+    println!("{force}")
 }
 
 
 pub fn drop_tables(template_name: &str) {
-    println!("\nDrop DB tables for the template: '{template_name}'.\n")
+    println!("\nDrop DB tables for the template: '{template_name}'.")
 }
