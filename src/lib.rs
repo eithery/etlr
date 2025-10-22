@@ -1,5 +1,17 @@
-pub fn load_files(template_name: &str) {
-    println!("\nLoad files for the template '{template_name}'.\n");
+pub fn load_files(
+    template_name: &str,
+    config_path: Option<&str>,
+    postprocess: bool,
+    all_stages: bool,
+    force_update: bool,
+    preserve_inbox: bool
+) {
+    println!("\nLoad files for the template '{template_name}'.");
+    println!("{config_path:?}");
+    println!("{postprocess}");
+    println!("{all_stages}");
+    println!("{force_update}");
+    println!("{preserve_inbox}");
 }
 
 
