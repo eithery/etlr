@@ -40,13 +40,15 @@ pub fn anonymize_files(template_name: &str, config_path: Option<&str>) {
 }
 
 
-pub fn create_database() {
-    println!("\nCreate internal ETL database.")
+pub fn create_database(config_path: Option<&str>) {
+    println!("\nCreate internal ETL database.");
+    println!("{config_path:?}");
 }
 
 
-pub fn drop_database() {
-    println!("\nDrop internal ETL database.")
+pub fn drop_database(config_path: Option<&str>) {
+    println!("\nDrop internal ETL database.");
+    println!("{config_path:?}");
 }
 
 
@@ -57,6 +59,7 @@ pub fn create_tables(template_name: &str, config_path: Option<&str>, force: bool
 }
 
 
-pub fn drop_tables(template_name: &str) {
-    println!("\nDrop DB tables for the template: '{template_name}'.")
+pub fn drop_tables(template_name: &str, config_path: Option<&str>) {
+    println!("\nDrop DB tables for the template: '{template_name}'.");
+    println!("{config_path:?}");
 }

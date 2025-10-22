@@ -13,7 +13,7 @@ pub(crate) enum Commands {
         template: String,
         #[arg(short, long, value_name = "CONFIG_PATH", help = "Path to the custom app configuration file")]
         config: Option<String>,
-        #[arg(short, long, help = "Run ETL postprocessing step")]
+        #[arg(short, long, help = "Run ETL postprocessing stage")]
         postprocess: bool,
         #[arg(short, long, help = "Run ALL ETL stages with postprocessing")]
         all_stages: bool,

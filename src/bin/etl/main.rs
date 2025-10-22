@@ -57,15 +57,15 @@ fn main() -> Result<()> {
 
         Some(Commands::Db { command }) =>
             match command {
-                db::Commands::CreateTables {
+                db::Commands::Migrate {
                     template,
                     config,
                     force
                 } => create_tables(template, config.as_deref(), *force),
 
-                db::Commands::DropTables { template } => drop_tables(template),
-                db::Commands::Create => create_database(),
-                db::Commands::Drop => drop_database()
+                db::Commands::Rollback { template, config } => drop_tables(template, config.as_deref()),
+                db::Commands::Create { config} => create_database(config.as_deref()),
+                db::Commands::Drop { config } => drop_database(config.as_deref())
             },
         None => Cli::command().print_help()?
     }
