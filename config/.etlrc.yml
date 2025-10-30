@@ -1,0 +1,92 @@
+#
+# Eithery Labs, 2025
+# Contains application level configuration settings
+#
+database:
+  dialect: :mssql
+  host: localhost
+  db_name: etl_db
+
+  # Database server instance name, if any (optional)
+  # instance_name:
+
+  # Database server TCP port (optional)
+  # port: # 1433
+
+  # Database connection type
+  # Available values: :default | :auto | :sspi | :windows | :username
+  # Currently there are two different connection types supported:
+  # - via explicit user credentials: :default | :username
+  # - via Windows trusted connection (SSPI): :auto | :sspi | :windows
+  connection: :default
+
+  # Defines the collection of supported data sources including ID and database names
+  data_sources:
+    - id: :default
+      db_name: etl_db
+
+# Paths to inbound files to be imported and loaded by the application
+inbox:
+  - ./data/inbox
+
+# Path to the exported outbound files
+outbox: ./data/outbox
+
+# Path to YAML templates location
+templates:
+  - ./config/templates
+
+# ETL data workflow related settings
+workflow:
+
+  # Import/load files configuration settings
+  import:
+    # File archive directory settings (contains successfully processed inbound files)
+    # All archive settings defined here can be overridden in templates for specific files
+    archive:
+      enabled: true
+
+      # Path to archive directory (can be absolute or relative based on the project root)
+      # By default the path to archive directory is on the same level with 'inbox' directory
+      # Example: ./data/archive
+      # The default archive directory name is 'archive' and can be changed via this setting
+      path: :default
+
+      # Determines whether successfully loaded files should be compressed (zip format) in the archive
+      compressed: true
+
+    # Failed imports directory settings (contains inbound files failed during processing)
+    failed_imports:
+      enabled: true
+
+      # Path to failed imports directory (can be absolute or relative based on the project root)
+      # By default the path to failed imports directory is on the same level with 'inbox' directory
+      # Example: ./data/failed_imports
+      # The default failed imports directory name is 'failed_imports' and cen be changed with this setting
+      path: :default
+
+    # Determines whether the inbound data file should be preserved in the 'inbox' directory
+    preserve_data_file: false
+
+  # Export file related configuration settings
+  export:
+    file_name:
+      # Determines whether the time part is included into the exported file name as a part of timestamp
+      # Examples:
+      # - accounts_20251023.csv         (include_time: false)
+      # - accounts_20251023T121534.csv  (include_time: true)
+      include_time: true
+
+logging:
+  file:
+    enabled: true
+    path: ./log
+
+    # Logging level, available values: :debug | :info | :warning | :error | :critical
+    level: :warning
+
+  database:
+    enabled: false
+
+    # Logging level, available values: :debug | :info | :warning | :error | :critical
+    level: :warning

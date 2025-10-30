@@ -1,0 +1,17 @@
+#
+# Eithery Labs, 2025
+# Contains application level configuration settings for development environment
+# Overrides appropriate configuration settings from .etlrc.yml
+#
+database:
+workflow:
+  import:
+    archive:
+      enabled: false
+    failed_imports:
+      enabled: false
+    preserve_data_file: true
+
+logging:
+  file:
+    enabled: false

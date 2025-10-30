@@ -1,0 +1,6 @@
+#
+# Eithery Labs, 2025
+# Contains application level configuration settings for production environment
+# Overrides appropriate configuration settings from .etlrc.yml
+#
+---

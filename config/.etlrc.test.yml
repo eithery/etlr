@@ -1,0 +1,11 @@
+#
+# Eithery Labs, 2025
+# Contains application level configuration settings for test environment
+# Overrides appropriate configuration settings from .etlrc.yml
+#
+database:
+  db_name: etl_db_test
+
+logging:
+  file:
+    enabled: false

@@ -1,21 +1,21 @@
+mod config;
+mod std;
+
+use crate::config::app::AppConfiguration;
+
+
 pub fn load_files(
-    template_name: &str,
-    config_path: Option<&str>,
-    postprocess: bool,
-    all_stages: bool,
-    force_update: bool,
-    update_only: bool,
-    preserve_inbox: bool,
-    skip_audit: bool
+    _template_name: &str,
+    _config_path: Option<&str>,
+    _postprocess: bool,
+    _all_stages: bool,
+    _force_update: bool,
+    _update_only: bool,
+    _preserve_inbox: bool,
+    _skip_audit: bool
 ) {
-    println!("\nLoad files for the template '{template_name}'.");
-    println!("{config_path:?}");
-    println!("{postprocess}");
-    println!("{all_stages}");
-    println!("{force_update}");
-    println!("{update_only}");
-    println!("{preserve_inbox}");
-    println!("{skip_audit}");
+    let config = AppConfiguration::load(None);
+    println!("{config:#?}");
 }
 
 
