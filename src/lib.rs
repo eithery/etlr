@@ -1,4 +1,6 @@
 mod config;
+mod env;
+mod path;
 mod std;
 
 use crate::config::app::AppConfiguration;
@@ -6,7 +8,7 @@ use crate::config::app::AppConfiguration;
 
 pub fn load_files(
     _template_name: &str,
-    _config_path: Option<&str>,
+    config_path: Option<&str>,
     _postprocess: bool,
     _all_stages: bool,
     _force_update: bool,
@@ -14,7 +16,7 @@ pub fn load_files(
     _preserve_inbox: bool,
     _skip_audit: bool
 ) {
-    let config = AppConfiguration::load(None);
+    let config = AppConfiguration::load(config_path);
     println!("{config:#?}");
 }
 

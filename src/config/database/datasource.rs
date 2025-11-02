@@ -22,8 +22,13 @@ impl DataSource {
     pub(super) fn deserialize<'a, D>(deserializer: D) -> Result<HashMap<String, String>, D::Error>
         where D: serde::Deserializer<'a>
     {
-        let data_sources = Vec::<DataSource>::deserialize(deserializer)?;
-        Ok(data_sources.into_iter().map(|ds| (ds.id, ds.db_name)).collect())
+        let data_sources = Option::<Vec::<DataSource>>::deserialize(deserializer)?;
+        match data_sources {
+            Some(dss) => {
+                Ok(dss.into_iter().map(|ds| (ds.id, ds.db_name)).collect())
+            },
+            None => Ok(HashMap::new())
+        }
     }
 
 
