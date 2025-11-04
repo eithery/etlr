@@ -6,6 +6,7 @@ use serde::Deserialize;
 use crate::env::{self, Environment};
 use crate::path;
 use super::database::DatabaseConfiguration;
+use super::inbox::Inbox;
 use super::yaml;
 
 
@@ -18,7 +19,15 @@ const PROD_CONFIG_FILE_NAME: &str = ".etlrc.prod.yml";
 #[derive(Debug, Deserialize, Default)]
 pub(crate) struct AppConfiguration {
     #[serde(default)]
-    pub(crate) database: DatabaseConfiguration
+    pub(crate) database: DatabaseConfiguration,
+
+    #[serde(default)]
+    pub(crate) inbox: Inbox,
+
+    pub(crate) outbox: Option<String>,
+
+    #[serde(default)]
+    load_paths: Vec<PathBuf>
 }
 
 
@@ -67,7 +76,6 @@ impl AppConfiguration {
             Environment::Testing => TEST_CONFIG_FILE_NAME,
             Environment::Production => PROD_CONFIG_FILE_NAME
         };
-        println!("Load file {file_name}");
         self.load_config(path::config_dir, file_name)
     }
 
@@ -77,12 +85,12 @@ impl AppConfiguration {
         match config_dir() {
             Ok(path) => {
                 let config_path = path.join(file_name);
+                if self.load_paths.contains(&config_path) {
+                    return self;
+                }
                 match yaml::load_from_file(&config_path) {
-                    Ok(config) => self.merge_config(config),
-                    Err(err) => {
-                        println!("{err}");
-                        self
-                    }
+                    Ok(config) => self.merge(config, config_path),
+                    Err(_) => self
                 }
             },
             Err(_) => self
@@ -90,16 +98,20 @@ impl AppConfiguration {
     }
 
 
-    fn merge_config(self, other: Self) -> Self {
+    fn merge(self, other: Self, config_path: PathBuf) -> Self {
         Self {
-            database: self.database.merge(other.database)
+            database: self.database.merge(other.database),
+            inbox: self.inbox.prepend(other.inbox),
+            outbox: other.outbox.or(self.outbox),
+            load_paths: [self.load_paths.as_slice(), &[config_path]].concat()
         }
     }
 
 
     fn apply_env_vars(self) -> Self {
         Self {
-            database: self.database.apply_env_vars()
+            database: self.database.apply_env_vars(),
+            ..self
         }
     }
 }
