@@ -8,6 +8,7 @@ use crate::path;
 use crate::std::string;
 use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
+use super::logging::LoggingConfiguration;
 use super::workflow::WorkflowConfiguration;
 use super::yaml;
 
@@ -34,6 +35,9 @@ pub(crate) struct AppConfiguration {
 
     #[serde(default)]
     workflow: WorkflowConfiguration,
+
+    #[serde(default)]
+    logging: LoggingConfiguration,
 
     #[serde(default)]
     load_paths: Vec<PathBuf>
@@ -117,6 +121,7 @@ impl AppConfiguration {
             outbox: other.outbox.or(self.outbox),
             templates: self.templates.prepend(other.templates),
             workflow: self.workflow.merge(other.workflow),
+            logging: self.logging.merge(other.logging),
             load_paths: [self.load_paths.as_slice(), &[config_path]].concat()
         }
     }
