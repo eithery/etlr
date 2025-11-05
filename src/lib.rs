@@ -16,7 +16,8 @@ pub fn load_files(
     _preserve_inbox: bool,
     _skip_audit: bool
 ) {
-    AppConfiguration::load(config_path);
+    let config = AppConfiguration::load(config_path);
+    println!("{config:#?}");
 }
 
 

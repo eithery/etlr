@@ -5,8 +5,10 @@ use dotenv::dotenv;
 use serde::Deserialize;
 use crate::env::{self, Environment};
 use crate::path;
+use crate::std::string;
+use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
-use super::inbox::Inbox;
+use super::workflow::WorkflowConfiguration;
 use super::yaml;
 
 
@@ -19,12 +21,19 @@ const PROD_CONFIG_FILE_NAME: &str = ".etlrc.prod.yml";
 #[derive(Debug, Deserialize, Default)]
 pub(crate) struct AppConfiguration {
     #[serde(default)]
-    pub(crate) database: DatabaseConfiguration,
+    database: DatabaseConfiguration,
 
     #[serde(default)]
-    pub(crate) inbox: Inbox,
+    inbox: Vec<String>,
 
-    pub(crate) outbox: Option<String>,
+    #[serde(default, deserialize_with = "string::deserialize")]
+    outbox: Option<String>,
+
+    #[serde(default)]
+    templates: Vec<String>,
+
+    #[serde(default)]
+    workflow: WorkflowConfiguration,
 
     #[serde(default)]
     load_paths: Vec<PathBuf>
@@ -90,7 +99,10 @@ impl AppConfiguration {
                 }
                 match yaml::load_from_file(&config_path) {
                     Ok(config) => self.merge(config, config_path),
-                    Err(_) => self
+                    Err(err) => {
+                        println!("{err}");
+                        self
+                    }
                 }
             },
             Err(_) => self
@@ -103,6 +115,8 @@ impl AppConfiguration {
             database: self.database.merge(other.database),
             inbox: self.inbox.prepend(other.inbox),
             outbox: other.outbox.or(self.outbox),
+            templates: self.templates.prepend(other.templates),
+            workflow: self.workflow.merge(other.workflow),
             load_paths: [self.load_paths.as_slice(), &[config_path]].concat()
         }
     }

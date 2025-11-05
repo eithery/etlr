@@ -12,7 +12,7 @@ use dialect::DatabaseDialect;
 
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct DatabaseConfiguration {
+pub(super) struct DatabaseConfiguration {
     dialect: Option<DatabaseDialect>,
     host: Option<String>,
     db_name: Option<String>,

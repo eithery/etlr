@@ -18,8 +18,8 @@ pub(crate) const APP_TITLE: &str = concat!("\x1b[96mETL Toolkit, version ", env!
 )]
 pub(crate) struct Cli {
     #[command(subcommand)]
-    pub command: Option<Commands>,
+    pub(crate) command: Option<Commands>,
 
     #[arg(short = 'V', long, help = "Print version", hide = true)]
-    pub version: bool
+    pub(crate) version: bool
 }
