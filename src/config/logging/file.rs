@@ -1,6 +1,7 @@
+use std::ops::Deref;
 use serde::Deserialize;
 use crate::std::string;
-use super::LogLevel;
+use super::BaseLogConfiguration;
 
 
 const DEFAULT_LOG_DIR: &str = "./log";
@@ -8,22 +9,29 @@ const DEFAULT_LOG_DIR: &str = "./log";
 
 #[derive(Debug, Deserialize)]
 pub(super) struct FileLogConfiguration {
-    enabled: Option<bool>,
+    #[serde(flatten)]
+    base: BaseLogConfiguration,
 
     #[serde(default, deserialize_with = "string::deserialize")]
     path: Option<String>,
-
-    level: Option<LogLevel>
 }
 
 
 impl Default for FileLogConfiguration {
     fn default() -> Self {
         Self {
-            enabled: Some(true),
+            base: BaseLogConfiguration::default(),
             path: Some(DEFAULT_LOG_DIR.to_string()),
-            level: Some(LogLevel::Warning)
         }
+    }
+}
+
+
+impl Deref for FileLogConfiguration {
+    type Target = BaseLogConfiguration;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
     }
 }
 
@@ -31,9 +39,8 @@ impl Default for FileLogConfiguration {
 impl FileLogConfiguration {
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
-            enabled: other.enabled.or(self.enabled),
+            base: self.base.merge(other.base),
             path: other.path.or(self.path),
-            level: other.level.or(self.level)
         }
     }
 }

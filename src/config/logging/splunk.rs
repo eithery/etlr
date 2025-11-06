@@ -1,13 +1,15 @@
+use std::ops::Deref;
 use serde::Deserialize;
 use crate::env;
-use super::LogLevel;
+use super::BaseLogConfiguration;
 use super::defaults;
 
 
 #[derive(Debug, Deserialize)]
 pub(super) struct SplunkConfiguration {
-    enabled: Option<bool>,
-    level: Option<LogLevel>,
+    #[serde(flatten)]
+    base: BaseLogConfiguration,
+
     source: Option<String>,
     host: Option<String>,
     port: Option<u16>,
@@ -20,8 +22,7 @@ pub(super) struct SplunkConfiguration {
 impl Default for SplunkConfiguration {
     fn default() -> Self {
         Self {
-            enabled: Some(false),
-            level: Some(LogLevel::Warning),
+            base: BaseLogConfiguration::default(),
             source: defaults::splunk::source(),
             host: defaults::splunk::host(),
             port: defaults::splunk::port(),
@@ -33,11 +34,19 @@ impl Default for SplunkConfiguration {
 }
 
 
+impl Deref for SplunkConfiguration {
+    type Target = BaseLogConfiguration;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
+    }
+}
+
+
 impl SplunkConfiguration {
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
-            enabled: other.enabled.or(self.enabled),
-            level: other.level.or(self.level),
+            base: self.base.merge(other.base),
             source: other.source.or(self.source),
             host: other.host.or(self.host),
             port: other.port.or(self.port),

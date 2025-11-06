@@ -1,29 +1,28 @@
+use std::ops::Deref;
 use serde::Deserialize;
-use super::LogLevel;
+use super::BaseLogConfiguration;
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 pub(super) struct DatabaseLogConfiguration {
-    enabled: Option<bool>,
-    level: Option<LogLevel>
+    #[serde(flatten)]
+    base: BaseLogConfiguration
+}
+
+
+impl Deref for DatabaseLogConfiguration {
+    type Target = BaseLogConfiguration;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
+    }
 }
 
 
 impl DatabaseLogConfiguration {
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
-            enabled: other.enabled.or(self.enabled),
-            level: other.level.or(self.level)
-        }
-    }
-}
-
-
-impl Default for DatabaseLogConfiguration {
-    fn default() -> Self {
-        Self {
-            enabled: Some(true),
-            level: Some(LogLevel::Warning)
+            base: self.base.merge(other.base)
         }
     }
 }

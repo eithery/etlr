@@ -1,10 +1,12 @@
+mod base;
 mod database;
 mod defaults;
 mod file;
 mod severity;
 mod splunk;
 
-pub(crate) use severity::LogLevel;
+pub(self) use base::BaseLogConfiguration;
+pub(self) use severity::LogLevel;
 use serde::Deserialize;
 use database::DatabaseLogConfiguration;
 use file::FileLogConfiguration;
