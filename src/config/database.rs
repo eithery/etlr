@@ -17,7 +17,7 @@ pub(super) struct DatabaseConfiguration {
     host: Option<String>,
     db_name: Option<String>,
     instance_name: Option<String>,
-    port: Option<String>,
+    port: Option<u16>,
 
     #[serde(rename = "connection")]
     connection_type: Option<ConnectionType>,

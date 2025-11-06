@@ -90,3 +90,21 @@ logging:
 
     # Logging level, available values: :debug | :info | :warning | :error | :critical
     level: :warning
+
+  # Splunk logging configuration
+  splunk:
+    enabled: false
+
+    # Logging level, available values: :debug | :info | :warning | :error | :critical
+    level: :warning
+
+    # Determines the application source in the Splunk
+    source: ETL Toolkit
+
+    # Splunk connection settings
+    host: localhost
+    port: 8088
+    index: main
+
+    # Turns SSL verification on or off, defaults to true
+    verify: true

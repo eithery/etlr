@@ -12,6 +12,10 @@ const DB_USER_ENV_VAR: &str = "ETL_DB_USER";
 const DB_PWD_ENV_VAR : &str = "ETL_DB_PWD";
 const DB_AUTH_TYPE_ENV_VAR: &str = "DB_AUTH_TYPE";
 
+const SPLUNK_HOST_ENV_VAR: &str = "SPLUNK_HOST";
+const SPLUNK_PORT_ENV_VAR: &str = "SPLUNK_PORT";
+const SPLUNK_TOKEN_ENV_VAR: &str = "SPLUNK_TOKEN";
+
 pub(crate) const CONFIG_HOME_ENV_VAR: &str = "ETL_CONFIG_HOME";
 
 const DEV_ENV_NAMES: [&str; 2] = ["dev", "development"];
@@ -50,8 +54,8 @@ pub(crate) fn db_host() -> Option<String> {
 }
 
 
-pub(crate) fn db_port() -> Option<String> {
-    env::var(DB_PORT_ENV_VAR).ok()
+pub(crate) fn db_port() -> Option<u16> {
+    env::var(DB_PORT_ENV_VAR).ok()?.parse().ok()
 }
 
 
@@ -78,4 +82,19 @@ pub(crate) fn db_pwd() -> Option<String> {
 pub(crate) fn db_auth_type() -> Option<ConnectionType> {
     env::var(DB_AUTH_TYPE_ENV_VAR).ok()
         .map(|conn| conn.parse().unwrap())
+}
+
+
+pub(crate) fn splunk_host() -> Option<String> {
+    env::var(SPLUNK_HOST_ENV_VAR).ok()
+}
+
+
+pub(crate) fn splunk_port() -> Option<u16> {
+    env::var(SPLUNK_PORT_ENV_VAR).ok()?.parse().ok()
+}
+
+
+pub(crate) fn splunk_token() -> Option<String> {
+    env::var(SPLUNK_TOKEN_ENV_VAR).ok()
 }

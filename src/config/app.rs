@@ -130,6 +130,7 @@ impl AppConfiguration {
     fn apply_env_vars(self) -> Self {
         Self {
             database: self.database.apply_env_vars(),
+            logging: self.logging.apply_env_vars(),
             ..self
         }
     }
