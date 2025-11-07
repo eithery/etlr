@@ -3,7 +3,6 @@
 # Contains application level configuration settings for development environment
 # Overrides appropriate configuration settings from .etlrc.yml
 #
-database:
 workflow:
   import:
     archive:
@@ -15,3 +14,5 @@ workflow:
 logging:
   file:
     enabled: false
+  splunk:
+    enabeld: false

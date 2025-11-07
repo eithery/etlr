@@ -3,6 +3,7 @@ use std::io;
 use std::path::PathBuf;
 use dotenv::dotenv;
 use serde::Deserialize;
+use crate::config::defaults;
 use crate::env::{self, Environment};
 use crate::path;
 use crate::std::string;
@@ -19,7 +20,7 @@ const TEST_CONFIG_FILE_NAME: &str = ".etlrc.test.yml";
 const PROD_CONFIG_FILE_NAME: &str = ".etlrc.prod.yml";
 
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
 pub(crate) struct AppConfiguration {
     #[serde(default)]
     database: DatabaseConfiguration,
@@ -41,6 +42,20 @@ pub(crate) struct AppConfiguration {
 
     #[serde(default)]
     load_paths: Vec<PathBuf>
+}
+
+
+impl Default for AppConfiguration {
+    fn default() -> Self {
+        Self {
+            database: Default::default(),
+            inbox: defaults::app::inbox(),
+            outbox: defaults::app::outbox(),
+            templates: Vec::new(),
+            workflow: Default::default(),
+            logging: Default::default(),
+            load_paths: Vec::new() }
+    }
 }
 
 

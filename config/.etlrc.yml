@@ -42,7 +42,6 @@ workflow:
   # Import/load files configuration settings
   import:
     # File archive directory settings (contains successfully processed inbound files)
-    # All archive settings defined here can be overridden in templates for specific files
     archive:
       enabled: true
 
@@ -62,7 +61,7 @@ workflow:
       # Path to failed imports directory (can be absolute or relative based on the project root)
       # By default the path to failed imports directory is on the same level with 'inbox' directory
       # Example: ./data/failed_imports
-      # The default failed imports directory name is 'failed_imports' and cen be changed with this setting
+      # The default failed imports directory name is 'failed_imports' and can be changed with this setting
       path: :default
 
     # Determines whether the inbound data file should be preserved in the 'inbox' directory
@@ -80,10 +79,12 @@ workflow:
 logging:
   file:
     enabled: true
-    path: ./log
 
     # Logging level, available values: :debug | :info | :warning | :error | :critical
     level: :warning
+
+    # Path to log directory
+    path: ./log
 
   database:
     enabled: false
@@ -106,5 +107,5 @@ logging:
     port: 8088
     index: main
 
-    # Turns SSL verification on or off, defaults to true
+    # Turns SSL verification on/off, defaults to true (on)
     verify: true

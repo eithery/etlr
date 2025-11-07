@@ -9,3 +9,5 @@ database:
 logging:
   file:
     enabled: false
+  splunk:
+    enabled: false
