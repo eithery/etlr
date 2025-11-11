@@ -17,7 +17,7 @@ pub(crate) fn display_app_header(template_name: &str, command: &str) {
 
 
 pub(crate) fn file_loaded(file_path: &Path) {
-    println!("{:?} \t{}", file_path, green("LOADED"));
+    println!("{}  {}", file_path.display(), green("LOADED"));
 }
 
 
