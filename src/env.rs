@@ -1,4 +1,5 @@
 use std::env::{self, VarError};
+use std::fmt::Display;
 use crate::std::string::Normalize;
 use crate::config::database::connection::ConnectionType;
 
@@ -28,6 +29,17 @@ pub(crate) enum Environment {
     Development,
     Testing,
     Production
+}
+
+
+impl Display for Environment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Environment::Development => write!(f, "{}", DEV_ENV_NAMES[1]),
+            Environment::Testing => write!(f, "{}", TEST_ENV_NAMES[1]),
+            Environment::Production => write!(f, "{}", PROD_ENV_NAMES[1])
+        }
+    }
 }
 
 

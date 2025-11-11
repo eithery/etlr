@@ -1,9 +1,12 @@
+pub mod cli;
 mod config;
 mod env;
 mod path;
+mod pipelines;
 mod std;
 
 use crate::config::app::AppConfiguration;
+use crate::pipelines::builder;
 
 
 pub fn load_files(
@@ -16,23 +19,19 @@ pub fn load_files(
     _preserve_inbox: bool,
     _skip_audit: bool
 ) {
-    let config = AppConfiguration::load(config_path);
-    println!("{config:#?}");
+    let _ = AppConfiguration::load(config_path);
+    // crate::echo!("Loading configuration file...");
 }
 
 
 pub fn export_files(
     template_name: &str,
     config_path: Option<&str>,
-    files: Option<&str>,
-    file_prefix: Option<&str>,
-    skip_column_names: bool
+    _files: Option<&str>,
+    _file_prefix: Option<&str>,
+    _skip_column_names: bool
 ) {
-    println!("\nExport files for the template: '{template_name}'.");
-    println!("{config_path:?}");
-    println!("{files:?}");
-    println!("{file_prefix:?}");
-    println!("{skip_column_names}");
+    builder::build_export_pipeline(template_name, config_path);
 }
 
 

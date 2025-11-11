@@ -1,11 +1,10 @@
 use std::default::Default;
 use std::io;
 use std::path::PathBuf;
-use dotenv::dotenv;
 use serde::Deserialize;
 use crate::config::defaults;
 use crate::env::{self, Environment};
-use crate::path;
+use crate::{cli, path};
 use crate::std::string;
 use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
@@ -54,14 +53,14 @@ impl Default for AppConfiguration {
             templates: Vec::new(),
             workflow: Default::default(),
             logging: Default::default(),
-            load_paths: Vec::new() }
+            load_paths: Vec::new()
+        }
     }
 }
 
 
 impl AppConfiguration {
     pub(crate) fn load(config_path: Option<&str>) -> Self {
-        dotenv().ok();
         Self::default()
             .load_from_home()
             .load_from_dir(path::config_dir)
@@ -117,11 +116,11 @@ impl AppConfiguration {
                     return self;
                 }
                 match yaml::load_from_file(&config_path) {
-                    Ok(config) => self.merge(config, config_path),
-                    Err(err) => {
-                        println!("{err}");
-                        self
+                    Ok(config) => {
+                        cli::file_loaded(&config_path);
+                        self.merge(config, config_path)
                     }
+                    Err(_) => self // TODO: Log all invalid config cases
                 }
             },
             Err(_) => self
