@@ -21,6 +21,11 @@ pub(crate) fn file_loaded(file_path: &Path) {
 }
 
 
+pub(crate) fn env_vars_applied() {
+    println!("Apply environment variables  {}", green("DONE"));
+}
+
+
 pub(crate) fn blank_line() {
     echo("");
 }

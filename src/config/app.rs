@@ -142,6 +142,7 @@ impl AppConfiguration {
 
 
     fn apply_env_vars(self) -> Self {
+        cli::env_vars_applied();
         Self {
             database: self.database.apply_env_vars(),
             logging: self.logging.apply_env_vars(),
