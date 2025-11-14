@@ -4,7 +4,7 @@ mod help;
 
 use anyhow::Result;
 use clap::{CommandFactory, Parser};
-use etlr::{load_files, export_files, anonymize_files, create_database, drop_database, create_tables, drop_tables};
+use etlr::{import_files, export_files, anonymize_files, create_database, drop_database, create_tables, drop_tables};
 use crate::cli::{Cli, APP_TITLE};
 use crate::commands::{Commands, db};
 
@@ -27,7 +27,7 @@ fn main() -> Result<()> {
             update_only,
             skip_audit
         }) =>
-            load_files(
+            import_files(
                 template,
                 config.as_deref(),
                 *postprocess,
@@ -66,8 +66,7 @@ fn main() -> Result<()> {
                 db::Commands::Rollback { template, config } => drop_tables(template, config.as_deref()),
                 db::Commands::Create { config} => create_database(config.as_deref()),
                 db::Commands::Drop { config } => drop_database(config.as_deref())
-            },
-        None => Cli::command().print_help()?
+            }
+        None => Ok(Cli::command().print_help()?)
     }
-    Ok(())
 }
