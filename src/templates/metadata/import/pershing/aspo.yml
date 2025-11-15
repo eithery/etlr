@@ -1,0 +1,140 @@
+version: 2
+type: pershing.aspo
+format: fixed-length
+description: >
+  The Subscription Products Ordersfile (ASPO) is created daily from the Automated Subscription Products
+  System (ASPS) and contains all annuity orders facilitated through NetX360, including but not limited to
+  new purchases and subsequent purchases. This file along with the Subscription Products Financial Activity
+  file (ASPF), contains all data for direct orders and transactional activity (financial and non-financial).
+
+layout:
+  record_size: 500
+  record_id:
+    pos: 4
+  header:
+    tag: BOF\x20{6}PERSHING
+    file_type:
+      tag: ASPO\x20ORDER\x20FILE
+      pos: 19..36
+    date:
+      pos: 47..56
+      format: MM/DD/CCYY
+  trailer:
+    tag: EOF\x20{6}PERSHING
+    record_count:
+      pos: 106..115
+
+  records:
+    - id: A
+      name: DETAIL RECORD A
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: AO
+        - record_indicator_value:
+            pos: 3
+            value: A
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - ibd_number: 12..14
+        - :blank: 15
+        - office_number: 16..18
+        - ip_number: 19..22
+        - account_number: 23..31
+        - application_control_number: 32..51
+        - order_sequence_number: 52..56
+        - dtcc_participant_id: 57..60
+        - type_of_activity:
+            pos: 61..63
+            value: APP|SUB
+        - :blank: 64..100
+# DTCC: 101..400?
+        - name_of_insurance_company: 401..435
+        - :blank: 436..499
+        - :end_of_record:
+            pos: 500
+            value: X
+
+    - id: '1'
+      name: SHARE CLASS
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: AO
+        - record_indicator_value:
+            pos: 3
+            value: '1'
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - ibd_number: 12..14
+        - :blank: 15
+        - office_number: 16..18
+        - ip_number: 19..22
+        - account_number: 23..31
+        - application_control_number: 32..51
+        - order_sequence_number: 52..56
+        - dtcc_participant_id: 57..60
+        - type_of_activity:
+            pos: 61..63
+            value: APP|SUB
+        - :blank: 64..100
+        - submitters_code: 101
+        - record_type:
+            pos: 102..103
+            value: APP|SUB
+        - order_record_id:
+            pos: 104..105
+            value: AA
+        - application_control_number: 106..125
+        - share_class_annuity_order: 126..135
+        - :blank: 136..400
+        - name_of_insurance_company: 401..435
+        - :blank: 436..499
+        - :end_of_record:
+            pos: 500
+            value: X
+
+    - id: '2'
+      name: SUITABILITY INFORMATION
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: AO
+        - record_indicator_value:
+            pos: 3
+            value: '2'
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - ibd_number: 12..14
+        - :blank: 15
+        - office_number: 16..18
+        - ip_number: 19..22
+        - account_number: 23..31
+        - application_control_number: 32..51
+        - order_sequence_number: 52..56
+        - dtcc_participant_id: 57..60
+        - type_of_activity:
+            pos: 61..63
+            value: APP|SUB
+        - :blank: 64..100
+        - submitters_code: 101
+        - record_type_from_document: 102..103
+        - order_record_id:
+            pos: 104..105
+            value: BB
+        - suitability_question_id: 126..135
+        - suitability_question: 136..305
+        - suitability_answer_id: 306..315
+        - suitability_answer: 316..395
+        - suitability_auto_fail_indicator:
+            pos: 396
+            value: Y|N
+        - :blank: 397..400
+        - name_of_insurance_company: 401..435
+        - :blank: 436..499
+        - :end_of_record:
+            pos: 500
+            value: X

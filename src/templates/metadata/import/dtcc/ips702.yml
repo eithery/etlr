@@ -1,0 +1,117 @@
+etl_template: :import
+version: 2
+file:
+  type: dtcc.ips702
+  format: :fixed-length
+
+description: NSCC Record Layout. Money Settlement Detail (MSD) for COM, APP/SUB & STL
+
+layout:
+  record_size: 200
+  record_id:
+    pos: 1..2
+  header:
+    tag: \w{14}\s{2}702ANNUITY MONEY SETT
+    file_type:
+      tag: 702ANNUITY MONEY SETT
+      pos: 17..37
+    date:
+      pos: 82..89
+      format: YYYYMMDD
+  trailer:
+    enabled: false
+
+  records:
+    - id: '80'
+      name: IPS Money Settlement Summary
+      required: true
+      fields:
+        - record_type:
+            pos: 1..2
+            value: '80'
+            required: true
+        - participant_number: 3..6
+        - ips_event_code:
+            pos: 7..9
+            value: MSD
+        - transmission_unique_id: 10..39
+        - file_count:
+            pos: 40..46
+            type: int
+        - debit_credit_indicator:
+            pos: 47
+            value: 1|2
+        - total_setting_amount:
+            pos: 48..63
+            type: num(18,2)
+            format: 9(14)v9(02)
+        - test_indicator:
+            pos: 64
+            value: P|T
+        - :blank: 65..200
+
+    - id: '81'
+      name: IPS Money Settlement Summary (Contra Header Record)
+      required: true
+      fields:
+        - record_type:
+            pos: 1..2
+            value: '81'
+            required: true
+        - contra_participant_number: 3..6
+        - contra_file_count:
+            pos: 7..13
+            type: int
+        - debit_credit_indicator:
+            pos: 14
+            value: 1|2
+        - total_contra_settling_amount:
+            pos: 15..30
+            type: num(18,2)
+            format: 9(14)v9(02)
+        - test_indicator:
+            pos: 31
+            value: P|T
+        - :blank: 32..200
+
+    - id: '82'
+      name: IPS Money Settlement Detail Record
+      required: true
+      repeatable: true
+      fields:
+        - record_type:
+            pos: 1..2
+            value: '82'
+            required: true
+        - submitted_date:
+            pos: 3..10
+            type: date
+            format: CCYYMMDD
+        - settling_amount:
+            pos: 11..26
+            type: num(18,2)
+            format: 9(14)v9(02)
+        - debit_credit_indicator:
+            pos: 27
+            value: 1|2
+        - signed_solicited_state: 28..29
+        - application_control_number: 30..49
+        - group_number: 50..79
+        - contract_number: 80..109
+        - nscc_control_number: 110..129
+        - distributor_account_id: 130..159
+        - distributor_transaction_id: 160..189
+        - related_event_code: 190..192
+        - settlement_date:
+            pos: 193..200
+            type: date
+            format: CCYYMMDD
+
+processing:
+  update_strategy: default
+
+postprocess:
+  stage_2:
+    enabled: false
+  stage_3:
+    enabled: false

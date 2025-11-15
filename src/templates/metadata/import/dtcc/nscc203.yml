@@ -1,0 +1,203 @@
+etl_template: :import
+version: 2
+file:
+  type: dtcc.nscc203
+  format: :fixed-length
+
+description: DTCC Payment aXis Commission & Fee Settlement
+
+layout:
+  record_size: 100
+  record_id:
+    pos: 2..3
+  header:
+    tag: \w{14}\s{2}203Y2K COMM SETTLE MRO
+    file_type:
+      tag: 203Y2K COMM SETTLE MRO
+      pos: 17..38
+    date:
+      pos: 82..89
+      format: YYYYMMDD
+  trailer:
+    enabled: false
+
+  records:
+    - id: '00'
+      name: Mutual Fund DTCC Payment aXis Service Output Header Record
+      required: true
+      fields:
+        - system_code:
+            pos: 1
+            value: 'N'
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '00'
+            required: true
+        - sequence_number:
+            pos: 4
+            type: int
+            # value: 1
+            required: true
+        - mro_recipient_number:
+            pos: 5..8
+            type: int
+        - literal_1:
+            pos: 9..19
+            value: '11111111111'
+        - transmission_date:
+            pos: 20..27
+            type: date
+            format: MMDDCCYY
+        - autoroute_file_id: 20..27
+        - literal_2:
+            pos: 36..45
+            value: COMMISSION
+        - :blank: 46..100
+
+    - id: '38'
+      name: Mutual Fund DTCC Payment aXis Security Issue ID Settlement Detail Record
+      required: true
+      repeatable: true
+      fields:
+        - system_code:
+            pos: 1
+            value: 'N'
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '38'
+            required: true
+        - :blank: 4..5
+        - mro_recipient_number:
+            pos: 6..9
+            type: int
+        - security_issue_country_code: 10..11
+        - security_issue_id: 12..20
+        - security_issue_check_digit: 21
+        - pay_receive_code:
+            pos: 22
+            value: 2|4
+        - contra_clearing_number:
+            pos: 23..26
+            type: int
+        - settlement_date:
+            pos: 27..34
+            type: date
+            format: MMDDCCYY
+        - processing_date:
+            pos: 35..42
+            type: date
+            format: MMDDCCYY
+        - settlement_value:
+            pos: 43..58
+            type: num(18,2)
+        - currency_indicator: 59..61
+        - omni_pay_receive_code:
+            pos: 62
+            value: 2|4
+        - omni_settlement_value:
+            pos: 63..79
+            type: num(18,2)
+        - tpa_investment_agent_firm_number: 80..83
+        - :blank: 84..99
+        - mro_recipient_type:
+            pos: 100
+            value: A|B|F|T
+
+    - id: '39'
+      name: Mutual Fund DTCC Payment aXis Settlement Record By Contra Participant
+      required: true
+      repeatable: true
+      fields:
+        - system_code:
+            pos: 1
+            value: 'N'
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '39'
+            required: true
+        - :blank: 4..5
+        - mro_recipient_number:
+            pos: 6..9
+            type: int
+        - pay_receive_code:
+            pos: 10
+            value: 2|4
+        - contra_clearing_number:
+            pos: 11..14
+            type: int
+        - settlement_date:
+            pos: 15..22
+            type: date
+            format: MMDDCCYY
+        - processing_date:
+            pos: 23..30
+            type: date
+            format: MMDDCCYY
+        - settlement_value:
+            pos: 31..46
+            type: num(18,2)
+        - currency_indicator: 47..49
+        - omni_pay_receive_code:
+            pos: 50
+            value: 2|4
+        - omni_settlement_value:
+            pos: 51..67
+            type: num(18,2)
+        - :blank: 68..99
+        - mro_recipient_type:
+            pos: 100
+            value: A|B|F|T
+
+    - id: '40'
+      name: Mutual Fund DTCC Payment aXis Grand Total Settlement Record
+      required: true
+      fields:
+        - system_code:
+            pos: 1
+            value: 'N'
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '40'
+            required: true
+        - :blank: 4..5
+        - mro_recipient_number:
+            pos: 6..9
+            type: int
+        - pay_receive_code:
+            pos: 10
+            value: 2|4
+        - settlement_date:
+            pos: 11..18
+            type: date
+            format: MMDDCCYY
+        - processing_date:
+            pos: 19..26
+            type: date
+            format: MMDDCCYY
+        - settlement_value:
+            pos: 27..42
+            type: num(18,2)
+        - currency_indicator: 43..45
+        - omni_pay_receive_code:
+            pos: 46
+            value: 2|4
+        - omni_settlement_value:
+            pos: 47..63
+            type: num(18,2)
+        - :blank: 64..99
+        - mro_recipient_type:
+            pos: 100
+            value: A|B|F|T
+
+processing:
+  update_strategy: default
+
+postprocess:
+  stage_2:
+    enabled: false
+  stage_3:
+    enabled: false

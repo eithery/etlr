@@ -1,0 +1,33 @@
+etl_template: :import
+version: 2
+file:
+  type: nfs.mas
+  format: :fixed-length
+
+description: NFS MAS file interface
+
+layout:
+  record_size: 200
+  record_id:
+    pos: 1..2
+  header:
+    enabled: false
+  trailer:
+    enabled: false
+
+  records: {}
+
+
+processing:
+  legacy: true
+  update_strategy: default
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    type: sql
+    data_source: :pcs
+    run: dbo.load_nfs_mas

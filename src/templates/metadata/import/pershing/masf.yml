@@ -1,0 +1,299 @@
+etl_template: :import
+version: 2
+file:
+  type: pershing.masf
+  format: :fixed-length
+
+description: >
+  The Managed Account Billing Information file (MASF) contains billing details along with Payee/Payor information
+  for Institutional and Retail accounts. This file will be generated based on fee transaction daily billing details
+  from REDI 2.
+  This file contains header and trailer records that confirm the beginning and end of the file, the date it was
+  created, and the file's total number of records.
+  This file is available at the Introducing broker dealer, Office, Investment Professional and Account
+
+layout:
+  record_size: 750
+  record_id:
+    pos: 3
+  header:
+    tag: BOF\x20{6}PERSHING
+    file_type:
+      tag: MNGD\x20ACC\x20FEE\x20\BILL
+      pos: 19..36
+    date:
+      pos: 47..56
+      format: MM/DD/CCYY
+  trailer:
+    tag: EOF\x20{6}PERSHING
+    record_count:
+      pos: 106..115
+
+  records:
+    - id: A
+      name: DETAIL RECORD A. BILLING CHARGE
+      required: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: MG
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: A
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+            required: true
+        - introducing_broker_dealer_number: 12..14
+        - :blank: 15
+        - :blank: 16
+        - office_number:
+            pos: 17..19
+            required: true
+        - :blank: 20
+        - investment_professional_number:
+            pos: 21..24
+            required: true
+        - account_number:
+            pos: 25..33
+            key: true
+            required: true
+        - household_id: 34..53
+        - household_name: 54..173
+        - account_type_indicator:
+            pos: 174
+            value: C|F
+        - program_product_description: 175..294
+        - manager_number: 295..299
+        - manager_name: 300..419
+        - style_number: 420..439
+        - style_name: 440..559
+        - distributor_id: 560..564
+        - billing_method:
+            pos: 565
+            value: A|F
+        - valuation_method:
+            pos: 566..567
+            value: EP|AD|AM
+        - inception_date:
+            pos: 568..575
+            type: date
+            format: CCYYMMDD
+        - termination_date:
+            pos: 576..583
+            type: date
+            format: CCYYMMDD
+        - billing_start_date:
+            pos: 584..592
+            type: date
+            format: CCYYMMDD
+        - billing_end_date:
+            pos: 593..601
+            type: date
+            format: CCYYMMDD
+        - billing_period:
+            pos: 602..604
+            type: int
+        - discount_amount:
+            pos: 605..622
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - fee_forgiveness_amount:
+            pos: 623..640
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - min_max_applied_indicator:
+            pos: 641..643
+            value: MIN|MAX
+        - bill_to_account_number: 644..652
+        - total_asset_value:
+            pos: 653..670
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - total_asset_value_sign:
+            pos: 671
+            value: C|D
+        - total_fee:
+            pos: 672..689
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - total_fee_sign:
+            pos: 690
+            value: C|D
+        - billing_event:
+            pos: 691
+            value: F|I|M|P|R|T
+            required: true
+        - source_code: 692..694
+        - reversal_cancel_indicator:
+            pos: 695
+            value: Y|N
+        - billing_frequency_code:
+            pos: 696
+            value: Q|M
+        - agent_internal_number: 697..708
+        - :blank: 709..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: B
+      name: DETAIL RECORD B. PAYEE/PAYOR CHARGE
+      required: true
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: MG
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: B
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+            required: true
+        - introducing_broker_dealer_number: 12..14
+        - :blank: 15
+        - :blank: 16
+        - office_number:
+            pos: 17..19
+            required: true
+        - :blank: 20
+        - investment_professional_number:
+            pos: 21..24
+            required: true
+        - account_number:
+            pos: 25..33
+            key: true
+            required: true
+        - household_id: 34..53
+        - secondary_sequence_number:
+            pos: 54..61
+            type: int
+        - asset_class_name: 62..73
+        - payee_payor_code:
+            pos: 74..75
+            value: AC|BD|CU|DI|IP|MA|OM|PP|SP
+        - payee_payor_identifier: 76..84
+        - payee_payor_account_number: 85..93
+        - payee_payor_office: 94..96
+        - disbursement_type:
+            pos: 97..98
+            value: AF|BF|CF|DF|FF|IF|MF|MS|OF|PA|PF|RF|SF|SM|TF
+            required: true
+        - source_code: 99..101
+        - asset_class_value:
+            pos: 102..119
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - asset_class_value_sign:
+            pos: 120
+            value: C|D
+        - asset_class_fee:
+            pos: 121..138
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - asset_class_fee_sign:
+            pos: 139
+            value: C|D
+        - asset_class_effective_basis_point:
+            pos: 140..157
+            type: num(18,5)
+            format: 9(13)v9(05)
+        - sleeve_identifier: 158..177
+        - sleeve_style: 178..182
+        - minimum_maximum_applied_indicator:
+            pos: 183..185
+            value: MIN|MAX
+        - aggregated_market_value:
+            pos: 186..203
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - aggregated_market_value_sign:
+            pos: 204
+            value: C|D
+        - :blank: 205..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: C
+      name: DETAIL RECORD C. INSTITUTIONAL CHARGE DETAIL
+      required: false
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: MG
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: C
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+            required: true
+        - introducing_broker_dealer_number: 12..14
+        - :blank: 15
+        - :blank: 16
+        - office_number:
+            pos: 17..19
+            required: true
+        - :blank: 20
+        - investment_professional_number:
+            pos: 21..24
+            required: true
+        - account_number:
+            pos: 25..33
+            key: true
+            required: true
+        - household_id: 34..53
+        - secondary_sequence_number:
+            pos: 54..61
+            type: int
+        - asset_class_name: 62..73
+        - customer_account_number: 74..82
+        - customer_office_number: 83..85
+        - ibd_number: 86..88
+        - asset_class_value:
+            pos: 89..106
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - asset_class_value_sign:
+            pos: 107
+            value: C|D
+        - asset_class_fee:
+            pos: 108..125
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - asset_class_fee_sign:
+            pos: 126
+            value: C|D
+        - asset_class_effective_basis_point:
+            pos: 127..144
+            type: num(18,5)
+            format: 9(13)v9(05)
+        - :blank: 145..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+processing:
+  update_strategy: default
+
+postprocess:
+  stage_2:
+    enabled: true
+    type: sql
+    run: pershing.masf_process
+
+  stage_3:
+    enabled: true
+    type: sql
+    data_source: :pcs
+    run: dbo.load_pershing_masf

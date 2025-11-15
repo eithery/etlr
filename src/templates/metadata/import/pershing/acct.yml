@@ -1,0 +1,4488 @@
+etl_template: :import
+version: 2
+file:
+  type: pershing.acct
+  format: :fixed-length
+
+description: >
+  The Customer Account Information files (ACCT and ACCF) are created from the Name and Address database,
+  which is updated on a nightly basis.
+  ACCF is a full or refresh file which includes all of the accounts, while ACCT is an update file which only shows
+  accounts added or updated that day.
+  The addition of account(s) to standard file destination is NOT considered an add or change to the account(s) and
+  will NOT produce a subsequent record on the ACCT file. In addition to being configured on the standard file
+  destination, accounts must be added/updated in Account Services that day to create a record on the ACCT file.
+
+layout:
+  record_size: 750
+  record_id:
+    pos: 3
+  header:
+    tag: BOF\x20{6}PERSHING
+    file_type:
+      tag: CUSTOMER\x20ACCT\x20INFO
+      pos: 19..36
+    date:
+      pos: 47..56
+      format: MM/DD/CCYY
+  trailer:
+    tag: EOF\x20{6}PERSHING
+    record_count:
+      pos: 106..115
+
+  records:
+    - id: A
+      name: DETAIL RECORD A. MAIN ACCOUNT INFORMATION
+      required: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+            exported: true
+        - record_indicator_value:
+            pos: 3
+            value: A
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number:  25..28
+        - account_short_name:
+            pos: 29..38
+            exported: true
+        - :blank: 39..40
+        - transaction_type:
+            pos: 41
+            value: A|C|X
+        - auto_titled_or_user_titled_account:
+            pos: 42
+            value: F|S
+        - account_type_code:
+            pos: 43
+            value: C|R|T|3|4
+            exported: true
+        - registration_type:
+            pos: 44..47
+            exported: true
+        - :blank: 48
+        - number_of_title_lines_in_registration:
+            pos: 49
+            value: 1|2|3|4
+        - account_registration_line_1:
+            pos: 50..81
+            exported: true
+        - account_registration_line_2:
+            pos: 82..113
+            exported: true
+        - account_registration_line_3:
+            pos: 114..145
+            exported: true
+        - account_registration_line_4:
+            pos: 146..177
+            exported: true
+        - account_registration_line_5:
+            pos: 178..209
+            exported: true
+        - account_registration_line_6:
+            pos: 210..241
+            exported: true
+
+        - :one_of:
+            scope: registration_type
+            groups:
+              - when: JNTN|TODJ
+                fields:
+                  - :group: JNTN AND TODJ ACCOUNT INFORMATION
+                  - us_tenancy_indicator:
+                      pos: 242
+                      value: Y|N
+                  - married_indicator:
+                      pos: 243
+                      value: Y|N
+                  - tenancy_state: 244..245
+                  - joint_tenancy_clause:
+                      pos: 246..249
+                      value: CMPP|CMRS|JTTN|TNCM|TNET|USFT
+                  - agreement_execution_date:
+                      pos: 250..257
+                      type: date
+                      format: CCYYMMDD
+                  - number_of_tenants: 258..259
+                  - :blank: 260..262
+              - when: CUST|529C
+                fields:
+                  - :group: CUSTODIAN ACCOUNT INFORMATION
+                  - state_gift_given: 242..243
+                  - date_gift_given:
+                      pos: 244..251
+                      type: date
+                      format: CCYYMMDD
+                  - age_to_terminate:
+                      pos: 252..253
+                      type: int
+                  - minors_birthdate:
+                      pos: 254..261
+                      type: date
+                      format: CCYYMMDD
+                  - manner_of_gift:
+                      pos: 262
+                      value: C|E|F|O|R|T|W
+              - when: TRST|529T|NPLT
+                fields:
+                  - :group: TRUST ACCOUNT INFORMATION
+                  - type_of_trust:
+                      pos: 242
+                      value: A|C|D|E|F|G|I|L|N|P|Q|R|S|T|V
+                  - date_trust_established:
+                      pos: 243..250
+                      type: date
+                      format: CCYYMMDD
+                  - amended_date:
+                      pos: 251..258
+                      type: date
+                      format: CCYYMMDD
+                  - trustee_independent_action:
+                      pos: 259
+                      value: Y|N
+                  - :blank: 260..262
+              - when: CPPS
+                fields:
+                  - :group: CPPS ACCOUNT INFORMATION
+                  - plan_established_date:
+                      pos: 242..249
+                      type: date
+                      format: CCYYMMDD
+                  - plan_amendment_date:
+                      pos: 250..257
+                      type: date
+                      format: CCYYMMDD
+                  - :blank: 258..262
+
+        - :group: ACCOUNT OPEN/UPDATE/CLOSE DATES
+        - date_account_opened:
+            pos: 263..270
+            type: date
+            format: CCYYMMDD
+            exported: true
+        - date_account_information_updated:
+            pos: 271..278
+            type: date
+            format: CCYYMMDD
+        - account_status_indicator:
+            pos: 279
+            value: O|P|C
+            exported: true
+        - pending_closed_date:
+            pos: 280..287
+            type: date
+            format: CCYYMMDD
+        - date_account_closed:
+            pos: 288..295
+            type: date
+            format: CCYYMMDD
+            exported: true
+        - closing_notice_date:
+            pos: 296..303
+            type: date
+            format: CCYYMMDD
+        - account_reactivated_date:
+            pos: 304..311
+            type: date
+            format: CCYYMMDD
+        - date_account_reopened:
+            pos: 312..319
+            type: date
+            format: CCYYMMDD
+
+        - :group: INSTRUCTIONS
+        - proceeds:
+            pos: 320
+            value: 1|2|3
+        - transfer_instructions:
+            pos: 321
+            value: 1|2|3|4
+        - income_instructions:
+            pos: 322
+            value: 2|3|4
+        - number_of_confirms: 323..324
+        - number_of_statements: 325..326
+
+        - :group: INVESTMENT OBJECTIVE DETAILS
+        - investment_objective_transaction_code:
+            pos: 327
+            value: X|A|C
+
+        - comments: 328..353
+        - employer_short_name: 354..368
+        - employer_cusip: 369..377
+        - employer_symbol: 378..386
+        - margin_privileges_revoked:
+            pos: 387
+            value: Y|N
+        - statement_review_date:
+            pos: 388..395
+            type: date
+            format: CCYYMMDD
+        - margin_papers_on_file:
+            pos: 396
+            value: Y|N
+        - option_papers_on_file:
+            pos: 397
+            value: Y|N
+        - :blank: 398
+        - good_faith_margin:
+            pos: 399
+            value: Y|N
+
+        - :group: DISCRETION
+        - investment_professional_discretion_granted:
+            pos: 400
+            value: Y|N
+        - investment_advisor_discretion_granted:
+            pos: 401
+            value: Y|N
+        - third_party_discretion_granted:
+            pos: 402
+            value: Y|N
+        - third_party_name: 403..417
+        - risk_factor_code:
+            pos: 418
+            value: L|M|H|S|C|R|E|I|A
+            exported: true
+        - investment_objective_code:
+            pos: 419..422
+            value: I|L|S
+            exported: true
+
+        - :group: OPTION TRADING
+        - option_equities:
+            pos: 423
+            value: Y|N
+        - option_index:
+            pos: 424
+            value: Y|N
+        - option_debt:
+            pos: 425
+            value: Y|N
+        - option_currency:
+            pos: 426
+            value: Y|N
+
+        - :group: OPTION LEVELS
+        - option_level_1:
+            pos: 427
+            value: O|P
+        - option_level_2:
+            pos: 428
+            value: L
+        - option_level_3:
+            pos: 429
+            value: S
+        - option_level_4:
+            pos: 430
+            value: A
+        - option_call_limits:
+            pos: 431..440
+            type: int
+        - option_put_limits:
+            pos: 441..450
+            type: int
+        - option_total_limits_of_puts_and_calls:
+            pos: 451..460
+            type: int
+
+        - :group: BROKERAGE INFORMATION
+        - non_us_dollar_trading:
+            pos: 461
+            value: Y|N
+        - :blank: 462..464
+        - non_customer_indicator:
+            pos: 465
+            value: N|P|S
+        - third_party_fee_indicator:
+            pos: 466..467
+            value: Y|N
+        - third_party_fee_approval_date:
+            pos: 468..475
+            type: date
+            format: CCYYMMDD
+        - intermediary_account_indicator:
+            pos: 476
+            value: Y|N
+        - commission_schedule:
+            pos: 477..478
+            value: C
+        - group_index: 479..483
+        - money_manager_id: 484..486
+        - money_manager_objective: 487..489
+        - dtc_id_confirm_number: 490..494
+        - caps_master_mnemonic: 495..503
+
+        - employee_id: 504..511
+        - prime_broker_free_fund_indicator:
+            pos: 512
+            value: B|C|F|T|X
+        - fee_based_account_indicator:
+            pos: 513
+            value: Y|N
+            exported: true
+        - :blank: 514..516
+        - fee_based_termination_date:
+            pos: 517..524
+            type: date
+            format: CCYYMMDD
+        - :blank: 525
+        - plan_name: 526..557
+        - self_directed_401k_account_type: 558..589
+        - plan_type: 590..591
+        - plan_number: 592..601
+        - employee_relative_indicator:
+            pos: 602..605
+            value: E|ER
+        - commission_percent_discount:
+            pos: 606..623
+            type: num(18,9)
+            format: 9(09)v9(09)
+        - block_mutual_fund_fees:
+            pos: 624
+            value: D|B|N|C
+
+        - :group: NEW ACCOUNT FORM SIGNATORY INFORMATION
+        - name_of_investment_professional_signed_new_account_form: 625..639
+        - date_investment_professional_signed_new_account_form:
+            pos: 640..647
+            type: date
+            format: CCYYMMDD
+        - name_of_principal_signed_new_account_form: 648..662
+        - date_principal_signed_new_account_form:
+            pos: 663..670
+            type: date
+            format: CCYYMMDD
+
+        - :group: ACCOUNT LEVEL INFORMATION FOR USA PATRIOT ACT
+        - politically_exposed_person_indicator:
+            pos: 671
+            value: Y|N|U
+        - private_banking_account_indicator:
+            pos: 672
+            value: Y|N|U
+        - foreign_bank_account_indicator:
+            pos: 673
+            value: Y|N|U
+        - initial_source_of_funds:
+            pos: 674..677
+            value: ALMY|AREC|ASAV|EINC|FDIN|FECM|GAME|GIFT|INHT|INPR|INSR|LSET|PRAS|RDNA|REPC|RINC|RSAV|RLTN|ROLL|SALE|SORE|OTHR|UNKN
+        - usa_patriot_act_exempt_reason:
+            pos: 678..681
+            value: NOEX|CONV|ERSA|PEAC|PTRD|RBNK|GVTI|UNKN|IBEX
+
+        - primary_country_of_citizenship: 682..683
+        - country_of_residence: 684..685
+        - birth_date:
+            pos: 686..693
+            type: date
+            format: CCYYMMDD
+        - age_based_fund_roll_exempt_indicator:
+            pos: 694
+            value: Y|N
+        - money_fund_reform_retail:
+            pos: 695
+            value: Y|N
+        - trusted_contact_status:
+            pos: 696
+            value: C|D|P
+        - regulatory_account_type_category:
+            pos: 697..700
+            value: PTAA|EBDC|EBDB|OEBR|CTAY|IMIA|FETA|OTFA|TLFA|CSKA|FHFO|IRHS
+        - account_managed_by_trust_company_indicator:
+            pos: 701
+            value: Y|N|U
+        - voting_authority:
+            pos: 702..703
+            value: SH|SO|NO
+        - ims_prime_broker_code: 704..709
+        - payout_code: 710..711
+        - trader_number: 712..714
+        - product_code: 715..718
+        - customer_type: 719..722
+        - account_plan_type: 723..726
+        - promotion_type: 727..730
+        - investment_objective_1: 731..734
+        - investment_objective_2: 735..738
+        - investment_objective_3: 739..742
+        - fulfillment_method:
+            pos: 743..746
+            value: BPKG|ESIG|GPDF|SGNX
+        - credit_interest_indicator:
+            pos: 747
+            value: Y|N
+        - ama_indicator:
+            pos: 748
+            value: P|R|[1-5780]
+        - :blank: 749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: B
+      name: DETAIL RECORD B. MAIN ACCOUNT INFORMATION
+      required: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: B
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number:
+            pos: 25..28
+            exported: true
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: TAX INFORMATION
+        - tax_id_type:
+            pos: 41
+            value: A|E|F|I|N|Q|S|T|W
+            exported: true
+        - tax_id_number:
+            pos: 42..50
+            exported: true
+        - date_tax_id_applied_for:
+            pos: 51..58
+            type: date
+            format: CCYYMMDD
+        - w8_w9_indicator:
+            pos: 59..60
+            value: W8|W9
+        - w8_w9_date_signed:
+            pos: 61..68
+            type: date
+            format: CCYYMMDD
+        - w8_w9_effective_date:
+            pos: 69..76
+            type: date
+            format: CCYYMMDD
+        - w8_w9_document_type:
+            pos: 77..80
+            value: W8|W8BE|W8CO|W8D|W8E|W8EC|W8ET|W8EX|W8IM|W8IT|W8MT|W9|W9DT|W9WH
+        - tax_status:
+            pos: 81
+            value: B|A
+        - b_notice_reason_code:
+            pos: 82
+            value: 1|2|3|5|6
+        - first_b_notice_status:
+            pos: 83..102
+            value: ACTIVE|INACTIVE|SATISFIED
+        - date_first_b_notice_status_issued_enforced:
+            pos: 103..110
+            type: date
+            format: CCYYMMDD
+        - :blank: 111..118
+        - date_first_b_notice_status_satisfied:
+            pos: 119..126
+            type: date
+            format: CCYYMMDD
+        - second_b_notice_status:
+            pos: 127..146
+            value: ACTIVE|INACTIVE|SATISFIED
+        - date_second_b_notice_status_issued_enforced:
+            pos: 147..154
+            type: date
+            format: CCYYMMDD
+        - :blank: 155..162
+        - date_second_b_notice_status_satisfied:
+            pos: 163..170
+            type: date
+            format: CCYYMMDD
+        - c_notice_status:
+            pos: 171..190
+            value: ACTIVE|INACTIVE|SATISFIED
+        - date_c_notice_status_issued_enforced:
+            pos: 191..198
+            type: date
+            format: CCYYMMDD
+        - date_c_notice_status_satisfied:
+            pos: 199..206
+            type: date
+            format: CCYYMMDD
+        - old_account_number:
+            pos: 207..226
+            exported: true
+        - original_account_open_date:
+            pos: 227..234
+            type: date
+            format: CCYYMMDD
+
+        - :group: LARGE TRADER INFORMATION
+        - unidentified_large_trader_id: 235..247
+        - :blank: 248..249
+        - large_trader_type_code:
+            pos: 250..251
+            value: LT|UT
+        - large_trader_type_last_change_date:
+            pos: 252..259
+            type: date
+            format: CCYYMMDD
+        - :blank: 260..272
+        - :blank: 273..286
+
+        - initial_source_of_funds: 287..316
+        - finance_away:
+            pos: 317
+            value: Y|N|M|U
+        - account_funding_date:
+            pos: 318..325
+            type: date
+            format: CCYYMMDD
+        - :blank: 326..332
+
+        - :group: STATEMENT CURRENCY INFORMATION
+        - statement_currency_code:
+            pos: 333..335
+            value: AUS|BRL|CAD|CHF|CNY|EUR|GBP|HKD|JPY|MXN|SGD|USD
+        - future_statement_currency_code:
+            pos: 336..338
+            value: AUS|BRL|CAD|CHF|CNY|EUR|GBP|HKD|JPY|MXN|SGD|USD
+        - future_statement_currency_code_date:
+            pos: 339..346
+            type: date
+            format: CCYYMMDD
+
+        - :group: SPECIAL ACCOUNT-LEVEL ROUTING CODES
+        - account_level_routing_code_1:
+            pos: 347..349
+            value: ADV|APL|BCS|BNY|CGT|CON|DVP|FOL|FQI|HSA|LKW|MAT|MTV|PMR|SHR|WAD
+        - account_level_routing_code_2:
+            pos: 350..352
+            value: ADV|APL|BCS|BNY|CGT|CON|DVP|FOL|FQI|HSA|LKW|MAT|MTV|PMR|SHR|WAD
+        - account_level_routing_code_3:
+            pos: 353..355
+            value: ADV|APL|BCS|BNY|CGT|CON|DVP|FOL|FQI|HSA|LKW|MAT|MTV|PMR|SHR|WAD
+        - account_level_routing_code_4:
+            pos: 356..358
+            value: ADV|APL|BCS|BNY|CGT|CON|DVP|FOL|FQI|HSA|LKW|MAT|MTV|PMR|SHR|WAD
+
+        - :blank: 359
+        - self_directed_indicator:
+            pos: 360
+            value: Y|N
+        - digital_advice_indicator:
+            pos: 361
+            value: Y|N
+        - prohibited_transaction_exemption_86_128_account_indicator:
+            pos: 362
+            value: Y|N
+        - :blank: 363..370
+        - legacy_first_investment_professional_number: 371..373
+        - legacy_second_investment_professional_number: 374..376
+        - legacy_third_investment_professional_number: 377..379
+        - legacy_fourth_investment_professional_number: 380..382
+        - legacy_fifth_investment_professional_number: 383..385
+        - legacy_sixth_investment_professional_number: 386..388
+        - legacy_seventh_investment_professional_number: 389..391
+        - legacy_eighth_investment_professional_number: 392..394
+        - legacy_ninth_investment_professional_number: 395..397
+        - legacy_tenth_investment_professional_number: 398..400
+        - alert_im_acronym: 401..408
+        - alert_im_access_code: 409..424
+        - broker_acronym: 425..432
+        - cross_referenced_indicator:
+            pos: 433
+            value: Y|N
+        - bny_trust_indicator:
+            pos: 434
+            value: Y|N
+        - source_of_assets_at_account_opening:
+            pos: 435..436
+            value: E|P|N|R
+        - commission_discount_code: 437
+        - external_account_number: 438..457
+        - confirmation_suppression_indicator:
+            pos: 458
+            value: Y|N
+        - date_last_books_and_records_mailing_sent_to:
+            pos: 459..464
+            type: date
+            format: CCYYMM
+        - date_last_books_and_records_mailing_sent_to_outside_pershing:
+            pos: 465..470
+            type: date
+            format: CCYYMM
+        - :blank: 471
+        - fully_paid_lending_agreement_indicator: 472
+        - fully_paid_lending_agreement_date:
+            pos: 473..480
+            type: date
+            format: CCYYMMDD
+        - custodian_account_type:
+            pos: 481..484
+            value: UGMA|UTMA
+        - markets_in_financial_instruments_directive_customer_categorization:
+            pos: 485..488
+            value: RETL|RETP|RETE|PROF|PROR|PROE|ELIG
+
+        - :group: CASH MANAGEMENT INFORMATION
+        - cash_management_transaction_code:
+            pos: 489
+            value: X|A|C
+        - sweep_status_indicator:
+            pos: 490..493
+            value: A|C|I|N
+        - date_sweep_activated:
+            pos: 494..501
+            type: date
+            format: CCYYMMDD
+        - date_sweep_details_changed:
+            pos: 502..509
+            type: date
+            format: CCYYMMDD
+        - cover_margin_debit_indicator:
+            pos: 510
+            value: Y|N
+        - :blank: 511
+
+        - :group: FIRST FUND SWEEP INFORMATION
+        - first_fund_sweep_account_id: 512..518
+        - first_fund_sweep_account_percent:
+            pos: 519..536
+            type: num(18,9)
+            format: 9(09)v9(09)
+        - first_fund_sweep_account_redemption_priority:
+            pos: 537
+            value: 1|2
+
+        - :group: SECOND FUND SWEEP INFORMATION
+        - second_fund_sweep_account_id: 538..544
+        - second_fund_sweep_account_percent:
+            pos: 545..562
+            type: num(18,9)
+            format: 9(09)v9(09)
+        - second_fund_sweep_account_redemption_priority:
+            pos: 563
+            value: 1|2
+
+        - :group: BANKLINK SWEEP INFORMATION
+        - type_of_bank_account:
+            pos: 564
+            value: C|S|N
+        - banklink_aba_number: 565..573
+        - banklink_dda_number: 574..590
+        - :blank: 591..593
+
+        - fund_bank_indicator:
+            pos: 594
+            value: F|B
+        - :blank: 595..630
+        - w9_corporation_tax_classification_code:
+            pos: 631..634
+            value: CCRP|SCRP
+        - :blank: 635
+        - combined_margin_account_indicator:
+            pos: 636
+            value: Y|N
+        - pledge_collateral_account_indicator:
+            pos: 637
+            value: Y|N
+        - finra_institutional_account_code:
+            pos: 638..641
+            value: BKRI|INVA|NONI|OENT
+        - proposed_account_reference_id: 642..647
+        - advisor_model_id: 648..659
+        - firm_model_style_id: 660..665
+        - :blank: 666..685
+        - :blank: 686..698
+        - :blank: 699..710
+        - dvp_restriction_code:
+            pos: 711
+            value: Y|N
+        - dvp_restriction_expiration_date:
+            pos: 712..719
+            type: date
+            format: CCYYMMDD
+        - escheatment_withholding_indicator:
+            pos: 720..721
+            value: WH|NR|NP
+        - :blank: 722
+        - source_of_origination:
+            pos: 723..726
+            value: BNKC|BRKR|PASO|PERS|RIA
+        - source_of_persona:
+            pos: 727..730
+            value: ADVS|DIGI|HOME|INVS|SALA|VNDR
+        - client_onboarding_method:
+            pos: 731..734
+            value: ASER|CONB|CONP|CONQ|ICOB|KORR|NXCP|PCOB|PMAS|PONA|UAOA|UNDI|UNMF|WEBS
+        - tax_filing_code: 735..738
+        - :blank: 739..744
+        - :blank: 745..748
+        - non_purpose_collateral_account_indicator:
+            pos: 749
+            value: Y|N
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: C
+      name: DETAIL RECORD C. MAIN ACCOUNT INFORMATION; ADDRESS 1 AND 2
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: C
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: ACCOUNT ADDRESS 1
+        - address_1_transaction_code:
+            pos: 41
+            value: A|C|X
+        - special_handling_indicator_1:
+            pos: 42
+            value: Y|N
+        - delivery_identifier_1:
+            pos: 43
+            value: L|M|D|2|O|P|S|T|U
+            exported: true
+        - attention_line_prefix_1:
+            pos: 44..47
+            value: ATTN|C\/O
+        - attention_line_detail_1: 48..75
+        - address_1_line_1:
+            pos: 76..107
+            exported: true
+        - address_1_line_2:
+            pos: 108..139
+            exported: true
+        - address_1_line_3:
+            pos: 140..171
+            exported: true
+        - address_1_line_4:
+            pos: 172..203
+            exported: true
+
+        - :one_of:
+            scope: country_code_1
+            groups:
+              - when: US|CA
+                fields:
+                  - city_1:
+                      pos: 204..218
+                      exported: true
+                  - state_province_1:
+                      pos: 219..220
+                      exported: true
+                  - zip_postal_code_1:
+                      pos: 221..235
+                      exported: true
+              - else:
+                fields:
+                  - non_us_canada_city_1:
+                      pos: 204..235
+                      exported: true
+        - country_code_1:
+            pos: 236..237
+            exported: true
+        - :blank: 238
+
+        - most_recent_mail_return_date:
+            pos: 239..246
+            type: date
+            format: CCYYMMDD
+        - most_recent_return_comment: 247..267
+        - most_recent_return_mail_type:
+            pos: 268..271
+            value: CHCK|CONF|OTHR|STMT|TXSM
+        - second_most_recent_mail_return_date:
+            pos: 272..279
+            type: date
+            format: CCYYMMDD
+        - second_most_recent_return_comment: 280..300
+        - second_most_recent_return_mail_type:
+            pos: 301..304
+            value: CHCK|CONF|OTHR|STMT|TXSM
+        - third_most_recent_mail_return_date:
+            pos: 305..312
+            type: date
+            format: CCYYMMDD
+        - third_most_recent_return_comment: 313..333
+        - third_most_recent_return_mail_type:
+            pos: 334..337
+            value: CHCK|CONF|OTHR|STMT|TXSM
+
+        - :group: ACCOUNT ADDRESS 2
+        - address_2_transaction_code:
+            pos: 338
+            value: A|C|X
+        - special_handling_indicator_2:
+            pos: 339
+            value: Y|N
+        - delivery_identifier_2:
+            pos: 340
+            value: L|M|D|2|O|P|S|T|U
+            exported: true
+        - attention_line_prefix_2:
+            pos: 341..344
+            value: ATTN|C\/O
+        - attention_line_detail_2: 345..372
+        - address_2_line_1:
+            pos: 373..404
+            exported: true
+        - address_2_line_2:
+            pos: 405..436
+            exported: true
+        - address_2_line_3:
+            pos: 437..468
+            exported: true
+        - address_2_line_4:
+            pos: 469..500
+            exported: true
+
+        - :one_of:
+            scope: country_code_2
+            groups:
+              - when: US|CA
+                fields:
+                  - city_2:
+                      pos: 501..515
+                      exported: true
+                  - state_province_2:
+                      pos: 516..517
+                      exported: true
+                  - zip_postal_code_2:
+                      pos: 518..532
+                      exported: true
+              - else:
+                fields:
+                  - non_us_canada_city_2:
+                      pos: 501..532
+                      exported: true
+        - country_code_2:
+            pos: 533..534
+            exported: true
+
+        - account_description: 535..566
+        - set_as_mailing_address_indicator_2:
+            pos: 567
+            value: 'Y'
+        - :blank: 568..600
+        - principal_billing_allocation_percentage:
+            pos: 601..618
+            type: num(18,9)
+            format: 9(09)v9(09)
+        - :blank: 619..634
+
+        - :group: SEASONAL ADDRESS DATES
+        - seasonal_address_id_1:
+            pos: 635
+            value: S|T|U
+        - from_date_1:
+            pos: 636..643
+            type: date
+            format: CCYYMMDD
+        - to_date_1:
+            pos: 644..651
+            type: date
+            format: CCYYMMDD
+        - seasonal_address_id_2:
+            pos: 652
+            value: S|T|U
+        - from_date_2:
+            pos: 653..660
+            type: date
+            format: CCYYMMDD
+        - to_date_2:
+            pos: 661..668
+            type: date
+            format: CCYYMMDD
+        - seasonal_address_id_3:
+            pos: 669
+            value: S|T|U
+        - from_date_3:
+            pos: 670..677
+            type: date
+            format: CCYYMMDD
+        - to_date_3:
+            pos: 678..685
+            type: date
+            format: CCYYMMDD
+
+        - :group: COST BASIS ACCOUNTING FIELDS
+        - cost_basis_accounting_system:
+            pos: 686..689
+            value: PORT
+        - disposition_method_for_mutual_funds:
+            pos: 690..691
+            value: AV|FI|HC|HL|HS|LC|LI|LL|LS|MS
+        - disposition_method_for_security_types:
+            pos: 692..693
+            value: AV|FI|HC|HL|HS|LC|LI|LL|LS|MS
+        - disposition_method_for_stocks_in_dividend_reinvestment_plans:
+            pos: 694..695
+            value: AV|FI|HC|HL|HS|LC|LI|LL|LS|MS
+
+        - :group: BOND ELECTION REQUEST FOR COST BASIS REPORTING
+        - :blank: 696
+        - amortize_taxable_premium_bonds:
+            pos: 697
+            value: Y|N
+        - accrue_market_discount_based_on:
+            pos: 698
+            value: C|R
+        - include_market_discount_in_income_annually:
+            pos: 699
+            value: Y|N
+        - :blank: 700..705
+        - :blank: 706..747
+        - :blank: 748..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: D
+      name: DETAIL RECORD D. MAIN ACCOUNT INFORMATION; ADDRESS 3 AND 4
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: D
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: ACCOUNT ADDRESS 3
+        - address_3_transaction_code:
+            pos: 41
+            value: A|C|X
+        - special_handling_indicator_3:
+            pos: 42
+            value: Y|N
+        - delivery_identifier_3:
+            pos: 43
+            value: L|M|D|2|O|P|S|T|U
+        - attention_line_prefix_3:
+            pos: 44..47
+            value: ATTN|C\/O
+        - attention_line_detail_3: 48..75
+        - address_3_line_1: 76..107
+        - address_3_line_2: 108..139
+        - address_3_line_3: 140..171
+        - address_3_line_4: 172..203
+
+        - :one_of:
+            scope: country_code_3
+            groups:
+              - when: US|CA
+                fields:
+                  - city_3: 204..218
+                  - state_province_3: 219..220
+                  - zip_postal_code_3: 221..235
+              - else:
+                fields:
+                  - non_us_canada_city_3: 204..235
+        - country_code_3: 236..237
+        - set_as_mailing_address_indicator_3:
+            pos: 238
+            value: 'Y'
+        - :blank: 239..337
+
+        - :group: ACCOUNT ADDRESS 4
+        - address_4_transaction_code:
+            pos: 338
+            value: A|C|X
+        - special_handling_indicator_4:
+            pos: 339
+            value: Y|N
+        - delivery_identifier_4:
+            pos: 340
+            value: L|M|D|2|O|P|S|T|U
+        - attention_line_prefix_4:
+            pos: 341..344
+            value: ATTN|C\/O
+        - attention_line_detail_4: 345..372
+        - address_4_line_1: 373..404
+        - address_4_line_2: 405..436
+        - address_4_line_3: 437..468
+        - address_4_line_4: 469..500
+
+        - :one_of:
+            scope: country_code_4
+            groups:
+              - when: US|CA
+                fields:
+                  - city_4: 501..515
+                  - state_province_4: 516..517
+                  - zip_postal_code_4: 518..532
+              - else: 
+                fields:
+                  - non_us_canada_city_4: 501..532
+        - country_code_4: 533..534
+
+        - set_as_mailing_address_indicator_4:
+            pos: 535
+            value: 'Y'
+        - :blank: 536..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: E
+      name: DETAIL RECORD E. MAIN ACCOUNT INFORMATION; ADDRESS 5 AND 6
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: E
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: ACCOUNT ADDRESS 5
+        - address_5_transaction_code:
+            pos: 41
+            value: A|C|X
+        - special_handling_indicator_5:
+            pos: 42
+            value: Y|N
+        - delivery_identifier_5:
+            pos: 43
+            value: L|M|D|2|O|P|S|T|U
+        - attention_line_prefix_5:
+            pos: 44..47
+            value: ATTN|C\/O
+        - attention_line_detail_5: 48..75
+        - address_5_line_1: 76..107
+        - address_5_line_2: 108..139
+        - address_5_line_3: 140..171
+        - address_5_line_4: 172..203
+
+        - :one_of:
+            scope: country_code_5
+            groups:
+              - when: US|CA
+                fields:
+                  - city_5: 204..218
+                  - state_province_5: 219..220
+                  - zip_postal_code_5: 221..235
+              - else:
+                fields:
+                  - non_us_canada_city_5: 204..235
+        - country_code_5: 236..237
+
+        - set_as_mailing_address_indicator_5:
+            pos: 238
+            value: 'Y'
+        - :blank: 239..337
+
+        - :group: ACCOUNT ADDRESS 6
+        - address_6_transaction_code:
+            pos: 338
+            value: A|C|X
+        - special_handling_indicator_6:
+            pos: 339
+            value: Y|N
+        - delivery_identifier_6:
+            pos: 340
+            value: L|M|D|2|O|P|S|T|U
+        - attention_line_prefix_6:
+            pos: 341..344
+            value: ATTN|C\/O
+        - attention_line_detail_6: 345..372
+        - address_6_line_1: 373..404
+        - address_6_line_2: 405..436
+        - address_6_line_3: 437..468
+        - address_6_line_4: 469..500
+
+        - :one_of:
+            scope: country_code_6
+            groups:
+              - when: US|CA
+                fields:
+                  - city_6: 501..515
+                  - state_province_6: 516..517
+                  - zip_postal_code_6: 518..532
+              - else: 
+                fields:
+                  - non_us_canada_city_6: 501..532
+        - country_code_6: 533..534
+
+        - set_as_mailing_address_indicator_6:
+            pos: 535
+            value: 'Y'
+        - :blank: 536..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: F
+      name: DETAIL RECORD F. MAIN ACCOUNT INFORMATION; ADDRESS 7
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: F
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: ACCOUNT ADDRESS 7
+        - address_7_transaction_code:
+            pos: 41
+            value: A|C|X
+        - special_handling_indicator_7:
+            pos: 42
+            value: Y|N
+        - delivery_identifier_7:
+            pos: 43
+            value: L|M|D|2|O|P|S|T|U
+        - attention_line_prefix_7:
+            pos: 44..47
+            value: ATTN|C\/O
+        - attention_line_detail_7: 48..75
+        - address_7_line_1: 76..107
+        - address_7_line_2: 108..139
+        - address_7_line_3: 140..171
+        - address_7_line_4: 172..203
+
+        - :one_of:
+            scope: country_code_7
+            groups:
+              - when: US|CA
+                fields:
+                  - city_7: 204..218
+                  - state_province_7: 219..220
+                  - zip_postal_code_7: 221..235
+              - else:
+                fields:
+                  - non_us_canada_city_7: 204..235
+        - country_code_7: 236..237
+
+        - set_as_mailing_address_indicator_7:
+            pos: 238
+            value: 'Y'
+        - :blank: 239..337
+        - tax_servicer:
+            pos: 338..339
+            value: FS|OS|PW|WS
+        - tax_production_group_id: 340..351
+        - tax_production_group_id_status:
+            pos: 352
+            value: I
+        - tax_production_group_description: 353..392
+        - :blank: 393..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: W
+      name: DETAIL RECORD W. ADDITIONAL ACCOUNT-LEVEL INFORMATION
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: W
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: NEW ACCOUNT-LEVEL INFORMATION
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: CURRENCY/LANGUAGE INFORMATION
+        - non_us_dollar_trading:
+            pos: 42
+            value: Y|N
+        - base_currency: 43..45
+        - income_currency:
+            pos: 46..48
+            value: ISS|POS|SEL
+        - statement_language:
+            pos: 49..51
+            value: ENG|SPA
+        - statement_format_code:
+            pos: 52..54
+            value: BRL|LRG
+        - msrb_statement_indicator:
+            pos: 55
+            value: Y|N
+        - :blank: 56..61
+
+        - politically_exposed_person:
+            pos: 62
+            value: Y|N
+            exported: true
+        - first_name_of_politically_exposed_person:
+            pos: 63..87
+            exported: true
+        - last_name_of_politically_exposed_person:
+            pos: 88..112
+            exported: true
+        - suffix_of_politically_exposed_person:
+            pos: 113..116
+            exported: true
+        - political_office_held:
+            pos: 117..151
+            exported: true
+        - country_of_office:
+            pos: 152..153
+            exported: true
+        - foreign_bank_account_indicator:
+            pos: 154
+            value: Y|N|U
+        - foreign_bank_certification_date:
+            pos: 155..162
+            type: date
+            format: CCYYMMDD
+        - foreign_bank_certification_expiration_date:
+            pos: 163..170
+            type: date
+            format: CCYYMMDD
+        - central_bank_indicator:
+            pos: 171
+            value: Y|N|U
+        - account_for_foreign_financial_institution:
+            pos: 172
+            value: Y|N
+        - foreign_bank_account_under_offshore_banking_license:
+            pos: 173
+            value: Y|N
+        - foreign_bank_account_under_license_issued_by_non_cooperative_country:
+            pos: 174
+            value: Y|N
+        - foreign_bank_account_under_license_issued_by_jurisdiction_subject_to_section_311_measures:
+            pos: 175
+            value: Y|N
+        - number_of_people_entities_that_own_10_or_more_of_bank:
+            pos: 176..177
+            value: 01|02|03|04|05|06|07|08|09|10
+        - proprietary_account_owned_by_broker_dealer:
+            pos: 178
+            value: Y|N
+        - :blank: 179..181
+
+        - :group: ACCOUNT-LEVEL TELEPHONE NUMBER
+        - :group: TELEPHONE NUMBER 1
+        - telephone_1_transaction_code:
+            pos: 182
+            value: A|C|X
+        - us_international_indicator_1:
+            pos: 183
+            value: U|F
+        - telephone_type_id_1:
+            pos: 184
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_1: 185..232
+        - telephone_extension_1: 233..239
+
+        - :group: TELEPHONE NUMBER 2
+        - telephone_2_transaction_code:
+            pos: 240
+            value: A|C|X
+        - us_international_indicator_2:
+            pos: 241
+            value: U|F
+        - telephone_type_id_2:
+            pos: 242
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_2: 243..290
+        - telephone_extension_2: 291..297
+
+        - :group: TELEPHONE NUMBER 3
+        - telephone_3_transaction_code:
+            pos: 298
+            value: A|C|X
+        - us_international_indicator_3:
+            pos: 299
+            value: U|F
+        - telephone_type_id_3:
+            pos: 300
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_3: 301..348
+        - telephone_extension_3: 349..355
+
+        - :group: TELEPHONE NUMBER 4
+        - telephone_4_transaction_code:
+            pos: 356
+            value: A|C|X
+        - us_international_indicator_4:
+            pos: 357
+            value: U|F
+        - telephone_type_id_4:
+            pos: 358
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_4: 359..406
+        - telephone_extension_4: 407..413
+
+        - :group: TELEPHONE NUMBER 5
+        - telephone_5_transaction_code:
+            pos: 414
+            value: A|C|X
+        - us_international_indicator_5:
+            pos: 415
+            value: U|F
+        - telephone_type_id_5:
+            pos: 416
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_5: 417..464
+        - telephone_extension_5: 465..471
+
+        - :group: TELEPHONE NUMBER 6
+        - telephone_6_transaction_code:
+            pos: 472
+            value: A|C|X
+        - us_international_indicator_6:
+            pos: 473
+            value: U|F
+        - telephone_type_id_6:
+            pos: 474
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_6: 475..522
+        - telephone_extension_6: 523..529
+
+        - :group: TELEPHONE NUMBER 7
+        - telephone_7_transaction_code:
+            pos: 530
+            value: A|C|X
+        - us_international_indicator_7:
+            pos: 531
+            value: U|F
+        - telephone_type_id_7:
+            pos: 532
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_7: 533..580
+        - telephone_extension_7: 581..587
+
+        - :group: TELEPHONE NUMBER 8
+        - telephone_8_transaction_code:
+            pos: 588
+            value: A|C|X
+        - us_international_indicator_8:
+            pos: 589
+            value: U|F
+        - telephone_type_id_8:
+            pos: 590
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_8: 591..638
+        - telephone_extension_8: 639..645
+
+        - email_address: 646..695
+        - external_positions_indicator:
+            pos: 696
+            value: Y|N
+        - purge_eligible_indicator:
+            pos: 697
+            value: Y|N
+        - advisory_account_indicator:
+            pos: 698
+            value: Y|N
+        - product_profile_code:
+            pos: 699..702
+            value: PMAS|PSHG
+        - cents_per_share_discount:
+            pos: 703..704
+            type: int
+        - :blank: 705..714
+        - option_disclosure_date:
+            pos: 715..722
+            type: date
+            format: CCYYMMDD
+        - :blank: 723..745
+        - country_of_account_level_tax_residency:
+            pos: 746..749
+            value: DE|PR|PH|CA|VI|NZ|GB|US|A1|A2|A3|FINT|UNPF|UNPU
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: '4'
+      name: DETAIL RECORD 4. KYC INVESTMENT KNOWLEDGE; BUNK CUSTODY; AML RISK RATING
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: '4'
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: KYC INVESTMENT KNOWLEDGE INFORMATION
+        - account_suitability_obligation:
+            pos: 42..45
+            value: WALL|AALL|TIME|WEXC
+        - equities:
+            pos: 46
+            value: Y|N
+        - options:
+            pos: 47
+            value: Y|N
+        - fixed_income:
+            pos: 48
+            value: Y|N
+        - mutual_funds:
+            pos: 49
+            value: Y|N
+        - unit_investment_trusts:
+            pos: 50
+            value: Y|N
+        - exchange_traded_funds:
+            pos: 51
+            value: Y|N
+        - other_investment_type: 52..81
+        - other_investment_type_value:
+            pos: 82
+            value: Y|N
+
+        - :group: OTHER INVESTMENTS HELD OUTSIDE OF ACCOUNT
+        - other_equity_investments_value:
+            pos: 83..100
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_option_investments_value:
+            pos: 101..118
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_fixed_income_investments_value:
+            pos: 119..136
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_mutual_funds_investments_value:
+            pos: 137..154
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_unit_investment_trust_investments_value:
+            pos: 155..172
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_exchange_traded_fund_investments_value:
+            pos: 173..190
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_real_estate_investments_value:
+            pos: 191..208
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_insurance_investments_value:
+            pos: 209..226
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_annuities_variable_investments_value:
+            pos: 227..244
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_annuities_fixed_investments_value:
+            pos: 245..262
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_precious_metals_investments_value:
+            pos: 263..280
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_commodities_and_futures_investments_value:
+            pos: 281..298
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_not_listed_type_one: 299..328
+        - other_not_listed_type_one_investments_value:
+            pos: 329..346
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_not_listed_type_two: 347..376
+        - other_not_listed_type_two_investments_value:
+            pos: 377..394
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_not_listed_type_three: 395..424
+        - other_not_listed_type_three_investments_value:
+            pos: 425..442
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_not_listed_type_four: 443..472
+        - other_not_listed_type_four_investments_value:
+            pos: 473..490
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - other_not_listed_type_five: 491..520
+        - other_not_listed_type_five_investments_value:
+            pos: 521..538
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - investment_time_horizon:
+            pos: 539..546
+            type: date
+            format: CCYYMMDD
+        - liquidity_needs:
+            pos: 547
+            value: H|M|L
+            exported: true
+        - time_horizon_range: 548..549
+        - :blank: 550..555
+        - are_there_other_investments:
+            pos: 556
+            value: Y|N|W
+        - securitized_product_approval_level: 557
+        - securitized_product_disclosure_mailing_date:
+            pos: 558..563
+            type: date
+            format: CCYYMM
+        - :blank: 564..565
+        - speculation:
+            pos: 566
+            value: Y|N
+        - :blank: 567..574
+        - assets_of_the_plan: 575..610
+        - exempt_payee_code:
+            pos: 611..612
+            type: int
+        - exemption_from_fatca_reporting_code: 613
+        - principal_income_accounting_indicator:
+            pos: 614
+            value: P|I|B
+        - bnym_capacity:
+            pos: 615..618
+            value: ADTR|AGTR|ANTR|COTR|CPTR|CTDN|DITR|ESAG|EXCT|GUCT|INMR|MGPR|PLSP|SCTR|SCUS|SOTR|SREA|SRTR
+        - firm_client_capacity:
+            pos: 619..622
+            value: ADTR|AGTR|ANTR|COTR|CPTR|CTDN|DITR|ESAG|EXCT|GUCT|INMR|MGPR|PLSP|SCTR|SCUS|SOTR|SREA|SRTR
+        - investment_authority:
+            pos: 623..626
+            value: FULL|FPEX|FPCC|JTCO|JTCX|JTFX|SPEC|SPEX|NONE|NOEX
+        - fiscal_year_end_date:
+            pos: 627..630
+            type: date
+            format: MMDD
+        - :blank: 631..633
+        - skip_tax_reclaim_processing:
+            pos: 634
+            value: Y|N
+        - last_investment_review_date:
+            pos: 635..642
+            type: date
+            format: CCYYMMDD
+        - last_administrative_review_date:
+            pos: 643..650
+            type: date
+            format: CCYYMMDD
+        - overdrafts_allowed:
+            pos: 651
+            value: Y|N
+
+        - :group: ADDITIONAL IDENTIFIERS
+        - reserved_for_introducing_firm: 652..660
+        - reserved_for_booking_entity:
+            pos: 661..664
+            value: BNYM|PLLC|PSAL|PSCL|PSLL
+        - reserved_for_booking_entity_business_code:
+            pos: 665..668
+            value: BKRG|BNKC
+
+        - :group: AML RISK RATING INFORMATION
+        - high_number_of_anticipated_transactions:
+            pos: 669
+            value: Y|N
+        - account_requires_special_services:
+            pos: 670
+            value: Y|N
+        - special_service_required_1:
+            pos: 671..674
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_2:
+            pos: 675..678
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_3:
+            pos: 679..682
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_4:
+            pos: 683..686
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_5:
+            pos: 687..690
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_6:
+            pos: 691..694
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - special_service_required_7:
+            pos: 695..698
+            value: BULK|FNBK|HLDM|NMAC|PAYT|RCDC|THRC
+        - :blank: 699..718
+
+        - :group: END OF AML RISK RATINGS SECTION
+        - pershing_plan_number: 719..727
+        - exempt_status_4210:
+            pos: 728
+            value: Y|N
+        - msfta_received:
+            pos: 729
+            value: Y|N
+        - covered_securities_limit:
+            pos: 730..739
+            type: bigint
+            range: 0..9999999999
+        - account_is_high_risk:
+            pos: 740
+            value: Y|N
+        - mtm_limit:
+            pos: 741..746
+            type: int
+            range: 0..250000
+        - :blank: 747..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: '6'
+      name: DETAIL RECORD 6. EXPANDED INVESTMENT PROFESSIONAL CODES
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: '6'
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - first_investment_professional: 41..44
+        - second_investment_professional: 45..48
+        - third_investment_professional: 49..52
+        - fourth_investment_professional: 53..56
+        - fifth_investment_professional: 57..60
+        - sixth_investment_professional: 61..64
+        - seventh_investment_professional: 65..68
+        - eighth_investment_professional: 69..72
+        - ninth_investment_professional: 73..76
+        - tenth_investment_professional: 77..80
+        - :blank: 81..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: '5'
+      name: DETAIL RECORD 5. CUSTOMER DUE DILIGENCE (CDD) INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: '5'
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: CUSTOMER DUE DILIGENCE (CDD) INFORMATION
+        - certification_date:
+            pos: 42..49
+            type: date
+            format: CCYYMMDD
+        - fincen_certification_form_certified_by: 50..81
+        - position_held_by_fincen_certifier: 82..121
+        - legal_entity_exempted_from_the_cdd_rule:
+            pos: 122
+            value: Y|N
+        - :blank: 123..172
+
+        - :group: LIST OF EXCLUSIONS
+        - entity_is_a_financial_institution:
+            pos: 173
+            value: Y|N
+        - entity_is_a_department_of_agency_of_any_state:
+            pos: 174
+            value: Y|N
+        - entity_is_an_investment_company:
+            pos: 175
+            value: Y|N
+        - entity_is_an_investment_adviser:
+            pos: 176
+            value: Y|N
+        - entity_is_an_exchange_or_clearing_agency:
+            pos: 177
+            value: Y|N
+        - entity_is_any_other_entity_registered_with_sec:
+            pos: 178
+            value: Y|N
+        - entity_is_a_registered_entity:
+            pos: 179
+            value: Y|N
+        - entity_is_a_public_accounting_firm:
+            pos: 180
+            value: Y|N
+        - entity_is_a_bank_holding_company:
+            pos: 181
+            value: Y|N
+        - entity_is_a_pooled_investment_vehicle:
+            pos: 182
+            value: Y|N
+        - entity_is_an_insurance_company:
+            pos: 183
+            value: Y|N
+        - entity_is_a_financial_market_utility:
+            pos: 184
+            value: Y|N
+        - entity_is_a_foreign_financial_institution:
+            pos: 185
+            value: Y|N
+        - entity_is_a_non_us_governmental_department:
+            pos: 186
+            value: Y|N
+        - entity_is_any_legal_entity_that_opens_private_banking_account:
+            pos: 187
+            value: Y|N
+        - entity_trust_is_not_a_statutory_trust:
+            pos: 188
+            value: Y|N
+        - entity_is_not_a_legal_entity_customer:
+            pos: 189
+            value: Y|N
+        - any_entity_other_than_a_bank_whose_common_stock_listed_on_stock_exchange:
+            pos: 190
+            value: Y|N
+        - any_entity_at_least_51_percent_held_by_a_listed_equity:
+            pos: 191
+            value: Y|N
+        - :blank: 192..229
+        - :blank: 230..249
+
+        - :group: Fields for Consolidated Audit Trail
+        - pershing_firm_designated_identifier: 250..289
+        - previous_ibd_firm_designated_identifier: 290..329
+        - business_purpose_code: 330..331
+        - affiliate_indicator:
+            pos: 332
+            value: Y|N
+        - retail_investor_indicator:
+            pos: 333
+            value: Y|N
+        - crs_generation_date:
+            pos: 334..341
+            type: date
+            format: CCYYMMDD
+        - firm_crs_generation_date:
+            pos: 342..349
+            type: date
+            format: CCYYMMDD
+        - nature_and_purpose_of_account: 350..477
+        - prior_firm_crd_number: 478..497
+        - last_cat_reportable_activity_date:
+            pos: 498..505
+            type: date
+            format: CCYYMMDD
+        - last_cais_report_date:
+            pos: 506..513
+            type: date
+            format: CCYYMMDD
+        - cais_status:
+            pos: 514
+            value: A|I
+        - last_cais_report_trigger:
+            pos: 515..518
+            value: RQST|RQRM|TRAN|ICHG|INAC
+        - request_cais_reporting:
+            pos: 519
+            value: Y|N
+        - :blank: 520..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: G
+      name: DETAIL RECORD G. ACCOUNT HOLDER/PARTICIPANT INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: G
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name:
+            pos: 29..38
+            exported: true
+        - :blank: 39..40
+        - account_holder_participant_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT SECONDARY IDENTIFIERS
+        - sequence_number:
+            pos: 42..44
+            value: 001|002|003|004|005|006|007|008|009|010|011|012|013|014|015|016
+            exported: true
+        - account_holder_type: 
+            pos: 45..47
+            value: AH|B&R|IPP
+            required: true
+            exported: true
+        - account_holder_participant_role:
+            pos: 48..51
+            required: true
+            exported: true
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT NAME AREA
+        - account_holder_participant_name_type:
+            pos: 52
+            value: I|E|M
+            exported: true
+        - :one_of:
+            scope: account_holder_participant_name_type
+            groups:
+              - when: I
+                fields:
+                  - account_holder_participant_name_prefix:
+                      pos: 53..56
+                      value: DR|MDM|MR|MS|MRS|SIR
+                      exported: true
+                  - account_holder_participant_name_suffix:
+                      pos: 57..60
+                      exported: true
+                  - :blank: 61..84
+                  - account_holder_participant_first_name:
+                      pos: 85..116
+                      exported: true
+                  - account_holder_participant_middle_initial:
+                      pos: 117..148
+                      exported: true
+                  - account_holder_participant_last_name:
+                      pos: 149..180
+                      exported: true
+              - else:
+                fields:
+                  - entity_name_line_1: 53..84
+                  - entity_name_line_2: 85..116
+                  - entity_name_line_3: 117..148
+                  - entity_name_line_4: 149..180
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT ADDRESS AREA (FIRST)
+        - delivery_identifier_1:
+            pos: 181
+            value: M|L|D
+            exported: true
+        - special_handling_indicator_1:
+            pos: 182
+            value: Y|N
+        - attention_line_prefix_1:
+            pos: 183..186
+            value: ATTN|C\/O
+        - attention_line_detail_1:
+            pos: 187..214
+            exported: true
+        - street_address_1_line_1:
+            pos: 215..246
+            exported: true
+        - street_address_1_line_2:
+            pos: 247..278
+            exported: true
+        - street_address_1_line_3: 279..310
+        - street_address_1_line_4: 311..342
+
+        - :one_of:
+            scope: country_code_1
+            groups:
+              - when: US|CA
+                fields:
+                  - city_1:
+                      pos: 343..357
+                      exported: true
+                  - state_province_1:
+                      pos: 358..359
+                      exported: true
+                  - zip_postal_code_1:
+                      pos: 360..374
+                      exported: true
+              - else:
+                fields:
+                  - non_us_canada_city_1:
+                      pos: 343..374
+                      exported: true
+        - country_code_1:
+            pos: 375..376
+            exported: true
+        - :blank: 377..378
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT ADDRESS AREA (SECOND)
+        - delivery_identifier_2:
+            pos: 379
+            value: M|L
+            exported: true
+        - special_handling_indicator_2:
+            pos: 380
+            value: Y|N
+        - attention_line_prefix_2:
+            pos: 381..384
+            value: ATTN|C\/O
+        - attention_line_detail_2: 385..412
+        - street_address_2_line_1:
+            pos: 413..444
+            exported: true
+        - street_address_2_line_2:
+            pos: 445..476
+            exported: true
+        - street_address_2_line_3: 477..508
+        - street_address_2_line_4: 509..540
+
+        - :one_of:
+            scope: country_code_2
+            groups:
+              - when: US|CA
+                fields:
+                  - city_2:
+                      pos: 541..555
+                      exported: true
+                  - state_province_2:
+                      pos: 556..557
+                      exported: true
+                  - zip_postal_code_2:
+                      pos: 558..572
+                      exported: true
+              - else:
+                fields:
+                  - non_us_canada_city_2:
+                      pos: 541..572
+                      exported: true
+        - country_code_2:
+            pos: 573..574
+            exported: true
+        - :blank: 575..576
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT INFORMATION. USA PATRIOTIC ACT
+        - natural_non_natural_indicator:
+            pos: 577
+            value: I|E|U|M
+        - confirmation_receipt_indicator:
+            pos: 578
+            value: Y|N
+        - statement_receipt_indicator:
+            pos: 579
+            value: Y|N
+        - years_of_investment_experience:
+            pos: 580..581
+            type: int
+        - gender:
+            pos: 582
+            value: F|M|N|U
+            exported: true
+        - proxy_indicator:
+            pos: 583
+            value: Y|N
+        - account_holder_participant_birth_date:
+            pos: 584..591
+            type: date
+            format: CCYYMMDD
+        - account_holder_participant_primary_country_of_citizenship_or_incorporation: 592..593
+        - account_holder_participant_country_of_residence: 594..595
+        - identity_verification_method:
+            pos: 569..599
+            value: CDCR|RDCR|INRV|OTHR
+        - tax_id_type:
+            pos: 600
+            value: A|E|F|I|N|Q|S|T|W
+        - tax_id_number: 601..609
+        - tax_exemption_indicator:
+            pos: 610
+            value: Y|N
+        - w9_on_file:
+            pos: 611
+            value: Y|N
+        - customer_bank_code: 612..615
+        - corporate_business_id: 616..647
+        - country_of_the_formation_organization: 648..649
+        - state_of_incorporation_organization: 650..651
+
+        - :group: EMPLOYMENT INFORMATION
+        - employee_of_this_ibd:
+            pos: 652
+            value: Y|N|U
+        - related_to_employee_of_this_ibd:
+            pos: 653
+            value: Y|N|U
+        - employee_of_another_ibd:
+            pos: 654
+            value: Y|N|U
+        - related_to_employee_of_another_ibd:
+            pos: 655
+            value: Y|N|U
+        - employment_status_code:
+            pos: 656..659
+            value: EMPL|SEMP|RETD|UEMP|HOME|STDT
+            exported: true
+        - occupation:
+            pos: 660..674
+            exported: true
+        - tax_bracket:
+            pos: 675..678
+            value: LWTB|MDTB|HITB|TPTB
+            exported: true
+        - years_employed:
+            pos: 679..680
+            type: int
+        - type_of_business: 681..715
+        - employer_name:
+            pos: 716..747
+            exported: true
+        - account_holder_participant_discretion:
+            pos: 748
+            value: Y|N
+        - marital_status:
+            pos: 749
+            value: M|S|D|W|P|N|U
+            exported: true
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: H
+      name: DETAIL RECORD H. ACCOUNT HOLDER/PARTICIPANT INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: H
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+        - account_holder_participant_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT SECONDARY IDENTIFIERS
+        - sequence_number:
+            pos: 42..44
+            value: 001|002|003|004|005|006|007|008|009|010|011|012|013|014|015|016
+            exported: true
+        - account_holder_type: 
+            pos: 45..47
+            value: AH|B&R|IPP
+            required: true
+            exported: true
+
+        - :group: BOOKS AND RECORDS DETAILS
+        - joint_account_income_net_worth_indicator:
+            pos: 48
+            value: Y|N
+            exported: true
+        - minimum_annual_income_amount:
+            pos: 49..66
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+        - maximum_annual_income_amount:
+            pos: 67..84
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+        - minimum_net_worth_amount:
+            pos: 85..102
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+        - maximum_net_worth_amount:
+            pos: 103..120
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+
+        - :group: TELEPHONE NUMBER (UP TO 7 TIMES)
+        - telephone_1_transaction_code:
+            pos: 121
+            value: A|C|X
+        - us_international_indicator_1:
+            pos: 122
+            value: U|F
+        - telephone_type_id_1:
+            pos: 123
+            value: B|C|E|F|H|S|T|V
+            exported: true
+        - telephone_number_1:
+            pos: 124..171
+            exported: true
+        - telephone_extension_1: 172..178
+
+        - :group: TELEPHONE NUMBER 2
+        - telephone_2_transaction_code:
+            pos: 179
+            value: A|C|X
+        - us_international_indicator_2:
+            pos: 180
+            value: U|F
+        - telephone_type_id_2:
+            pos: 181
+            value: B|C|E|F|H|S|T|V
+            exported: true
+        - telephone_number_2:
+            pos: 182..229
+            exported: true
+        - telephone_extension_2: 230..236
+
+        - :group: TELEPHONE NUMBER 3
+        - telephone_3_transaction_code:
+            pos: 237
+            value: A|C|X
+        - us_international_indicator_3:
+            pos: 238
+            value: U|F
+        - telephone_type_id_3:
+            pos: 239
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_3: 240..287
+        - telephone_extension_3: 288..294
+
+        - :group: TELEPHONE NUMBER 4
+        - telephone_4_transaction_code:
+            pos: 295
+            value: A|C|X
+        - us_international_indicator_4:
+            pos: 296
+            value: U|F
+        - telephone_type_id_4:
+            pos: 297
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_4: 298..345
+        - telephone_extension_4: 346..352
+
+        - :group: TELEPHONE NUMBER 5
+        - telephone_5_transaction_code:
+            pos: 353
+            value: A|C|X
+        - us_international_indicator_5:
+            pos: 354
+            value: U|F
+        - telephone_type_id_5:
+            pos: 355
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_5: 356..403
+        - telephone_extension_5: 404..410
+
+        - :group: TELEPHONE NUMBER 6
+        - telephone_6_transaction_code:
+            pos: 411
+            value: A|C|X
+        - us_international_indicator_6:
+            pos: 412
+            value: U|F
+        - telephone_type_id_6:
+            pos: 413
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_6: 414..461
+        - telephone_extension_6: 462..468
+
+        - :group: TELEPHONE NUMBER 7
+        - telephone_7_transaction_code:
+            pos: 469
+            value: A|C|X
+        - us_international_indicator_7:
+            pos: 470
+            value: U|F
+        - telephone_type_id_7:
+            pos: 471
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_7: 472..519
+        - telephone_extension_7: 520..526
+
+        - consolidated_liquid_net_worth_indicator:
+            pos: 527
+            value: Y|N
+            exported: true
+        - minimum_liquid_net_worth_amount:
+            pos: 528..545
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+        - maximum_liquid_net_worth_amount:
+            pos: 546..563
+            type: num(18,2)
+            format: 9(16)v9(02)
+            exported: true
+        - :blank: 564..568
+        - account_holder_participant_role_code:
+            pos: 569..572
+            required: true
+            exported: true
+        - participant_short_name: 573..582
+        - primary_mail_recipient_indicator:
+            pos: 583
+            value: 'Y'
+        - :blank: 584
+        - email_address:
+            pos: 585..634
+            exported: true
+
+        - :group: ADDITIONAL PATRIOT ACT INFORMATION
+        - type_of_unexpired_government_photo_id_1:
+            pos: 635..638
+            exported: true
+        - unexpired_government_photo_id_number_1:
+            pos: 639..670
+            exported: true
+        - country_of_unexpired_government_photo_id_1: 671..672
+        - state_province_of_unexpired_government_photo_id_1:
+            pos: 673..674
+            exported: true
+        - expiration_date_of_unexpired_government_photo_id_1:
+            pos: 675..682
+            type: date
+            format: CCYYMMDD
+            exported: true
+        - issuance_date_of_unexpired_government_photo_id_1:
+            pos: 683..690
+            type: date
+            format: CCYYMMDD
+            exported: true
+
+        - type_of_unexpired_government_photo_id_2: 691..694
+        - unexpired_government_photo_id_number_2: 695..726
+        - country_of_unexpired_government_photo_id_2: 727..728
+        - state_province_of_unexpired_government_photo_id_2: 729..730
+        - expiration_date_of_unexpired_government_photo_id_2:
+            pos: 731..738
+            type: date
+            format: CCYYMMDD
+        - issuance_date_of_unexpired_government_photo_id_2:
+            pos: 739..746
+            type: date
+            format: CCYYMMDD
+        - specified_adult_indicator:
+            pos: 747
+            value: Y|N
+        - :blank: 748..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: X
+      name: DETAIL RECORD X. ADDITIONAL ACCOUNT HOLDER/PARTICIPANT LEVEL INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: X
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: NEW ACCOUNT HOLDER INFORMATION
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT SECONDARY IDENTIFIERS
+        - sequence_number:
+            pos: 42..44
+            value: 001|002|003|004|005|006|007|008|009|010|011|012|013|014|015|016
+        - account_holder_type:
+            pos: 45..47
+            value: AH|B&R|IPP
+
+        - :group: EMPLOYER ADDRESS AREA
+        - :blank: 48..49
+        - attention_line_prefix:
+            pos: 50..53
+            value: ATTN|C\/O
+        - attention_line_detail: 54..81
+        - address_line_1: 82..113
+        - address_line_2: 114..145
+        - address_line_3: 146..177
+        - address_line_4: 178..209
+        - city: 210..224
+        - state_province: 225..226
+        - zip_postal_code: 227..241
+        - country_code: 242..243
+        - :blank: 244..245
+
+        - :group: EMPLOYMENT AND AFFILIATION INFORMATION
+        - employee_of_this_ibd:
+            pos: 246
+            value: Y|N|U
+        - related_to_employee_of_this_ibd:
+            pos: 247
+            value: Y|N|U
+        - employee_first_name: 248..272
+        - employee_last_name: 273..297
+        - employee_suffix: 298..301
+        - relationship_to_employee:
+            pos: 302..305
+            value: A|B|D|DP|F|FL|FS|GF|GM|GD|GS|M|ML|NE|NI|OI|SI|SO|SP|U
+        - employee_of_another_ibd:
+            pos: 306
+            value: Y|N|U
+        - ibd_name: 307..326
+        - related_to_employee_of_another_ibd:
+            pos: 327
+            value: Y|N|U
+        - another_ibd_name: 328..347
+        - another_ibd_employee_first_name: 348..372
+        - another_ibd_employee_last_name: 373..397
+        - another_ibd_employee_suffix: 398..401
+        - relationship_to_employee_of_another_ibd:
+            pos: 402..405
+            value: A|B|D|DP|F|FL|FS|GF|GM|GD|GS|M|ML|NE|NI|OI|SI|SO|SP|U
+        - other_brokerage_accounts:
+            pos: 406
+            value: Y|N
+        - name_of_ibd_where_account_held: 407..426
+        - holder_participant_or_family_member_affiliated_with_stock_exchange:
+            pos: 427
+            value: Y|N
+        - affiliation: 428..472
+        - holder_participant_a_senior_officer_or_shareholder_of_public_company:
+            pos: 473
+            value: Y|N
+        - name_of_public_company: 474..518
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT - LEVEL PATRIOT ACT ID VERIFICATION COMMENTS
+        - id_verification_comments: 519..568
+        - account_holder_participant_role_code: 569..572
+        - beneficiary_percent_allocation:
+            pos: 573..590
+            type: num(18,9)
+            format: 9(09)v9(09)
+        - relationship_to_primary_holder_code:
+            pos: 591..592
+            value: CH|GC|RL|SF|SP|OT
+        - :blank: 593..682
+
+        - primary_holder_relationship_to_decendent:
+            pos: 683..684
+            value: SP|OT
+        - date_of_death:
+            pos: 685..692
+            type: date
+            format: CCYYMMDD
+
+        - large_trader_id_prefix: 693..700
+        - :blank: 701..702
+        - large_trader_id_suffix: 703..706
+        - :blank: 707..716
+
+        - :group: FINANCIAL ACCOUNT TAX COMPLIANCE ACT (FATCA) INFORMATION
+        - additional_country_of_citizenship_1: 717..718
+        - additional_country_of_citizenship_2: 719..720
+        - additional_country_of_citizenship_3: 721..722
+        - additional_country_of_citizenship_4: 723..724
+        - additional_country_of_citizenship_5: 725..726
+        - us_resident_alien:
+            pos: 727
+            value: Y|N
+        - country_of_birth: 728..729
+        - per_stirpes_beneficiary_designation:
+            pos: 730
+            value: Y|N
+        - internal_pershing_client_id: 731..739
+        - :blank: 740..741
+        - formed_on_date:
+            pos: 742..749
+            type: date
+            format: CCYYMMDD
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: M
+      name: DETAIL RECORD M. ADDITIONAL ACCOUNT HOLDER/PARTICIPANT LEVEL INVESTMENT KNOWLEDGE
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: M
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: NEW ACCOUNT HOLDER INFORMATION
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+        
+        - :group: ACCOUNT HOLDER/PARTICIPANT SECONDARY IDENTIFIERS
+        - sequence_number:
+            pos: 42..44
+            value: 001|002|003|004|005|006|007|008|009|010|011|012|013|014|015|016
+        - account_holder_type:
+            pos: 45..47
+            value: AH|B&R|IPP
+        - account_holder_participant_role: 48..51
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT INVESTMENT KNOWLEDGE
+        - general_investment_knowledge:
+            pos: 52
+            value: L|M|E|N
+        - year_equity_investment_experience_began:
+            pos: 53..56
+            type: date
+            format: CCYY
+        - equity_investment_knowledge_code:
+            pos: 57
+            value: L|M|E|N
+        - year_option_investment_experience_began:
+            pos: 58..61
+            type: date
+            format: CCYY
+        - option_investment_knowledge_code:
+            pos: 62
+            value: L|M|E|N
+        - year_fixed_income_investment_experience_began:
+            pos: 63..66
+            type: date
+            format: CCYY
+        - fixed_income_investment_knowledge_code:
+            pos: 67
+            value: L|M|E|N
+        - year_mutual_fund_investment_experience_began:
+            pos: 68..71
+            type: date
+            format: CCYY
+        - mutual_fund_investment_knowledge_code:
+            pos: 72
+            value: L|M|E|N
+        - year_unit_investment_trust_investment_experience_began:
+            pos: 73..76
+            type: date
+            format: CCYY
+        - unit_investment_knowledge_code:
+            pos: 77
+            value: L|M|E|N
+        - year_exchange_traded_fund_investment_experience_began:
+            pos: 78..81
+            type: date
+            format: CCYY
+        - exchange_traded_fund_investment_knowledge_code:
+            pos: 82
+            value: L|M|E|N
+        - year_real_estate_investment_experience_began:
+            pos: 83..86
+            type: date
+            format: CCYY
+        - real_estate_investment_knowledge_code:
+            pos: 87
+            value: L|M|E|N
+        - year_insurance_investment_experience_began:
+            pos: 88..91
+            type: date
+            format: CCYY
+        - insurance_investment_knowledge_code:
+            pos: 92
+            value: L|M|E|N
+        - year_variable_annuity_investment_experience_began:
+            pos: 93..96
+            type: date
+            format: CCYY
+        - variable_annuity_investment_knowledge_code:
+            pos: 97
+            value: L|M|E|N
+        - year_fixed_annuity_investment_experience_began:
+            pos: 98..101
+            type: date
+            format: CCYY
+        - fixed_annuity_investment_knowledge_code:
+            pos: 102
+            value: L|M|E|N
+        - year_precious_metals_investment_experience_began:
+            pos: 103..106
+            type: date
+            format: CCYY
+        - precious_metals_investment_knowledge_code:
+            pos: 107
+            value: L|M|E|N
+        - year_commodity_and_futures_investment_experience_began:
+            pos: 108..111
+            type: date
+            format: CCYY
+        - commodity_and_futures_investment_knowledge_code:
+            pos: 112
+            value: L|M|E|N
+        - other_investment_type: 113..142
+        - year_other_type_investment_experience_began:
+            pos: 143..146
+            type: date
+            format: CCYY
+        - other_investment_knowledge_code:
+            pos: 147
+            value: L|M|E|N
+        - reserved_for_additional_investment_experience: 148..152
+        - :blank: 153..294
+
+        - :group: CANADIAN REVENUE AGENCY (CRA) DOCUMENTATION
+        - document_code: 295..298
+        - document_received_date:
+            pos: 299..306
+            type: date
+            format: CCYYMMDD
+        - document_expiration_date:
+            pos: 307..314
+            type: date
+            format: CCYYMMDD
+        - related_to_employee_of_this_idb_employee_id: 315..334
+        - number_of_dependents:
+            pos: 335..336
+            type: int
+
+        - :group: EXTERNAL BANK INFORMATION
+        - bank_name: 337..368
+        - attention_line_prefix:
+            pos: 369..372
+            value: ATTN|C\/O
+        - attention_line_detail: 373..400
+        - bank_address_line_1: 401..432
+        - bank_address_line_2: 433..464
+        - bank_address_line_3: 465..496
+        - bank_address_line_4: 497..528
+        - city: 529..543
+        - state_province: 544..545
+        - zip_postal_code: 546..560
+        - country_code: 561..562
+        - :blank: 563..709
+        - :blank: 710..729
+        - client_id: 730..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: '7'
+      name: >
+        DETAIL RECORD 7. ADDITIONAL ACCOUNT HOLDER/PARTICIPANT LEVEL INFORMATION FOR BANK CUSTODY, TRUST,
+        AND CDD ACCOUNTS; FOR ALL REGISTRATION TYPES
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: '7'
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: NEW ACCOUNT HOLDER INFORMATION
+        - record_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: ACCOUNT HOLDER/PARTICIPANT SECONDARY IDENTIFIERS
+        - sequence_number:
+            pos: 42..44
+            value: 001|002|003|004|005|006|007|008|009|010|011|012|013|014|015|016
+        - account_holder_type:
+            pos: 45..47
+            value: AH|B&R|IPP
+        - account_holder_participant_role: 48..51
+
+        - type_of_trust:
+            pos: 52
+            value: A|C|D|E|F|G|I|L|N|P|Q|R|S|T|V
+        - date_trust_established:
+            pos: 53..60
+            type: date
+            format: CCYYMMDD
+        - trust_amendment_date:
+            pos: 61..68
+            type: date
+            format: CCYYMMDD
+        - trustee_independent_action:
+            pos: 69
+            value: Y|N
+        - country_governing_trust_administration: 70..71
+        - state_governing_trust_administration: 72..73
+        - crummey_power_provision_applied_to_this_trust:
+            pos: 74
+            value: Y|N
+        - employee_benefit_account_flag:
+            pos: 75
+            value: Y|N
+        - creator_of_trust_a_resident_of_nyc_at_the_time_the_trust_created:
+            pos: 76..79
+            value: NYC
+        - creator_of_trust_a_resident_of_nyc_at_the_time_of_creator_death:
+            pos: 80..83
+            value: NYC
+        - blind_trust_indicator:
+            pos: 84
+            value: Y|N
+        - revocability_of_trust:
+            pos: 85
+            value: R|I
+        - minimum_number_of_trustees_required_for_consent:
+            pos: 86..87
+            type: int
+        - establish_and_maintain_asset_management_account_with_check_writing_privileges:
+            pos: 88
+            value: 'Y'
+        - trust_allows_use_of_attorney:
+            pos: 89
+            value: 'Y'
+        - collateralization_of_trust_permitted:
+            pos: 90
+            value: 'Y'
+        - maintain_margin_accounts:
+            pos: 91
+            value: 'Y'
+        - sell_securities_trust_does_not_own_and_borrow_securities_to_facilitate_practice:
+            pos: 92
+            value: 'Y'
+        - engage_in_purchase_of_call_options:
+            pos: 93
+            value: 'Y'
+        - engage_in_covered_call_writing:
+            pos: 94
+            value: 'Y'
+        - engage_in_purchase_of_put_options:
+            pos: 95
+            value: 'Y'
+        - engage_in_option_spread_transactions:
+            pos: 96
+            value: 'Y'
+        - purchase_securities_which_are_deemed_to_be_speculative_investments:
+            pos: 97
+            value: 'Y'
+        - receive_or_deliver_on_behalf_of_trust_moneys_stocks_bonds_and_other_securities:
+            pos: 98
+            value: 'Y'
+        - sell_assign_and_endorse_transfer_certificates:
+            pos: 99
+            value: 'Y'
+        - beneficial_owner_percentage_of_ownership:
+            pos: 100..102
+            type: int
+        - position_held_of_controlling_person: 103..142
+        - legal_entity_identifier: 143..162
+        - :blank: 163..202
+
+        - employee_id_of_employees_of_another_ibd: 203..222
+        - employee_id_of_those_related_to_employees_of_another_ibd: 223..242
+        - :blank: 243..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: I
+      name: DETAIL RECORD I. CUSTOM DATA FIELDS 1-10
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: I
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - custom_field_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: CUSTOM FIELD 1. RESERVED FOR DDA NUMBER
+        - custom_field_1_label: 42..73
+        - custom_field_1_detail_text:
+            pos: 74..105
+            exported: true
+        - custom_field_1_status_indicator:
+            pos: 106
+            value: A|D|L
+        - :blank: 107
+
+        - :group: CUSTOM FIELD 2. RESERVED FOR ACCOUNT MNEMONIC
+        - custom_field_2_label: 108..139
+        - custom_field_2_detail_text:
+            pos: 140..171
+            exported: true
+        - custom_field_2_status_indicator:
+            pos: 172
+            value: A|D|L
+        - :blank: 173
+
+        - :group: CUSTOM FIELD 3. RESERVED FOR MASTER MNEMONIC
+        - custom_field_3_label: 174..205
+        - custom_field_3_detail_text:
+            pos: 206..237
+            exported: true
+        - custom_field_3_status_indicator:
+            pos: 238
+            value: A|D|L
+        - :blank: 239
+
+        - :group: CUSTOM FIELD 4. RESERVED FOR BANK ACCOUNT NUMBER
+        - custom_field_4_label: 240..271
+        - custom_field_4_detail_text:
+            pos: 272..303
+            exported: true
+        - custom_field_4_status_indicator:
+            pos: 304
+            value: A|D|L
+        - :blank: 305
+
+        - :group: CUSTOM FIELD 5
+        - custom_field_5_label: 306..337
+        - custom_field_5_detail_text:
+            pos: 338..369
+            exported: true
+        - custom_field_5_status_indicator:
+            pos: 370
+            value: A|D|L
+        - :blank: 371
+
+        - :group: CUSTOM FIELD 6
+        - custom_field_6_label: 372..403
+        - custom_field_6_detail_text:
+            pos: 404..435
+            exported: true
+        - custom_field_6_status_indicator:
+            pos: 436
+            value: A|D|L
+        - :blank: 437
+
+        - :group: CUSTOM FIELD 7
+        - custom_field_7_label: 438..469
+        - custom_field_7_detail_text:
+            pos: 470..501
+            exported: true
+        - custom_field_7_status_indicator:
+            pos: 502
+            value: A|D|L
+        - :blank: 503
+
+        - :group: CUSTOM FIELD 8
+        - custom_field_8_label: 504..535
+        - custom_field_8_detail_text:
+            pos: 536..567
+            exported: true
+        - custom_field_8_status_indicator:
+            pos: 568
+            value: A|D|L
+        - :blank: 569
+
+        - :group: CUSTOM FIELD 9
+        - custom_field_9_label: 570..601
+        - custom_field_9_detail_text:
+            pos: 602..633
+            exported: true
+        - custom_field_9_status_indicator:
+            pos: 634
+            value: A|D|L
+        - :blank: 635
+
+        - :group: CUSTOM FIELD 10
+        - custom_field_10_label: 636..667
+        - custom_field_10_detail_text:
+            pos: 668..699
+            exported: true
+        - custom_field_10_status_indicator:
+            pos: 700
+            value: A|D|L
+        - :blank: 701..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: J
+      name: DETAIL RECORD J. CUSTOM DATA FIELDS 11-15
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: J
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - custom_field_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: CUSTOM FIELD 11
+        - custom_field_11_label: 42..73
+        - custom_field_11_detail_text:
+            pos: 74..105
+            exported: true
+        - custom_field_11_status_indicator:
+            pos: 106
+            value: A|D|L
+        - :blank: 107
+
+        - :group: CUSTOM FIELD 12
+        - custom_field_12_label: 108..139
+        - custom_field_12_detail_text:
+            pos: 140..171
+            exported: true
+        - custom_field_12_status_indicator:
+            pos: 172
+            value: A|D|L
+        - :blank: 173
+
+        - :group: CUSTOM FIELD 13
+        - custom_field_13_label: 174..205
+        - custom_field_13_detail_text:
+            pos: 206..237
+            exported: true
+        - custom_field_13_status_indicator:
+            pos: 238
+            value: A|D|L
+        - :blank: 239
+
+        - :group: CUSTOM FIELD 14
+        - custom_field_14_label: 240..271
+        - custom_field_14_detail_text:
+            pos: 272..303
+            exported: true
+        - custom_field_14_status_indicator:
+            pos: 304
+            value: A|D|L
+        - :blank: 305
+
+        - :group: CUSTOM FIELD 15
+        - custom_field_15_label: 306..337
+        - custom_field_15_detail_text:
+            pos: 338..369
+            exported: true
+        - custom_field_15_status_indicator:
+            pos: 370
+            value: A|D|L
+        - :blank: 371
+        - :blank: 372..456
+        - :blank: 457..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: K
+      name: DETAIL RECORD K. SUPPLEMENTAL CUSTOM DATA FIELDS
+      required: false
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: K
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+            exported: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - secondary_sequence_number:
+            pos: 39..40
+            type: int
+        - custom_field_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: CUSTOM FIELD 16
+        - custom_field_16_label: 42..73
+        - custom_field_16_detail_text:
+            pos: 74..105
+            exported: true
+        - custom_field_16_status_indicator:
+            pos: 106
+            value: A|D|L
+        - :blank: 107
+
+        - :group: CUSTOM FIELD 17
+        - custom_field_17_label: 108..139
+        - custom_field_17_detail_text:
+            pos: 140..171
+            exported: true
+        - custom_field_17_status_indicator:
+            pos: 172
+            value: A|D|L
+        - :blank: 173
+
+        - :group: CUSTOM FIELD 18
+        - custom_field_18_label: 174..205
+        - custom_field_18_detail_text:
+            pos: 206..237
+            exported: true
+        - custom_field_18_status_indicator:
+            pos: 238
+            value: A|D|L
+        - :blank: 239
+
+        - :group: CUSTOM FIELD 19
+        - custom_field_19_label: 240..271
+        - custom_field_19_detail_text:
+            pos: 272..303
+            exported: true
+        - custom_field_19_status_indicator:
+            pos: 304
+            value: A|D|L
+        - :blank: 305
+
+        - :group: CUSTOM FIELD 20
+        - custom_field_20_label: 306..337
+        - custom_field_20_detail_text:
+            pos: 338..369
+            exported: true
+        - custom_field_20_status_indicator:
+            pos: 370
+            value: A|D|L
+        - :blank: 371
+
+        - :group: CUSTOM FIELD 21
+        - custom_field_21_label: 372..403
+        - custom_field_21_detail_text:
+            pos: 404..435
+            exported: true
+        - custom_field_21_status_indicator:
+            pos: 436
+            value: A|D|L
+        - :blank: 437
+
+        - :group: CUSTOM FIELD 22
+        - custom_field_22_label: 438..469
+        - custom_field_22_detail_text:
+            pos: 470..501
+            exported: true
+        - custom_field_22_status_indicator:
+            pos: 502
+            value: A|D|L
+        - :blank: 503
+
+        - :group: CUSTOM FIELD 23
+        - custom_field_23_label: 504..535
+        - custom_field_23_detail_text:
+            pos: 536..567
+            exported: true
+        - custom_field_23_status_indicator:
+            pos: 568
+            value: A|D|L
+        - :blank: 569
+
+        - :group: CUSTOM FIELD 24
+        - custom_field_24_label: 570..601
+        - custom_field_24_detail_text:
+            pos: 602..633
+            exported: true
+        - custom_field_24_status_indicator:
+            pos: 634
+            value: A|D|L
+        - :blank: 635
+
+        - :group: CUSTOM FIELD 25
+        - custom_field_25_label: 636..667
+        - custom_field_25_detail_text:
+            pos: 668..699
+            exported: true
+        - custom_field_25_status_indicator:
+            pos: 700
+            value: A|D|L
+        - :blank: 701..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: L
+      name: DETAIL RECORD L. ADVISORY ACCOUNT INFORMATION; ONLY ADVISORY ACCOUNTS
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: L
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+        - advisory_account_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: ADVISORY ACCOUNT INFORMATION
+        - inception_date:
+            pos: 42..49
+            type: date
+            format: CCYYMMDD
+        - advisory_program_code: 50..59
+        - advisory_product_type_code: 60..69
+        - advisory_program_product_type_long_name: 70..189
+        - advisory_money_manager_code: 190..199
+        - advisory_money_manager_name: 200..319
+        - advisory_management_style_code: 320..329
+        - advisory_management_style: 330..449
+        - :blank: 500..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: 'N'
+      name: DETAIL RECORD N. BUSINESS PARTY REFERENTIAL INFORMATION (BPFF/BPFD FILE)
+      required: false
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: 'N'
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: BUSINESS PARTY 1 DETAILS
+        - business_party_1_transaction_code:
+            pos: 41
+            value: A|C|D|X
+        - business_party_1_id: 42..50
+        - business_party_1_role_code: 51..54
+        - business_party_1_has_discretion:
+            pos: 55
+            value: Y|N
+        - :blank: 56..62
+
+        - :group: BUSINESS PARTY 2 DETAILS
+        - business_party_2_transaction_code:
+            pos: 63
+            value: A|C|D|X
+        - business_party_2_id: 64..72
+        - business_party_2_role_code: 73..76
+        - business_party_2_has_discretion:
+            pos: 77
+            value: Y|N
+        - :blank: 78..84
+
+        - :group: BUSINESS PARTY 3 DETAILS
+        - business_party_3_transaction_code:
+            pos: 85
+            value: A|C|D|X
+        - business_party_3_id: 86..94
+        - business_party_3_role_code: 95..98
+        - business_party_3_has_discretion:
+            pos: 99
+            value: Y|N
+        - :blank: 100..106
+
+        - :group: BUSINESS PARTY 4 DETAILS
+        - business_party_4_transaction_code:
+            pos: 107
+            value: A|C|D|X
+        - business_party_4_id: 108..116
+        - business_party_4_role_code: 117..120
+        - business_party_4_has_discretion:
+            pos: 121
+            value: Y|N
+        - :blank: 122..128
+
+        - :group: BUSINESS PARTY 5 DETAILS
+        - business_party_5_transaction_code:
+            pos: 129
+            value: A|C|D|X
+        - business_party_5_id: 130..138
+        - business_party_5_role_code: 139..142
+        - business_party_5_has_discretion:
+            pos: 143
+            value: Y|N
+        - :blank: 144..150
+
+        - :group: BUSINESS PARTY 6 DETAILS
+        - business_party_6_transaction_code:
+            pos: 151
+            value: A|C|D|X
+        - business_party_6_id: 152..160
+        - business_party_6_role_code: 161..164
+        - business_party_6_has_discretion:
+            pos: 165
+            value: Y|N
+        - :blank: 166..172
+
+        - :group: BUSINESS PARTY 7 DETAILS
+        - business_party_7_transaction_code:
+            pos: 173
+            value: A|C|D|X
+        - business_party_7_id: 174..182
+        - business_party_7_role_code: 183..186
+        - business_party_7_has_discretion:
+            pos: 187
+            value: Y|N
+        - :blank: 188..194
+
+        - :group: BUSINESS PARTY 8 DETAILS
+        - business_party_8_transaction_code:
+            pos: 195
+            value: A|C|D|X
+        - business_party_8_id: 196..204
+        - business_party_8_role_code: 205..208
+        - business_party_8_has_discretion:
+            pos: 209
+            value: Y|N
+        - :blank: 210..216
+
+        - :group: BUSINESS PARTY 9 DETAILS
+        - business_party_9_transaction_code:
+            pos: 217
+            value: A|C|D|X
+        - business_party_9_id: 218..226
+        - business_party_9_role_code: 227..230
+        - business_party_9_has_discretion:
+            pos: 231
+            value: Y|N
+        - :blank: 232..238
+
+        - :group: BUSINESS PARTY 10 DETAILS
+        - business_party_10_transaction_code:
+            pos: 239
+            value: A|C|D|X
+        - business_party_10_id: 240..248
+        - business_party_10_role_code: 249..252
+        - business_party_10_has_discretion:
+            pos: 253
+            value: Y|N
+        - :blank: 254..260
+
+        - :group: BUSINESS PARTY 11 DETAILS
+        - business_party_11_transaction_code:
+            pos: 261
+            value: A|C|D|X
+        - business_party_11_id: 262..270
+        - business_party_11_role_code: 271..274
+        - business_party_11_has_discretion:
+            pos: 275
+            value: Y|N
+        - :blank: 276..282
+
+        - :group: BUSINESS PARTY 12 DETAILS
+        - business_party_12_transaction_code:
+            pos: 283
+            value: A|C|D|X
+        - business_party_12_id: 284..292
+        - business_party_12_role_code: 293..296
+        - business_party_12_has_discretion:
+            pos: 297
+            value: Y|N
+        - :blank: 298..304
+
+        - :group: BUSINESS PARTY 13 DETAILS
+        - business_party_13_transaction_code:
+            pos: 305
+            value: A|C|D|X
+        - business_party_13_id: 306..314
+        - business_party_13_role_code: 315..318
+        - business_party_13_has_discretion:
+            pos: 319
+            value: Y|N
+        - :blank: 320..326
+
+        - :group: BUSINESS PARTY 14 DETAILS
+        - business_party_14_transaction_code:
+            pos: 327
+            value: A|C|D|X
+        - business_party_14_id: 328..336
+        - business_party_14_role_code: 337..340
+        - business_party_14_has_discretion:
+            pos: 341
+            value: Y|N
+        - :blank: 342..348
+
+        - :group: BUSINESS PARTY 15 DETAILS
+        - business_party_15_transaction_code:
+            pos: 349
+            value: A|C|D|X
+        - business_party_15_id: 350..358
+        - business_party_15_role_code: 359..362
+        - business_party_15_has_discretion:
+            pos: 363
+            value: Y|N
+        - :blank: 364..370
+
+        - :group: BUSINESS PARTY 16 DETAILS
+        - business_party_16_transaction_code:
+            pos: 371
+            value: A|C|D|X
+        - business_party_16_id: 372..380
+        - business_party_16_role_code: 381..384
+        - business_party_16_has_discretion:
+            pos: 385
+            value: Y|N
+        - :blank: 386..392
+
+        - :group: BUSINESS PARTY 17 DETAILS
+        - business_party_17_transaction_code:
+            pos: 393
+            value: A|C|D|X
+        - business_party_17_id: 394..402
+        - business_party_17_role_code: 403..406
+        - business_party_17_has_discretion:
+            pos: 407
+            value: Y|N
+        - :blank: 408..414
+
+        - :group: BUSINESS PARTY 18 DETAILS
+        - business_party_18_transaction_code:
+            pos: 415
+            value: A|C|D|X
+        - business_party_18_id: 416..424
+        - business_party_18_role_code: 425..428
+        - business_party_18_has_discretion:
+            pos: 429
+            value: Y|N
+        - :blank: 430..436
+
+        - :group: BUSINESS PARTY 19 DETAILS
+        - business_party_19_transaction_code:
+            pos: 437
+            value: A|C|D|X
+        - business_party_19_id: 438..446
+        - business_party_19_role_code: 447..450
+        - business_party_19_has_discretion:
+            pos: 451
+            value: Y|N
+        - :blank: 452..458
+
+        - :group: BUSINESS PARTY 20 DETAILS
+        - business_party_20_transaction_code:
+            pos: 459
+            value: A|C|D|X
+        - business_party_20_id: 460..468
+        - business_party_20_role_code: 469..472
+        - business_party_20_has_discretion:
+            pos: 473
+            value: Y|N
+        - :blank: 474..480
+
+        - :group: BUSINESS PARTY 21 DETAILS
+        - business_party_21_transaction_code:
+            pos: 481
+            value: A|C|D|X
+        - business_party_21_id: 482..490
+        - business_party_21_role_code: 491..494
+        - business_party_21_has_discretion:
+            pos: 495
+            value: Y|N
+        - :blank: 496..502
+
+        - :group: BUSINESS PARTY 22 DETAILS
+        - business_party_22_transaction_code:
+            pos: 503
+            value: A|C|D|X
+        - business_party_22_id: 504..512
+        - business_party_22_role_code: 513..516
+        - business_party_22_has_discretion:
+            pos: 517
+            value: Y|N
+        - :blank: 518..524
+
+        - :group: BUSINESS PARTY 23 DETAILS
+        - business_party_23_transaction_code:
+            pos: 525
+            value: A|C|D|X
+        - business_party_23_id: 526..534
+        - business_party_23_role_code: 535..538
+        - business_party_23_has_discretion:
+            pos: 539
+            value: Y|N
+        - :blank: 540..546
+
+        - :group: BUSINESS PARTY 24 DETAILS
+        - business_party_24_transaction_code:
+            pos: 547
+            value: A|C|D|X
+        - business_party_24_id: 548..556
+        - business_party_24_role_code: 557..560
+        - business_party_24_has_discretion:
+            pos: 561
+            value: Y|N
+        - :blank: 562..568
+
+        - :group: BUSINESS PARTY 25 DETAILS
+        - business_party_25_transaction_code:
+            pos: 569
+            value: A|C|D|X
+        - business_party_25_id: 570..578
+        - business_party_25_role_code: 579..582
+        - business_party_25_has_discretion:
+            pos: 583
+            value: Y|N
+        - :blank: 584..590
+
+        - :group: BUSINESS PARTY 26 DETAILS
+        - business_party_26_transaction_code:
+            pos: 591
+            value: A|C|D|X
+        - business_party_26_id: 592..600
+        - business_party_26_role_code: 601..604
+        - business_party_26_has_discretion:
+            pos: 605
+            value: Y|N
+        - :blank: 606..612
+
+        - :group: BUSINESS PARTY 27 DETAILS
+        - business_party_27_transaction_code:
+            pos: 613
+            value: A|C|D|X
+        - business_party_27_id: 614..622
+        - business_party_27_role_code: 623..626
+        - business_party_27_has_discretion:
+            pos: 627
+            value: Y|N
+        - :blank: 628..634
+
+        - :group: BUSINESS PARTY 28 DETAILS
+        - business_party_28_transaction_code:
+            pos: 635
+            value: A|C|D|X
+        - business_party_28_id: 636..644
+        - business_party_28_role_code: 645..648
+        - business_party_28_has_discretion:
+            pos: 649
+            value: Y|N
+        - :blank: 650..656
+
+        - :group: BUSINESS PARTY 29 DETAILS
+        - business_party_29_transaction_code:
+            pos: 657
+            value: A|C|D|X
+        - business_party_29_id: 658..666
+        - business_party_29_role_code: 667..670
+        - business_party_29_has_discretion:
+            pos: 671
+            value: Y|N
+        - :blank: 672..678
+
+        - :group: BUSINESS PARTY 30 DETAILS
+        - business_party_30_transaction_code:
+            pos: 679
+            value: A|C|D|X
+        - business_party_30_id: 680..688
+        - business_party_30_role_code: 689..692
+        - business_party_30_has_discretion:
+            pos: 693
+            value: Y|N
+        - :blank: 694..700
+
+        - :group: BUSINESS PARTY 31 DETAILS
+        - business_party_31_transaction_code:
+            pos: 701
+            value: A|C|D|X
+        - business_party_31_id: 702..710
+        - business_party_31_role_code: 711..714
+        - business_party_31_has_discretion:
+            pos: 715
+            value: Y|N
+        - :blank: 716..722
+
+        - :group: BUSINESS PARTY 32 DETAILS
+        - business_party_32_transaction_code:
+            pos: 723
+            value: A|C|D|X
+        - business_party_32_id: 724..732
+        - business_party_32_role_code: 733..736
+        - business_party_32_has_discretion:
+            pos: 737
+            value: Y|N
+        - :blank: 738..744
+
+        - secondary_sequence_number:
+            pos: 745..749
+            type: int
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: P
+      name: DETAIL RECORD P. ACCOUNT SETTLEMENT INSTRUCTION INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: P
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: GENERAL INFORMATION
+        - parent_id_value: 41..46
+        - institution_id: 47..54
+        - institution_account_number: 55..70
+        - alert_acronym: 71..78
+        - alert_access_code: 79..90
+        - confirmation_option:
+            pos: 91
+            value: 1|7|3
+        - birth_date:
+            pos: 92..99
+            type: date
+            format: CCYYMMDD
+        - :blank: 100..103
+        - country_of_citizenship: 104..105
+
+        - :group: DTC INSTRUCTIONS
+        - dtc_transaction_code:
+            pos: 106
+            value: A|C|X
+        - dtc_location_product_code:
+            pos: 107..110
+            value: DTC
+        - institution_number: 111..118
+        - institution_name: 119..158
+        - agent_number: 159..166
+        - agent_name: 167..206
+        - agent_internal_number: 207..222
+        - agent_internal_name: 223..272
+        - clearing_agent_number: 273..280
+        - clearing_agent_name: 281..315
+        - first_dtc_ip_number: 316..323
+        - first_ip_account_number: 324..346
+        - second_dtc_ip_number: 347..354
+        - second_ip_account_number: 355..377
+
+        - :group: FED/UST/GNMA/ALL OTHER INSTRUCTIONS
+        - fed_transaction_code:
+            pos: 378
+            value: A|C|X
+        - fed_location_product_code:
+            pos: 379..382
+            value: FED
+        - aba_number: 383..391
+        - internal_account_number: 392..431
+        - federal_wire_bank_name: 432..481
+
+        - :group: EUROCLEAR INSTRUCTIONS
+        - eur_transaction_code:
+            pos: 482
+            value: A|C|X
+        - eur_location_product_code:
+            pos: 483..486
+            value: EUR
+        - euroclear_number: 487..494
+        - euroclear_account_number: 495..509
+
+        - :group: CEDEL INSTRUCTIONS
+        - ced_transaction_code:
+            pos: 510
+            value: A|C|X
+        - ced_location_product_code:
+            pos: 511..514
+            value: CED
+        - cedel_number: 515..522
+        - cedel_account_number: 523..537
+
+        - :group: PHYSICAL INSTRUCTIONS
+        - phy_transaction_code:
+            pos: 538
+            value: A|C|X
+        - phy_location_product_code:
+            pos: 539..542
+            value: PHY
+        - account_number_for_physical_delivery: 543..557
+        - other_instructions_1: 558..589
+        - other_instructions_2: 590..621
+        - other_instructions_3: 622..653
+        - other_instructions_4: 654..685
+        - other_instructions_5: 686..717
+        - other_instructions_6: 718..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: R
+      name: DETAIL RECORD R. RETIREMENT ACCOUNT INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: R
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+        - retirement_account_transaction_code:
+            pos: 41
+            value: A|C|X
+        - participant_marital_status:
+            pos: 42
+            value: M|S
+        - sex_of_participant:
+            pos: 43
+            value: F|M|U
+        - custodian_code:
+            pos: 44..47
+            value: A
+        - type_of_retirement_plan:
+            pos: 48..51
+            value: '[124-9A-LORST]'
+        - type_of_retirement_account:
+            pos: 52
+            value: '[1-9A-DF-L]'
+        - retirement_plan_number: 53..62
+        - self_directed_indicator:
+            pos: 63
+            value: Y|N
+        - asset_will_indicator:
+            pos: 64
+            value: Y|N
+
+        - :group: DATES
+        - broker_dealer_conversion_date:
+            pos: 65..72
+            type: date
+            format: CCYYMMDD
+        - adoption_agreement_date:
+            pos: 73..80
+            type: date
+            format: CCYYMMDD
+        - date_plan_established:
+            pos: 81..88
+            type: date
+            format: CCYYMMDD
+        - custodian_date:
+            pos: 89..96
+            type: date
+            format: CCYYMMDD
+        - plan_amendment_date:
+            pos: 97..104
+            type: date
+            format: CCYYMMDD
+        - spousal_consent_date:
+            pos: 105..112
+            type: date
+            format: CCYYMMDD
+        - education_disability_indicator:
+            pos: 113
+            value: Y|N
+        - disability_start_date:
+            pos: 114..121
+            type: date
+            format: CCYYMMDD
+        - date_of_death:
+            pos: 122..129
+            type: date
+            format: CCYYMMDD
+        - related_brokerage_account_number_1: 130..138
+        - related_brokerage_account_number_2: 139..147
+        - related_brokerage_account_number_3: 148..156
+
+        - :group: EMPLOYER INFORMATION AND ADDRESS
+        - employer_name: 157..188
+        - employer_tin:
+            pos: 189..197
+            value: \d{9}
+        - trust_administrator: 198..229
+        - employer_address_transaction_code:
+            pos: 230
+            value: A|C|X
+        - special_handling_indicator:
+            pos: 231
+            value: Y|N
+        - attention_line_prefix:
+            pos: 232..235
+            value: ATTN|C\/O
+        - employer_attention_line_detail: 236..263
+        - employer_address_line_1: 264..295
+        - employer_address_line_2: 296..327
+        - employer_address_line_3: 328..359
+        - employer_address_line_4: 360..391
+        - city: 392..406
+        - state_province: 407..408
+        - zip_postal_code: 409..423
+        - country_code: 424..425
+        - :blank: 426..525
+
+        - :group: E-MAIL INFORMATION
+        - email_address: 526..575
+
+        - :group: EMPLOYER TELEPHONE NUMBERS
+        - :group: TELEPHONE NUMBER 1
+        - telephone_1_transaction_code:
+            pos: 576
+            value: A|C|X
+        - us_international_indicator_1:
+            pos: 577
+            value: U|F
+        - telephone_type_id_1:
+            pos: 578
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_1: 579..638
+        - telephone_extension_1: 639..645
+
+        - :group: TELEPHONE NUMBER 2
+        - telephone_2_transaction_code:
+            pos: 646
+            value: A|C|X
+        - us_international_indicator_2:
+            pos: 647
+            value: U|F
+        - telephone_type_id_2:
+            pos: 648
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_2: 649..708
+        - telephone_extension_2: 709..715
+
+        - mutual_fund_indicator:
+            pos: 716
+            value: Y|N
+        - :blank: 717..748
+        - :blank: 749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: S
+      name: DETAIL RECORD S. RETIREMENT ACCOUNT INFORMATION; ADDITIONAL NUMBER INFORMATION
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: S
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: TELEPHONE NUMBER 3
+        - telephone_3_transaction_code:
+            pos: 41
+            value: A|C|X
+        - us_international_indicator_3:
+            pos: 42
+            value: U|F
+        - telephone_type_id_3:
+            pos: 43
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_3: 44..103
+        - telephone_extension_3: 104..110
+
+        - :group: TELEPHONE NUMBER 4
+        - telephone_4_transaction_code:
+            pos: 111
+            value: A|C|X
+        - us_international_indicator_4:
+            pos: 112
+            value: U|F
+        - telephone_type_id_4:
+            pos: 113
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_4: 114..173
+        - telephone_extension_4: 174..180
+
+        - :group: TELEPHONE NUMBER 5
+        - telephone_5_transaction_code:
+            pos: 181
+            value: A|C|X
+        - us_international_indicator_5:
+            pos: 182
+            value: U|F
+        - telephone_type_id_5:
+            pos: 183
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_5: 184..243
+        - telephone_extension_5: 244..250
+
+        - :group: TELEPHONE NUMBER 6
+        - telephone_6_transaction_code:
+            pos: 251
+            value: A|C|X
+        - us_international_indicator_6:
+            pos: 252
+            value: U|F
+        - telephone_type_id_6:
+            pos: 253
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_6: 254..313
+        - telephone_extension_6: 314..320
+
+        - :group: TELEPHONE NUMBER 7
+        - telephone_7_transaction_code:
+            pos: 321
+            value: A|C|X
+        - us_international_indicator_7:
+            pos: 322
+            value: U|F
+        - telephone_type_id_7:
+            pos: 323
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_7: 324..383
+        - telephone_extension_7: 384..390
+
+        - :blank: 391..412
+        - original_beneficiary_date_of_birth:
+            pos: 413..420
+            type: date
+            format: CCYYMMDD
+        - :blank: 421..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: T
+      name: DETAIL RECORD T. BENEFICIARY INFORMATION; UP TO 10 PRIMARY AND 10 CONTINGENTS
+      required: false
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: T
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: BENEFICIARY NAME AREA
+        - beneficiary_transaction_code:
+            pos: 41
+            value: A|C|X
+        - beneficiary_type:
+            pos: 42
+            value: P|C
+        - sequence_number:
+            pos: 43..45
+            value: 001|002|003|004|005|006|007|008|009|010
+        - :blank: 46..48
+        - beneficiary_relationship_indicator:
+            pos: 49
+            value: B|CC|CS|D|DP|E|F|FL|GD|GF|GM|GS|M|ML|NE|NI|O|OE|OI|OT|SI|SO|SP|T
+        - primary_country_of_citizenship: 51..52
+        - :blank: 53..58
+        - sex_of_beneficiary:
+            pos: 59
+            value: F|M|U
+        - beneficiary_birth_date:
+            pos: 60..67
+            type: date
+            format: CCYYMMDD
+        - tax_id_type:
+            pos: 68
+            value: A|E|F|I|N|Q|S|T|W
+        - beneficiary_tax_id_number: 69..77
+        - percent_allocation:
+            pos: 78..95
+            type: num(18,9)
+            format: 9(09)v(09)
+
+        - :group: BENEFICIARY NAME INFORMATION
+        - beneficiary_name_type:
+            pos: 96
+            value: I|E
+        - :one_of:
+            scope: beneficiary_name_type
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_prefix:
+                      pos: 97..100
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_first_name: 129..160
+                  - beneficiary_middle_initial_name: 161..192
+                  - beneficiary_last_name: 193..224
+              - else:
+                fields:
+                  - entity_line_1: 97..128
+                  - entity_line_2: 129..160
+                  - entity_line_3: 161..192
+                  - entity_line_4: 193..224
+        - :blank: 225..227
+
+        - :group: BENEFICIARY MAILING ADDRESS
+        - beneficiary_address_transaction_code:
+            pos: 228
+            value: A|C|X
+        - special_handling_indicator:
+            pos: 229
+            value: Y|N
+        - attention_line_prefix:
+            pos: 230
+            value: ATTN|C\/O
+        - beneficiary_attention_line_detail: 234..261
+        - beneficiary_address_line_1: 262..293
+        - beneficiary_address_line_2: 294..325
+        - beneficiary_address_line_3: 326..357
+        - beneficiary_address_line_4: 358..389
+        - :one_of:
+            scope: country_code
+            groups:
+              - when: US|CA
+                fields:
+                  - city: 390..404
+                  - state_province: 405..406
+                  - zip_postal_code: 407..421
+              - else:
+                fields:
+                  - non_us_canada_city: 390..421
+        - country_code: 422..423
+        - :blank: 424
+
+        - :group: BENEFICIARY TELEPHONE NUMBERS
+        - :group: TELEPHONE NUMBER 1
+        - beneficiary_telephone_1_transaction_code:
+            pos: 425
+            value: A|C|X
+        - us_international_indicator_1:
+            pos: 426
+            value: U|F
+        - telephone_type_id_1:
+            pos: 427
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_1: 428..487
+        - telephone_extension_1: 488..494
+
+        - :group: TELEPHONE NUMBER 2
+        - beneficiary_telephone_2_transaction_code:
+            pos: 495
+            value: A|C|X
+        - us_international_indicator_2:
+            pos: 496
+            value: U|F
+        - telephone_type_id_2:
+            pos: 497
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_2: 498..557
+        - telephone_extension_2: 558..564
+
+        - :group: TELEPHONE NUMBER 3
+        - beneficiary_telephone_3_transaction_code:
+            pos: 565
+            value: A|C|X
+        - us_international_indicator_3:
+            pos: 566
+            value: U|F
+        - telephone_type_id_3:
+            pos: 567
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_3: 568..627
+        - telephone_extension_3: 628..634
+
+        - beneficiary_payment_amount:
+            pos: 635..652
+            type: num(18,2)
+            format: 9(16)v9(02)
+        - per_stirpes_beneficiary_designation:
+            pos: 653
+            value: Y|N
+        - external_client_id_supplied_by_customer: 654..673
+        - internal_pershing_client_id: 674..682
+        - type_of_trust:
+            pos: 683
+            value: A|C|D|E|F|G|I|L|N|P|Q|R|S|T|V
+        - date_trust_established:
+            pos: 684..691
+            type: date
+            format: CCYYMMDD
+        - :blank: 692..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: U
+      name: >
+        DETAIL RECORD U. BENEFICIARY INFORMATION; UP TO 10 PRIMARY AND 10 CONTINGENTS.
+        INCLUDES ALL ALTERNATE FIRST BENEFICIARY TRUSTEE IF POPULATED
+      required: false
+      repeatable: true
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: U
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - beneficiary_transaction_code:
+            pos: 41
+            value: A|C|X
+        - beneficiary_type:
+            pos: 42
+            value: P|C
+        - sequence_number:
+            pos: 43..45
+            value: 001|002|003|004|005|006|007|008|009|010
+        - :blank: 46..48
+
+        - :group: TELEPHONE NUMBER 4
+        - beneficiary_telephone_4_transaction_code:
+            pos: 49
+            value: A|C|X
+        - us_international_indicator_4:
+            pos: 50
+            value: U|F
+        - telephone_type_id_4:
+            pos: 51
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_4: 52..111
+        - telephone_extension_4: 112..118
+
+        - :group: TELEPHONE NUMBER 5
+        - beneficiary_telephone_5_transaction_code:
+            pos: 119
+            value: A|C|X
+        - us_international_indicator_5:
+            pos: 120
+            value: U|F
+        - telephone_type_id_5:
+            pos: 121
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_5: 122..181
+        - telephone_extension_5: 182..188
+
+        - :group: TELEPHONE NUMBER 6
+        - beneficiary_telephone_6_transaction_code:
+            pos: 189
+            value: A|C|X
+        - us_international_indicator_6:
+            pos: 190
+            value: U|F
+        - telephone_type_id_6:
+            pos: 191
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_6: 192..251
+        - telephone_extension_6: 252..258
+
+        - :group: TELEPHONE NUMBER 7
+        - beneficiary_telephone_7_transaction_code:
+            pos: 259
+            value: A|C|X
+        - us_international_indicator_7:
+            pos: 260
+            value: U|F
+        - telephone_type_id_7:
+            pos: 261
+            value: B|C|E|F|H|S|T|V
+        - telephone_number_7: 262..321
+        - telephone_extension_7: 322..328
+
+        - :group: TRUSTEE INFORMATION
+        - beneficiary_trust_transaction_code:
+            pos: 329
+            value: A|C|X
+
+        - :group: BENEFICIARY TRUSTEE NAME INFORMATION
+        - beneficiary_trustee_name_type_code:
+            pos: 330
+            value: I|N
+
+        - :one_of:
+            scope: beneficiary_trustee_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_prefix:
+                      pos: 331..362
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_first_name: 363..394
+                  - beneficiary_trustee_middle_initial_name: 395..426
+                  - beneficiary_trustee_last_name: 427..458
+              - else:
+                fields:
+                  - entity_line_1: 331..362
+                  - entity_line_2: 363..394
+                  - entity_line_3: 395..426
+                  - entity_line_4: 427..458
+
+        - :group: BENEFICIARY LEGAL ADDRESS
+        - beneficiary_address_transaction_code:
+            pos: 459
+            value: A|C|X
+        - special_handling_indicator:
+            pos: 460
+            value: Y|N
+        - attention_line_prefix:
+            pos: 461..464
+            value: ATTN|C\/O
+        - beneficiary_attention_line_detail: 465..492
+        - beneficiary_address_line_1: 493..524
+        - beneficiary_address_line_2: 525..556
+        - beneficiary_address_line_3: 557..588
+        - beneficiary_address_line_4: 589..620
+
+        - :one_of:
+            scope: country_code
+            groups:
+              - when: US|CA
+                fields:
+                  - city: 621..635
+                  - state_province: 636..637
+                  - zip_postal_code: 638..652
+              - else:
+                fields:
+                  - non_us_canada_city: 621..652
+        - country_code: 653..654
+
+        - beneficiary_email_address: 655..704
+        - :blank: 705..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+    - id: V
+      name: DETAIL RECORD V. BENEFICIARY TRUSTEE INFORMATION CONTINUED; FOR TRUST BENEFICIARY RELATIONSHIP
+      required: false
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: CI
+            required: true
+        - record_indicator_value:
+            pos: 3
+            value: V
+            required: true
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - account_number:
+            pos: 12..20
+            key: true
+            required: true
+        - introducing_broker_dealer_number: 21..23
+        - :blank: 24
+        - investment_professional_number: 25..28
+        - account_short_name: 29..38
+        - :blank: 39..40
+
+        - :group: TRUSTEE INFORMATION
+        - beneficiary_trust_transaction_code:
+            pos: 41
+            value: A|C|X
+
+        - :group: BENEFICIARY TRUSTEE 2 NAME INFORMATION
+        - beneficiary_trustee_2_name_type_code:
+            pos: 42
+            value: I|N
+        - :one_of:
+            scope: beneficiary_trustee_2_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_2_prefix:
+                      pos: 43..74
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_2_first_name: 75..106
+                  - beneficiary_trustee_2_middle_initial_name: 107..138
+                  - beneficiary_trustee_2_last_name: 139..170
+              - else:
+                fields:
+                  - beneficiary_trustee_2_entity_line_1: 43..74
+                  - beneficiary_trustee_2_entity_line_2: 75..106
+                  - beneficiary_trustee_2_entity_line_3: 107..138
+                  - beneficiary_trustee_2_entity_line_4: 139..170
+
+        - :group: BENEFICIARY TRUSTEE 3 NAME INFORMATION
+        - beneficiary_trustee_3_name_type_code:
+            pos: 171
+            value: I|N
+        - :one_of:
+            scope: beneficiary_trustee_3_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_3_prefix:
+                      pos: 172..203
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_3_first_name: 204..235
+                  - beneficiary_trustee_3_middle_initial_name: 236..267
+                  - beneficiary_trustee_3_last_name: 268..299
+              - else:
+                fields:
+                  - beneficiary_trustee_3_entity_line_1: 172..203
+                  - beneficiary_trustee_3_entity_line_2: 204..235
+                  - beneficiary_trustee_3_entity_line_3: 236..267
+                  - beneficiary_trustee_3_entity_line_4: 268..299
+
+        - :group: BENEFICIARY TRUSTEE 4 NAME INFORMATION
+        - beneficiary_trustee_4_name_type_code:
+            pos: 300
+            value: I|N
+        - :one_of:
+            scope: beneficiary_trustee_4_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_4_prefix:
+                      pos: 301..332
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_4_first_name: 333..364
+                  - beneficiary_trustee_4_middle_initial_name: 365..396
+                  - beneficiary_trustee_4_last_name: 397..428
+              - else:
+                fields:
+                  - beneficiary_trustee_4_entity_line_1: 301..332
+                  - beneficiary_trustee_4_entity_line_2: 333..364
+                  - beneficiary_trustee_4_entity_line_3: 365..396
+                  - beneficiary_trustee_4_entity_line_4: 397..428
+
+        - :group: BENEFICIARY TRUSTEE 5 NAME INFORMATION
+        - beneficiary_trustee_5_name_type_code:
+            pos: 429
+            value: I|N
+        - :one_of:
+            scope: beneficiary_trustee_5_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_5_prefix:
+                      pos: 430..461
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_5_first_name: 462..493
+                  - beneficiary_trustee_5_middle_initial_name: 494..525
+                  - beneficiary_trustee_5_last_name: 526..557
+              - else:
+                fields:
+                  - beneficiary_trustee_5_entity_line_1: 430..461
+                  - beneficiary_trustee_5_entity_line_2: 462..493
+                  - beneficiary_trustee_5_entity_line_3: 494..525
+                  - beneficiary_trustee_5_entity_line_4: 526..557
+
+        - :group: BENEFICIARY TRUSTEE 6 NAME INFORMATION
+        - beneficiary_trustee_6_name_type_code:
+            pos: 558
+            value: I|N
+        - :one_of:
+            scope: beneficiary_trustee_6_name_type_code
+            groups:
+              - when: I
+                fields:
+                  - beneficiary_trustee_6_prefix:
+                      pos: 559..590
+                      value: DR|MDM|MR|MS|MRS|SIR
+                  - beneficiary_trustee_6_first_name: 591..622
+                  - beneficiary_trustee_6_middle_initial_name: 623..654
+                  - beneficiary_trustee_6_last_name: 655..686
+              - else:
+                fields:
+                  - beneficiary_trustee_6_entity_line_1: 559..590
+                  - beneficiary_trustee_6_entity_line_2: 591..622
+                  - beneficiary_trustee_6_entity_line_3: 623..654
+                  - beneficiary_trustee_6_entity_line_4: 655..686
+
+        - :blank: 687..749
+        - :end_of_record:
+            pos: 750
+            value: X
+
+processing:
+  update_strategy: delete_insert
+
+postprocess:
+  stage_2:
+    enabled: false
+  stage_3:
+    enabled: false

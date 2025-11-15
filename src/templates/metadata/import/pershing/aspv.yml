@@ -1,0 +1,62 @@
+version: 2
+type: pershing.aspv
+format: fixed-length
+description: >
+  The Subscription Products Positions and Valuations (POV Full Refresh)balance file (ASPV)is created daily from the
+  Automated Subscription Products System (ASPS). This file contains all contract balance activity 
+  (networked positions -valid Pershing account number and non-networked -invalid Pershing account number) sent to 
+  Pershingfrom participating Insurance Companies.  Headers and trailers are included as part of the fileand will be
+  sent even if there is no data on a given day.The ASPV includes all contract information including owner, annuitant,
+  beneficiary, and fund information, and together with the ASPP file, contain all contract balance data.
+
+layout:
+  record_size: 500
+  record_id:
+    pos: 4
+  header:
+    tag: BOF\x20{6}PERSHING
+    file_type:
+      tag: ASPV\x20BALNC\x20FILE
+      pos: 19..36
+    date:
+      pos: 47..56
+      format: MM/DD/CCYY
+  trailer:
+    tag: EOF\x20{6}PERSHING
+    record_count:
+      pos: 106..115
+
+  records:
+    - id: A
+      name: DETAIL RECORD A
+      fields:
+        - transaction_code:
+            pos: 1..2
+            value: PV
+        - record_indicator_value:
+            pos: 3
+            value: A
+        - record_id_sequence_number:
+            pos: 4..11
+            type: int
+        - ibd_number: 12..14
+        - :blank: 15
+        - office_number: 16..18
+        - ip_number: 19..22
+        - account_number: 23..31
+        - activity_sequence_number: 32..39
+        - dtcc_participant_id: 40..43
+        - linked_indicator:
+            pos: 44
+            value: L|N
+        - contract_date:
+            pos: 45..52
+            type: date
+            format: CCYYMMDD
+        - :blank: 53..100
+# DTCC: 101..400?
+        - name_of_insurance_company: 401..435
+        - :blank: 436..499
+        - :end_of_record:
+            pos: 500
+            value: X
