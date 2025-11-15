@@ -6,4 +6,7 @@ pub(crate) struct FileExportTemplate {
 
 
 impl FileTemplate for FileExportTemplate {
+    fn load() -> Self {
+        Self {}
+    }
 }

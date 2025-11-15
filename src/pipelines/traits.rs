@@ -2,14 +2,16 @@ use anyhow::Result;
 use dotenv::dotenv;
 use crate::cli;
 use crate::config::app::AppConfiguration;
+use crate::templates::traits::FileTemplate;
 
 
 pub(crate) trait DataPipeline {
     type Options<'a>;
+    type Template: FileTemplate;
 
     const PIPELINE_NAME: &'static str;
 
-    fn new(config: AppConfiguration) -> Self;
+    fn new(template: Self::Template, config: AppConfiguration) -> Self;
 
     fn run<'a>(&self, options: Self::Options<'a>) -> Result<()>;
 
@@ -21,6 +23,7 @@ pub(crate) trait DataPipeline {
         cli::display_app_header(template_name, Self::PIPELINE_NAME);
         let config = AppConfiguration::load(config_path);
         cli::blank_line();
-        Ok(Self::new(config))
+        let template = Self::Template::load();
+        Ok(Self::new(template, config))
     }
 }
