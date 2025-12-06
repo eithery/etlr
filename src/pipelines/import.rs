@@ -5,6 +5,7 @@ use super::options::FileImportOptions;
 use super::traits::DataPipeline;
 
 
+#[allow(dead_code)]
 pub(crate) struct FileImportPipeline {
     template: FileImportTemplate,
     config: AppConfiguration
@@ -26,7 +27,7 @@ impl DataPipeline for FileImportPipeline {
     }
 
 
-    fn run(&self, options: FileImportOptions) -> Result<()> {
+    fn run(&self, _options: FileImportOptions) -> Result<()> {
         Ok(())
     }
 }

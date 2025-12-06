@@ -23,7 +23,7 @@ pub(crate) trait DataPipeline {
         cli::display_app_header(template_name, Self::PIPELINE_NAME);
         let config = AppConfiguration::load(config_path);
         cli::blank_line();
-        let template = Self::Template::load();
+        let template = Self::Template::load(template_name, config.template_dirs())?;
         Ok(Self::new(template, config))
     }
 }

@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub(crate) struct FileExportOptions<'a> {
     pub(crate) files: Option<&'a str>,
     pub(crate) file_prefix: Option<&'a str>,
@@ -5,6 +6,7 @@ pub(crate) struct FileExportOptions<'a> {
 }
 
 
+#[allow(dead_code)]
 pub(crate) struct FileImportOptions {
     pub(crate) postprocess: bool,
     pub(crate) all_stages: bool,

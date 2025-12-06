@@ -2,6 +2,7 @@ mod cli;
 mod commands;
 mod help;
 
+use std::process;
 use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use etlr::{import_files, export_files, anonymize_files, create_database, drop_database, create_tables, drop_tables};
@@ -9,7 +10,15 @@ use crate::cli::{Cli, APP_TITLE};
 use crate::commands::{Commands, db};
 
 
-fn main() -> Result<()> {
+fn main() {
+    if let Err(err) = run() {
+        etlr::cli::error(format!("{err}").as_str());
+        process::exit(1);
+    }
+}
+
+
+fn run() -> Result<()> {
     let cli = Cli::parse();
     if cli.version {
         println!("\n{APP_TITLE}\n");

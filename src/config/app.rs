@@ -1,6 +1,6 @@
 use std::default::Default;
-use std::io;
-use std::path::PathBuf;
+use std::{fs, io};
+use std::path::{Path, PathBuf};
 use serde::Deserialize;
 use crate::config::defaults;
 use crate::env::{self, Environment};
@@ -70,6 +70,14 @@ impl AppConfiguration {
             .load_from_env()
             .load_from_option(config_path)
             .apply_env_vars()
+    }
+
+
+    pub(crate) fn template_dirs(&self) -> impl Iterator<Item = PathBuf> {
+        self.templates.iter().map(|p| {
+            let path = Path::new(p);
+            fs::canonicalize(path).expect(&format!("Invalid template path '{path:?}'"))
+        })
     }
 
 

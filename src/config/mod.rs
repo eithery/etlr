@@ -6,4 +6,4 @@ mod export;
 mod import;
 mod logging;
 mod workflow;
-mod yaml;
+pub(crate) mod yaml;
