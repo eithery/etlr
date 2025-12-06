@@ -1,6 +1,7 @@
 pub mod cli;
 mod config;
 mod env;
+mod fs;
 mod path;
 mod pipelines;
 mod std;

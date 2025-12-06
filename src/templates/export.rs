@@ -8,4 +8,5 @@ pub(crate) struct FileExportTemplate {
 
 
 impl FileTemplate for FileExportTemplate {
+    const TEMPLATES_ROOT: &'static str = "export";
 }

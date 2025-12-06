@@ -1,0 +1,115 @@
+etl_template: :export
+version: 2
+file:
+  type: std.master_accounts
+  format: :pipe
+
+description: >
+  Describes a standard files and records layout for master accounts and customers books & records data export
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+    include_file_version: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  files:
+    - std.customers:
+        file_name: customers_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.customers
+          columns:
+            include: :all
+    - std.master_accounts:
+        file_name: master_accounts_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.master_accounts
+          columns:
+            include: :all
+    - std.account_owners:
+        file_name: account_owners_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_owners
+          columns:
+            include: :all
+    - std.account_interested_parties:
+        file_name: account_interested_parties_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_interested_parties
+          columns:
+            include: :all
+    - std.customer_financial_profile:
+        file_name: customer_financial_profile_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.customer_financial_profile
+          columns:
+            include: :all
+    - std.customer_investment_experience:
+        file_name: customer_investment_experience_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.customer_investment_experience
+          columns:
+            include: :all
+    - std.customer_assets_held_away:
+        file_name: customer_assets_held_away_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.customer_assets_held_away
+          columns:
+            include: :all
+    - std.customer_questions:
+        file_name: customer_questions_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.customer_questions
+          columns:
+            include: :all
+    - std.account_investment_objectives:
+        file_name: account_investment_objectives_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_investment_objectives
+          columns:
+            include: :all
+    - std.account_investment_purposes:
+        file_name: account_investment_purposes_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_investment_purposes
+          columns:
+            include: :all
+    - std.account_investment_strategies:
+        file_name: account_investment_strategies_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_investment_strategies
+          columns:
+            include: :all
+    - std.account_sources_of_funds:
+        file_name: account_sources_of_funds_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_sources_of_funds
+          columns:
+            include: :all
+    - std.account_questions:
+        file_name: account_questions_{CCYYMMDDTHHMMSS}.txt
+        data_source:
+          id: :bnr
+          table: outbound.account_questions
+          columns:
+            include: :all

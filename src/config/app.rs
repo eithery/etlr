@@ -2,15 +2,15 @@ use std::default::Default;
 use std::{fs, io};
 use std::path::{Path, PathBuf};
 use serde::Deserialize;
+use crate::{cli, path};
 use crate::config::defaults;
 use crate::env::{self, Environment};
-use crate::{cli, path};
+use crate::fs::yaml;
 use crate::std::string;
 use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
 use super::logging::LoggingConfiguration;
 use super::workflow::WorkflowConfiguration;
-use super::yaml;
 
 
 const CONFIG_FILE_NAME: &str = ".etlrc.yml";
