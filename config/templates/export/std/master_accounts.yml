@@ -22,93 +22,93 @@ layout:
 
   files:
     - std.customers:
-        file_name: customers_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: customers.txt
+        dataset:
           id: :bnr
-          table: outbound.customers
+          source: outbound.customers
           columns:
             include: :all
     - std.master_accounts:
-        file_name: master_accounts_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: master_accounts.txt
+        dataset:
           id: :bnr
-          table: outbound.master_accounts
+          source: outbound.master_accounts
           columns:
             include: :all
     - std.account_owners:
-        file_name: account_owners_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_owners.txt
+        dataset:
           id: :bnr
-          table: outbound.account_owners
+          source: outbound.account_owners
           columns:
             include: :all
     - std.account_interested_parties:
-        file_name: account_interested_parties_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_interested_parties.txt
+        dataset:
           id: :bnr
-          table: outbound.account_interested_parties
+          source: outbound.account_interested_parties
           columns:
             include: :all
     - std.customer_financial_profile:
-        file_name: customer_financial_profile_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: customer_financial_profile.txt
+        dataset:
           id: :bnr
-          table: outbound.customer_financial_profile
+          source: outbound.customer_financial_profile
           columns:
             include: :all
     - std.customer_investment_experience:
-        file_name: customer_investment_experience_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: customer_investment_experience.txt
+        dataset:
           id: :bnr
-          table: outbound.customer_investment_experience
+          source: outbound.customer_investment_experience
           columns:
             include: :all
     - std.customer_assets_held_away:
-        file_name: customer_assets_held_away_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: customer_assets_held_away.txt
+        dataset:
           id: :bnr
-          table: outbound.customer_assets_held_away
+          source: outbound.customer_assets_held_away
           columns:
             include: :all
     - std.customer_questions:
-        file_name: customer_questions_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: customer_questions.txt
+        dataset:
           id: :bnr
-          table: outbound.customer_questions
+          source: outbound.customer_questions
           columns:
             include: :all
     - std.account_investment_objectives:
-        file_name: account_investment_objectives_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_investment_objectives.txt
+        dataset:
           id: :bnr
-          table: outbound.account_investment_objectives
+          source: outbound.account_investment_objectives
           columns:
             include: :all
     - std.account_investment_purposes:
-        file_name: account_investment_purposes_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_investment_purposes.txt
+        dataset:
           id: :bnr
-          table: outbound.account_investment_purposes
+          source: outbound.account_investment_purposes
           columns:
             include: :all
     - std.account_investment_strategies:
-        file_name: account_investment_strategies_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_investment_strategies.txt
+        dataset:
           id: :bnr
-          table: outbound.account_investment_strategies
+          source: outbound.account_investment_strategies
           columns:
             include: :all
     - std.account_sources_of_funds:
-        file_name: account_sources_of_funds_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_sources_of_funds.txt
+        dataset:
           id: :bnr
-          table: outbound.account_sources_of_funds
+          source: outbound.account_sources_of_funds
           columns:
             include: :all
     - std.account_questions:
-        file_name: account_questions_{CCYYMMDDTHHMMSS}.txt
-        data_source:
+        file_name: account_questions.txt
+        dataset:
           id: :bnr
-          table: outbound.account_questions
+          source: outbound.account_questions
           columns:
             include: :all
