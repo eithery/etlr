@@ -1,5 +1,7 @@
 use serde::Deserialize;
 use super::category::TemplateCategory;
+use super::file::FileInfoTemplate;
+use super::layout::RecordLayoutTemplate;
 use super::traits::FileTemplate;
 
 
@@ -11,9 +13,12 @@ pub(crate) struct FileExportTemplate {
 
     version: u8,
 
-    // file: String,
-    description: String
-    // layout: String
+    file: FileInfoTemplate,
+
+    #[serde(default)]
+    description: String,
+
+    layout: RecordLayoutTemplate
 }
 
 

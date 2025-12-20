@@ -11,7 +11,6 @@ layout:
   header:
     tag: H
     date: CCYYMMDD
-    include_file_type: true
     include_file_version: true
   trailer:
     tag: T
