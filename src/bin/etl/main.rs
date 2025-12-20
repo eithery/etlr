@@ -3,9 +3,9 @@ mod commands;
 mod help;
 
 use std::process;
-use anyhow::Result;
 use clap::{CommandFactory, Parser};
 use etlr::{import_files, export_files, anonymize_files, create_database, drop_database, create_tables, drop_tables};
+use etlr::std::result::Result;
 use crate::cli::{Cli, APP_TITLE};
 use crate::commands::{Commands, db};
 

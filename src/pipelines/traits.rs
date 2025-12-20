@@ -1,13 +1,14 @@
-use anyhow::Result;
+use std::fmt::Debug;
 use dotenv::dotenv;
 use crate::cli;
 use crate::config::app::AppConfiguration;
+use crate::std::result::Result;
 use crate::templates::traits::FileTemplate;
 
 
 pub(crate) trait DataPipeline {
     type Options<'a>;
-    type Template: FileTemplate;
+    type Template: FileTemplate + Debug;
 
     const PIPELINE_NAME: &'static str;
 
@@ -24,6 +25,7 @@ pub(crate) trait DataPipeline {
         let config = AppConfiguration::load(config_path);
         cli::blank_line();
         let template = Self::Template::load(template_name, config.template_dirs())?;
+        println!("{:?}", template);
         Ok(Self::new(template, config))
     }
 }
