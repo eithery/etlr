@@ -76,7 +76,7 @@ impl AppConfiguration {
     pub(crate) fn template_dirs(&self) -> impl Iterator<Item = PathBuf> {
         self.templates.iter().map(|p| {
             let path = Path::new(p);
-            fs::canonicalize(path).expect(&format!("Invalid template path '{path:?}'"))
+            fs::canonicalize(path).expect(&format!("Invalid template path `{path:?}`"))
         })
     }
 

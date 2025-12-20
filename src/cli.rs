@@ -14,8 +14,8 @@ pub fn error(message: &str) {
 pub(crate) fn display_app_header(template_name: &str, command: &str) {
     blank_line();
     println!("{} ({})", cyan(APP_TITLE), cyan(command));
-    println!("Current environment: '{}'", cyan(&env::current_environment().to_string()));
-    println!("Template name: '{}'", cyan(template_name));
+    println!("Current environment: `{}`", cyan(&env::current_environment().to_string()));
+    println!("Template name: `{}`", cyan(template_name));
     blank_line();
     println!("Load app configuration:")
 }

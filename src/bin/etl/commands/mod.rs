@@ -36,7 +36,7 @@ pub(crate) enum Commands {
         template: String,
         #[arg(short, long, value_name = "CONFIG_PATH", help = "Path to the custom app configuration file")]
         config: Option<String>,
-        #[arg(short, long, value_name = "FILES;...", help = "List of files to export separated by ';'")]
+        #[arg(short, long, value_name = "FILES;...", help = "List of files to export separated by `;`")]
         files: Option<String>,
         #[arg(long, value_name = "FILE_NAME_PREFIX", help = "Add the prefix into outbound file names")]
         file_prefix: Option<String>,
