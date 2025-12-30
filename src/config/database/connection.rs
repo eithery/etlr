@@ -1,6 +1,5 @@
 use std::str::FromStr;
 use serde::Deserialize;
-
 use crate::std::string::Normalize;
 
 
@@ -30,8 +29,8 @@ pub(crate) enum ConnectionType {
 impl FromStr for ConnectionType {
     type Err = ();
 
-    fn from_str(string: &str) -> Result<Self, Self::Err> {
-        Ok(match string.normalize().as_str() {
+    fn from_str(str_value: &str) -> Result<Self, Self::Err> {
+        Ok(match str_value.normalize().as_str() {
             ":default" => ConnectionType::Default,
             ":auto" => ConnectionType::Auto,
             ":sspi" => ConnectionType::Sspi,

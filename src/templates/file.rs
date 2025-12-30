@@ -10,3 +10,10 @@ pub(super) struct FileInfoTemplate {
 
     format: FileFormat
 }
+
+
+impl FileInfoTemplate {
+    pub(super) fn file_type(&self) -> &str {
+        self.file_type.as_str()
+    }
+}

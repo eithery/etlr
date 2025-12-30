@@ -25,3 +25,16 @@ pub(crate) struct FileExportTemplate {
 impl FileTemplate for FileExportTemplate {
     const TEMPLATES_ROOT: &'static str = "export";
 }
+
+
+#[allow(dead_code)]
+impl FileExportTemplate {
+    pub(crate) fn version(&self) -> u8 {
+        self.version
+    }
+
+
+    pub(crate) fn file_type(&self) -> &str {
+        self.file.file_type()
+    }
+}
