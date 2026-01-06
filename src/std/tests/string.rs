@@ -31,7 +31,6 @@ mod is_blank {
     fn it_returns_true_for_a_blank_string(#[case] str_value: &str) {
         expect(str_value.is_blank()).to_be_true();
         expect(String::from(str_value).is_blank()).to_be_true();
-        expect(Some(str_value).is_blank()).to_be_true();
     }
 
 
@@ -39,13 +38,6 @@ mod is_blank {
     fn it_returns_false_for_a_non_blank_string(#[case] str_value: &str) {
         expect(str_value.is_blank()).to_be_false();
         expect(String::from(str_value).is_blank()).to_be_false();
-        expect(Some(str_value).is_blank()).to_be_false();
-    }
-
-
-    #[rstest]
-    fn it_returns_true_for_none() {
-        expect((None as Option<&str>).is_blank()).to_be_true();
     }
 }
 
@@ -57,7 +49,6 @@ mod is_not_blank {
     fn it_returns_false_for_a_blank_string(#[case] str_value: &str) {
         expect(str_value.is_not_blank()).to_be_false();
         expect(String::from(str_value).is_not_blank()).to_be_false();
-        expect(Some(str_value).is_not_blank()).to_be_false();
     }
 
 
@@ -65,38 +56,6 @@ mod is_not_blank {
     fn it_returns_true_for_a_non_blank_string(#[case] str_value: &str) {
         expect(str_value.is_not_blank()).to_be_true();
         expect(String::from(str_value).is_not_blank()).to_be_true();
-        expect(Some(str_value).is_not_blank()).to_be_true();
-    }
-
-
-    #[rstest]
-    fn it_returns_false_for_none() {
-        expect((None as Option<&str>).is_not_blank()).to_be_false();
-    }
-}
-
-
-mod trim {
-    use super::*;
-
-    #[rstest]
-    #[case("\r\n \t  Some STRING   \n\t\r", "Some STRING")]
-    #[case("", "")]
-    #[case("    ", "")]
-    #[case(&"   VaLUE ".to_string(), "VaLUE")]
-    #[case("  TEST StrinG ", "TEST StrinG")]
-    #[case("  \r 1234\n\r  \t", "1234")]
-    #[case(" TEST\r\n", "TEST")]
-    #[case(" __..A \n ", "__..A")]
-    #[case(&String::from("  \r\n"), &String::new())]
-    fn it_trims_spaces_from_a_string(#[case] str_value: &str, #[case] expected: &str) {
-        expect(Some(str_value).trim()).to_equal(Some(expected));
-    }
-
-
-    #[rstest]
-    fn it_returns_none_for_none_value() {
-        expect((None as Option<String>).trim()).to_be_none();
     }
 }
 
@@ -113,7 +72,6 @@ mod chomp {
     fn it_removes_trailing_crlf(#[case] str_value: &str, #[case] expected: &str) {
         expect(str_value.chomp()).to_equal(expected);
         expect(String::from(str_value).chomp()).to_equal(expected);
-        expect(Some(str_value).chomp()).to_equal(Some(expected));
     }
 
 
@@ -124,13 +82,6 @@ mod chomp {
     ) {
         expect(str_value.chomp()).to_equal(str_value);
         expect(String::from(str_value).chomp()).to_equal(str_value);
-        expect(Some(str_value).chomp()).to_equal(Some(str_value));
-    }
-
-
-    #[rstest]
-    fn it_returns_none_for_none_value() {
-        expect((None as Option<&str>).chomp()).to_be_none();
     }
 }
 
@@ -150,13 +101,6 @@ mod remove {
     fn it_removes_chars_from_a_string(#[case] str_value: &str, #[case] chars: &str, #[case] expected: &str) {
         expect(str_value.remove_chars(chars)).to_equal(expected);
         expect(String::from(str_value).remove_chars(chars)).to_equal(expected);
-        expect(Some(str_value).remove_chars(chars)).to_equal(Some(expected.to_string()));
-    }
-
-
-    #[rstest]
-    fn it_returns_none_for_none_value() {
-        expect((None as Option<String>).remove_chars("ABC")).to_be_none();
     }
 }
 
@@ -177,13 +121,6 @@ mod normalize {
     fn it_trims_and_converts_a_string_to_lowercase(#[case] str_value: &str, #[case] expected: &str) {
         expect(str_value.normalize()).to_equal(expected);
         expect(String::from(str_value).normalize()).to_equal(expected);
-        expect(Some(str_value).normalize()).to_equal(Some(expected.to_string()));
-    }
-
-
-    #[rstest]
-    fn it_returns_none_for_none_value() {
-        expect((None as Option<String>).normalize()).to_be_none();
     }
 }
 
@@ -198,7 +135,6 @@ mod try_parse {
     ) {
         expect(str_value.try_parse()).to_equal(Some(true));
         expect(String::from(str_value).try_parse()).to_equal(Some(true));
-        expect(Some(str_value).try_parse()).to_equal(Some(true));
     }
 
 
@@ -209,7 +145,6 @@ mod try_parse {
     ) {
         expect(str_value.try_parse()).to_equal(Some(false));
         expect(String::from(str_value).try_parse()).to_equal(Some(false));
-        expect(Some(str_value).try_parse()).to_equal(Some(false));
     }
 
 
@@ -220,7 +155,6 @@ mod try_parse {
     ) {
         expect(str_value.try_parse()).to_be_none();
         expect(String::from(str_value).try_parse()).to_be_none();
-        expect(Some(str_value).try_parse()).to_be_none();
     }
 
 
@@ -231,12 +165,5 @@ mod try_parse {
     ) {
         expect(str_value.try_parse()).to_be_none();
         expect(String::from(str_value).try_parse()).to_be_none();
-        expect(Some(str_value).try_parse()).to_be_none();
-    }
-
-
-    #[rstest]
-    fn it_returns_none_for_none_value() {
-        expect((None as Option<String>).try_parse()).to_be_none();
     }
 }
