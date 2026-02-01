@@ -1,0 +1,2145 @@
+etl_template: :import
+version: 3
+file:
+  type: nfs.accounts
+  format: :fixed-length
+
+description: >
+  The Name and Address Transmission file contains customer name and address information required to open
+  and maintain a brokerage account on the Clearing and Custody platform.
+  The file includes data such as the account registration details, account and customer level detail,
+  interested parties, additional stakeholders and affiliations.
+
+layout:
+  record_size: 700
+  record_id:
+    pos: 2..4
+  header:
+    tag: H
+    file_type:
+      tag: FIDELITY SYSTEMS\x20{4}(NAME/ADDR HISTORY|NAME AND ADDRESS)
+      pos: 22..58
+    date:
+      pos: 63..68
+      format: MMDDYY
+  trailer:
+    tag: T
+    record_count:
+      pos: 41..55
+  multitenant:
+    subheader:
+      tag: CH
+    subtrailer:
+      tag: CT
+    trailer:
+      record_count:
+        pos: 43..57
+
+  records:
+    - id: '101'
+      name: Record 101. Customer name and address (primary only)
+      required: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '101'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - number_of_confirms:
+            pos: 18..19
+            type: :int
+            value: 0[0-9]
+        - number_of_statements:
+            pos: 20..21
+            type: :int
+            value: 0[0-9]
+        - irs_no:
+            pos: 22..30
+            required: true
+            exported: true
+        - irs_code:
+            pos: 31
+            required: true
+            exported: true
+            value: N|S|T
+        - zip_code:
+            pos: 32..36
+            exported: true
+        - state_country_code:
+            pos: 37..39
+            exported: true
+        - separate_account_manager_indicator:
+            pos: 40
+            value: 1|A|C|F|N|P|Q|R|S|W|Y
+        - short_name:
+            pos: 41..50
+            exported: true
+        - transfer_legend_code:
+            pos: 51
+            value: 1|2|3|4|5
+        - managed_account_code:
+            pos: 52
+            value: Y|N
+            type: :bool
+        - last_update_code:
+            pos: 53
+            value: A|C
+        - last_update_date:
+            pos: 54..61
+            type: :date
+            format: CCYYMMDD
+        - registered_rep:
+            pos: 62..64
+            required: true
+            exported: true
+        - trading_auth_code_bnam:
+            pos: 65
+            value: 1|2|3
+        - employee_code:
+            pos: 66
+            value: 4|5|6|7|8|B|C|N
+        - citizen_code:
+            pos: 67
+            value: 2|3|4|5|6|7|8|A|B|C|D
+            exported: true
+        - country_of_tax_residency:
+            pos: 68..70
+            exported: true
+        - do_not_purge_code:
+            pos: 71
+            value: Y|N
+            type: :bool
+        - account_classification: 72..73
+        - proceeds_instructions:
+            pos: 74
+            value: 1|2|3|8|9
+        - securities_instructions:
+            pos: 75
+            value: 1|2|3|4|5|6|7|8|9
+        - cash_dividend_instructions:
+            pos: 76
+            value: 1|2|3|4|5|6|7|9|D|P|S
+        - dividend_roundout_instruction_code:
+            pos: 77
+            value: 1|2
+        - non_objecting_beneficial_owner_code:
+            pos: 78
+            value: Y|N
+            type: :bool
+        - commission_class:
+            pos: 79
+            value: A|B|C|M|S|W|X
+        - commission_discount_percent:
+            pos: 80..84
+            type: :num(5,2)
+            format: 9(03)v9(02)
+        - commission_schedule: 85..86
+        - parent_branch: 87..89
+        - parent_account: 90..95
+        - agency_code:
+            pos: 96..103
+            exported: true
+        - registered_rep_exec_rep_rr2:
+            pos: 104..106
+            exported: true
+        - nap_rap_indicator:
+            pos: 107
+            value: Y|N
+            type: :bool
+            exported: true
+        - nap_rap_date:
+            pos: 108..115
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - institutional_delivery_code:
+            pos: 116
+            value: 1|2
+        - institutional_delivery_number: 117..121
+        - agent_bank_number: 122..126
+        - establish_date:
+            pos: 127..134
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - restriction_code:
+            pos: 135
+            exported: true
+        - bypass_misc_fee_indicator:
+            pos: 136
+            value: Y|N
+            type: :bool
+        - investment_club_agreement:
+            pos: 137
+            value: 1|2|R|T|Z
+        - joint_account_agreement:
+            pos: 138
+            value: 1|2|R|T|Z
+        - trust_service_provider_tla:
+            pos: 139
+            value: Y|N
+        - corporate_agreement:
+            pos: 140
+            value: 1|2|R|T|Z
+        - trust_accounting:
+            pos: 141
+            value: Y|N
+            type: :bool
+        - partner_agreement:
+            pos: 142
+            value: 1|2|R|T|Z
+        - margin_agreement:
+            pos: 143
+            value: 1|R|T|Z
+        - option_status:
+            pos: 144
+            value: R|T|Y|Z
+        - option_agreement:
+            pos: 145
+            value: 1|2|3|4|5|A|B|C|D|E
+        - non_purpose_loan_agreement:
+            pos: 146
+            value: Y|N
+            type: :bool
+        - trust_agreement:
+            pos: 147
+            value: 1|2|R|T|Z
+        - new_account_papers:
+            pos: 148
+            value: C|L|N|R|T|Y
+        - special_product_papers:
+            pos: 149
+            value: Y|N
+            type: :bool
+        - omnibus_code:
+            pos: 150..151
+            value: 0[1-8]
+        - segregation_code:
+            pos: 152
+            value: 'N'
+        - special_margine_rate:
+            pos: 153..157
+            type: :num(5,2)
+            format: 9(03)v9(02)
+        - money_movement_authorization_level:
+            pos: 158
+            value: 0|1|2
+        - master_security_landing_agreement_indicator:
+            pos: 159
+            value: N|P|Y
+        - corporate_tax_status:
+            pos: 160
+            value: C|D|N|O|P|S|T|X
+        - cost_basis_disposal_method_code:
+            pos: 161..164
+            value: FIFO|HICL|HICO|HICS|INFI|LIFO|LOCL|LOCO|LOCS|STTS|TXSN
+        - dvp_suppression_indicator:
+            pos: 165
+            value: N|T|Y
+        - abandoned_property_date:
+            pos: 166..173
+            type: :date
+            format: CCYYMMDD
+        - preferred_customer_code:
+            pos: 174..176
+            value: 000|001|002|003|004|005|006|007|008|009|011|012|013|014|015|017|018|019|020|N
+        - zip_code_2:
+            pos: 177..185
+            exported: true
+        - oasys_access_code: 186..197
+        - oasys_institution: 198..205
+        - number_of_address_lines:
+            pos: 206
+            type: :int
+            exported: true
+        - name_and_address_line_1:
+            pos: 207..238
+            exported: true
+        - name_and_address_line_2:
+            pos: 239..270
+            exported: true
+        - name_and_address_line_3:
+            pos: 271..302
+            exported: true
+        - name_and_address_line_4:
+            pos: 303..334
+            exported: true
+        - name_and_address_line_5:
+            pos: 335..366
+            exported: true
+        - name_and_address_line_6:
+            pos: 367..398
+            exported: true
+        - registration_type:
+            pos: 399..402
+            required: true
+            exported: true
+        - birth_date:
+            pos: 403..410
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - product_level: 411..412
+        - birth_date_shadow:
+            pos: 413..420
+            type: :date
+            format: CCYYMMDD
+        - multi_currency_account:
+            pos: 421
+            value: Y|F
+        - portfolio_margin_indicator:
+            pos: 422
+            value: P|N
+        - advisor_reporting_indicator:
+            pos: 423
+            value: 1|2|3|4|5|6|Z
+        - late_trade_indicator:
+            pos: 424
+            value: Y|N
+            type: :bool
+        - margin_sweep_code:
+            pos: 425
+            value: Y|N
+        - setup_fee_indicator:
+            pos: 426
+            value: N|P|R|W
+        - product_level_subtype_code:
+            pos: 427
+            value: A|B|E|F|M|N|O|P
+        - w8_form_code:
+            pos: 428
+            value: 1|2|3|4
+        - w8_certification_date:
+            pos: 429..436
+            type: :date
+            format: CCYYMMDD
+        - :blank: 437
+        - account_source_code: 438..440
+        - bda_parent_account_number: 441..449
+        - net_asset_value_indicator:
+            pos: 450
+            value: I|N|R|W|Y
+        - plan_name_code: 451..455
+        - team_code:
+            pos: 456..458
+            value: B00|C00|C01|C02|C03|C04|C05|C06|C07|C08|C09|C10|C11|E00|G00|G01|HAA|HAB|HAC|HAD|HAE|HAF
+        - flag_account_indicator:
+            pos: 459
+            value: Y|N
+            type: :bool
+        - proxy_vote_indicator: 460
+        - prime_broker_indicator:
+            pos: 461
+            value: 0|1|2|3|4|5|6|7|8|9|A|B|C
+        - transfer_agent_fee_code:
+            pos: 462..464
+            value: FIO|FIR
+        - transfer_agent_management_fee_code: 465..467
+        - account_regulatory_code: 468..469
+        - exchange_indicator:
+            pos: 470
+            value: D|N|X|Y
+        - cash_management_fee_schedule_code:
+            pos: 471..472
+            value: 11|22|33|44|55
+        - multiple_margin_indicator:
+            pos: 473
+            value: Y|N
+            type: :bool
+        - asset_distribution_account_code:
+            pos: 474
+            value: S|T|U
+        - confirm_print_code:
+            pos: 475
+            value: M|S
+        - family_office_type_code:
+            pos: 476
+            value: F|N|R
+        - shadosuite_dvp_code:
+            pos: 477
+            value: F|N|Y
+        - vendor_code:
+            pos: 478..479
+            value: NT|SG|TN
+        - chargeback_type_code:
+            pos: 480
+            value: 0|1|2|3|4|5|6|7
+        - cash_movement_type_code:
+            pos: 481
+            value: H|S
+        - futures_status_code:
+            pos: 482
+            value: C|O|P
+        - broker_dealer_sold_code:
+            pos: 483
+            value: P|S
+        - fee_authorization_code:
+            pos: 484
+            value: F
+        - mutual_fund_fee_rebate_code:
+            pos: 485
+            value: E|I
+        - special_account_usage_code:
+            pos: 486..490
+            value: SDRTH
+        - trade_away_eligible_code:
+            pos: 491
+            value: Y|N
+            type: :bool
+        - coverdell_special_needs_indicator:
+            pos: 492
+            value: Y|N
+            type: :bool
+        - multiple_margin_model_code:
+            pos: 493
+            value: A|D
+        - mutual_fund_investment_ira_indicator:
+            pos: 494
+            value: N|T|Y
+        - money_market_account_designation:
+            pos: 495
+            value: I|R
+        - product_class:
+            pos: 496..503
+            value: ACC529|DGTADVR|DMA|DMP|ENVDIR|FMAX|FROS|MAS|MFONLY|ROS
+        - platform_source:
+            pos: 504..511
+            value: EMONEY|ENV|ENVDIR|ENVMAS|ENVROS|FIWA|FIWAROS|FUTADV|PROP|SIGFIG|TRIZIC
+        - fiduciary_approach_code:
+            pos: 512..513
+            value: 10|20|30|40|50|84|BC|BL|CM|FB|FT|GF|LF|NA|NO|OO|PB|PL|PT|SB|SD|ST
+        - fiduciary_approach_last_update_date:
+            pos: 514..521
+            type: :date
+            format: CCYYMMDD
+        - line_of_business:
+            pos: 522..527
+            value: FCM|FFOS|IWS|NF|PI
+        - registered_rep_rep_of_record_ror: 528..536
+        - registered_rep_pay_to_rep_ptr_account_level: 537..545
+        - :blank: 546..700
+
+    - id: '102'
+      name: Record 102. Account owner registration information (Owners 1 - 3)
+      required: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '102'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - exception_registration_indicator:
+            pos: 18
+            value: Y|N
+            type: :bool
+        - trust_date:
+            pos: 19..26
+            type: :date
+            format: CCYYMMDD
+        - minor_residence_state:
+            pos: 27..28
+            exported: true
+        - auto_address_update_indicator:
+            pos: 29
+            value: Y|N
+            type: :bool
+        - ncoa_address_update_indicator:
+            pos: 30
+            value: Y|N
+            type: :bool
+        - foreign_address_code:
+            pos: 31
+            value: D|F
+            exported: true
+        - address_line_1:
+            pos: 32..63
+            exported: true
+        - address_line_2:
+            pos: 64..95
+            exported: true
+        - address_line_3:
+            pos: 96..127
+            exported: true
+        - address_city_name:
+            pos: 128..157
+            exported: true
+        - state:
+            pos: 158..159
+            exported: true
+        - postal_code:
+            pos: 160..168
+            exported: true
+        - state_country_code:
+            pos: 169..171
+            exported: true
+        - province:
+            pos: 172..186
+            exported: true
+        - name_count:
+            pos: 187..190
+            type: :int
+            exported: true
+
+        - :group: Account owner 1
+        - owner_1_name_type:
+            pos: 191
+            value: B|P
+            required: true
+            exported: true
+        - owner_1_primary_name_code:
+            pos: 192
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_1_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_1_first_name:
+                      pos: 193..204
+                      exported: true
+                  - owner_1_middle_name:
+                      pos: 205..214
+                      exported: true
+                  - owner_1_last_name:
+                      pos: 215..239
+                      exported: true
+                  - owner_1_name_title_prefix:
+                      pos: 240..249
+                      exported: true
+                  - owner_1_name_title_suffix:
+                      pos: 250..259
+                      exported: true
+                  - owner_1_date_of_birth:
+                      pos: 260..267
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_1_date_of_death:
+                      pos: 268..275
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_1_business_trust_name:
+                      pos: 193..242
+                      exported: true
+                  - :blank: 243..275
+        - owner_1_relationship_code:
+            pos: 276..279
+            exported: true
+        - owner_1_ssn_number:
+            pos: 280..288
+            key: true
+            required: true
+            exported: true
+        - owner_1_ssn_code:
+            pos: 289
+            value: N|S|T
+            key: true
+            required: true
+            exported: true
+        - owner_1_xref:
+            pos: 290..298
+            exported: true
+        - owner_1_customer_establish_date:
+            pos: 299..306
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - :group: Account owner 2
+        - owner_2_name_type:
+            pos: 307
+            value: B|P
+            exported: true
+        - owner_2_primary_name_code:
+            pos: 308
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_2_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_2_first_name:
+                      pos: 309..320
+                      exported: true
+                  - owner_2_middle_name:
+                      pos: 321..330
+                      exported: true
+                  - owner_2_last_name:
+                      pos: 331..355
+                      exported: true
+                  - owner_2_name_title_prefix:
+                      pos: 356..365
+                      exported: true
+                  - owner_2_name_title_suffix:
+                      pos: 366..375
+                      exported: true
+                  - owner_2_date_of_birth:
+                      pos: 376..383
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_2_date_of_death:
+                      pos: 384..391
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_2_business_trust_name:
+                      pos: 309..358
+                      exported: true
+                  - :blank: 359..391
+        - owner_2_relationship_code:
+            pos: 392..395
+            exported: true
+        - owner_2_ssn_number:
+            pos: 396..404
+            key: true
+            exported: true
+        - owner_2_ssn_code:
+            pos: 405
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_2_xref:
+            pos: 406..414
+            exported: true
+        - owner_2_customer_establish_date:
+            pos: 415..422
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - :group: Account owner 3
+        - owner_3_name_type:
+            pos: 423
+            value: B|P
+            exported: true
+        - owner_3_primary_name_code:
+            pos: 424
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_3_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_3_first_name:
+                      pos: 425..436
+                      exported: true
+                  - owner_3_middle_name:
+                      pos: 437..446
+                      exported: true
+                  - owner_3_last_name:
+                      pos: 447..471
+                      exported: true
+                  - owner_3_name_title_prefix:
+                      pos: 472..481
+                      exported: true
+                  - owner_3_name_title_suffix:
+                      pos: 482..491
+                      exported: true
+                  - owner_3_date_of_birth:
+                      pos: 492..499
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_3_date_of_death:
+                      pos: 500..507
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_3_business_trust_name:
+                      pos: 425..474
+                      exported: true
+                  - :blank: 475..507
+        - owner_3_relationship_code:
+            pos: 508..511
+            exported: true
+        - owner_3_ssn_number:
+            pos: 512..520
+            key: true
+            exported: true
+        - owner_3_ssn_code:
+            pos: 521
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_3_xref:
+            pos: 522..530
+            exported: true
+        - owner_3_customer_establish_date:
+            pos: 531..538
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - owner_1_trusted_contact_status_code:
+            pos: 539
+            value: F|Y
+            exported: true
+        - owner_2_trusted_contact_status_code:
+            pos: 540
+            value: F|Y
+            exported: true
+        - owner_3_trusted_contact_status_code:
+            pos: 541
+            value: F|Y
+            exported: true
+        - :blank: 542..700
+
+    - id: '103'
+      name: Record 103. Account owner registration information (Owners 4 - 6)
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '103'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - name_count:
+            pos: 18..21
+            type: :int
+            exported: true
+
+        - :group: Account owner 4
+        - owner_4_name_type:
+            pos: 22
+            value: B|P
+            exported: true
+        - owner_4_primary_name_code:
+            pos: 23
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_4_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_4_first_name:
+                      pos: 24..35
+                      exported: true
+                  - owner_4_middle_name:
+                      pos: 36..45
+                      exported: true
+                  - owner_4_last_name:
+                      pos: 46..70
+                      exported: true
+                  - owner_4_name_title_prefix:
+                      pos: 71..80
+                      exported: true
+                  - owner_4_name_title_suffix:
+                      pos: 81..90
+                      exported: true
+                  - owner_4_date_of_birth:
+                      pos: 91..98
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_4_date_of_death:
+                      pos: 99..106
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_4_business_trust_name:
+                      pos: 24..73
+                      exported: true
+                  - :blank: 74..106
+        - owner_4_relationship_code:
+            pos: 107..110
+            exported: true
+        - owner_4_ssn_number:
+            pos: 111..119
+            key: true
+            exported: true
+        - owner_4_ssn_code:
+            pos: 120
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_4_xref:
+            pos: 121..129
+            exported: true
+        - owner_4_customer_establish_date:
+            pos: 130..137
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - :group: Account owner 5
+        - owner_5_name_type:
+            pos: 138
+            value: B|P
+            exported: true
+        - owner_5_primary_name_code:
+            pos: 139
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_5_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_5_first_name:
+                      pos: 140..151
+                      exported: true
+                  - owner_5_middle_name:
+                      pos: 152..161
+                      exported: true
+                  - owner_5_last_name:
+                      pos: 162..186
+                      exported: true
+                  - owner_5_name_title_prefix:
+                      pos: 187..196
+                      exported: true
+                  - owner_5_name_title_suffix:
+                      pos: 197..206
+                      exported: true
+                  - owner_5_date_of_birth:
+                      pos: 207..214
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_5_date_of_death:
+                      pos: 215..222
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_5_business_trust_name:
+                      pos: 140..189
+                      exported: true
+                  - :blank: 190..222
+        - owner_5_relationship_code:
+            pos: 223..226
+            exported: true
+        - owner_5_ssn_number:
+            pos: 227..235
+            key: true
+            exported: true
+        - owner_5_ssn_code:
+            pos: 236
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_5_xref:
+            pos: 237..245
+            exported: true
+        - owner_5_customer_establish_date:
+            pos: 246..253
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - :group: Account owner 6
+        - owner_6_name_type:
+            pos: 254
+            value: B|P
+            exported: true
+        - owner_6_primary_name_code:
+            pos: 255
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_6_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_6_first_name:
+                      pos: 256..267
+                      exported: true
+                  - owner_6_middle_name:
+                      pos: 268..277
+                      exported: true
+                  - owner_6_last_name:
+                      pos: 278..302
+                      exported: true
+                  - owner_6_name_title_prefix:
+                      pos: 303..312
+                      exported: true
+                  - owner_6_name_title_suffix:
+                      pos: 313..322
+                      exported: true
+                  - owner_6_date_of_birth:
+                      pos: 323..330
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_6_date_of_death:
+                      pos: 331..338
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_6_business_trust_name:
+                      pos: 256..305
+                      exported: true
+                  - :blank: 306..338
+        - owner_6_relationship_code:
+            pos: 339..342
+            exported: true
+        - owner_6_ssn_number:
+            pos: 343..351
+            key: true
+            exported: true
+        - owner_6_ssn_code:
+            pos: 352
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_6_xref:
+            pos: 353..361
+            exported: true
+        - owner_6_customer_establish_date:
+            pos: 362..369
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - owner_4_trusted_contact_status_code:
+            pos: 370
+            value: F|Y
+            exported: true
+        - owner_5_trusted_contact_status_code:
+            pos: 371
+            value: F|Y
+            exported: true
+        - owner_6_trusted_contact_status_code:
+            pos: 372
+            value: F|Y
+            exported: true
+        - :blank: 373..700
+
+    - id: '104'
+      name: Record 104. Contact (phone numbers) and bank information
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '104'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - callback_no_1:
+            pos: 18..27
+            exported: true
+        - callback_name_1: 28..47
+        - authorized_trader_indicator:
+            pos: 48
+            value: Y|N
+        - trading_auth_code_fbsi:
+            pos: 49
+            value: A|D|F|L|M|P|T
+        - trading_auth_name_fbsi: 50..81
+        - trading_auth_code_fbsi_2:
+            pos: 82
+            value: A|D|F|L|M|P|T
+        - trading_auth_name_fbsi_2: 83..114
+        - trading_auth_code_fbsi_3:
+            pos: 115
+            value: A|D|F|L|M|P|T
+        - trading_auth_name_fbsi_3: 116..147
+        - callback_no_2:
+            pos: 148..157
+            exported: true
+        - callback_name_2: 158..177
+        - rt_aba_no_base: 178..186
+        - customer_bank_account_no: 187..203
+        - ach_account_type:
+            pos: 204
+            value: D|S
+        - core_symbol: 205..213
+        - :blank: 214..700
+
+    - id: '107'
+      name: Record 107. Employer and affiliation information
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '107'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - affiliation_status:
+            pos: 18
+            value: A|N|P|R
+        - finra_rule_3210_indicator:
+            pos: 19
+            value: B|N|O|S
+            exported: true
+        - financial_institution_name:
+            pos: 20..51
+            exported: true
+        - financial_institution_address_line_1: 52..83
+        - financial_institution_address_line_2: 84..115
+        - financial_institution_address_line_3: 116..147
+        - occupation:
+            pos: 148..197
+            exported: true
+        - employer_name:
+            pos: 198..229
+            exported: true
+        - employer_address_line_1:
+            pos: 230..261
+            exported: true
+        - employer_address_line_2:
+            pos: 262..293
+            exported: true
+        - employer_address_line_3:
+            pos: 294..325
+            exported: true
+        - employer_address_country_code:
+            pos: 326..328
+            exported: true
+        - control_relationship_code:
+            pos: 329
+            value: D|P|S
+            exported: true
+        - control_relationship_company_name:
+            pos: 330..361
+            exported: true
+        - control_relationship_cusip:
+            pos: 362..381
+            exported: true
+        - control_relationship_code_2:
+            pos: 382
+            value: D|P|S
+            exported: true
+        - control_relationship_company_name_2:
+            pos: 383..414
+            exported: true
+        - control_relationship_cusip_2:
+            pos: 415..434
+            exported: true
+        - control_relationship_code_3:
+            pos: 435
+            value: D|P|S
+            exported: true
+        - control_relationship_company_name_3:
+            pos: 436..467
+            exported: true
+        - control_relationship_cusip_3:
+            pos: 468..487
+            exported: true
+        - :blank: 488..700
+
+    - id: '113'
+      name: Record 113. Account owner registration information (Owners 7 - 8)
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '113'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - name_count:
+            pos: 18..21
+            type: :int
+            exported: true
+
+        - :group: Account owner 7
+        - owner_7_name_type:
+            pos: 22
+            value: B|P
+            exported: true
+        - owner_7_primary_name_code:
+            pos: 23
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_7_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_7_first_name:
+                      pos: 24..35
+                      exported: true
+                  - owner_7_middle_name:
+                      pos: 36..45
+                      exported: true
+                  - owner_7_last_name:
+                      pos: 46..70
+                      exported: true
+                  - owner_7_name_title_prefix:
+                      pos: 71..80
+                      exported: true
+                  - owner_7_name_title_suffix:
+                      pos: 81..90
+                      exported: true
+                  - owner_7_date_of_birth:
+                      pos: 91..98
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_7_date_of_death:
+                      pos: 99..106
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_7_business_trust_name:
+                      pos: 24..73
+                      exported: true
+                  - :blank: 74..106
+        - owner_7_relationship_code:
+            pos: 107..110
+            exported: true
+        - owner_7_ssn_number:
+            pos: 111..119
+            key: true
+            exported: true
+        - owner_7_ssn_code:
+            pos: 120
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_7_xref:
+            pos: 121..129
+            exported: true
+        - owner_7_customer_establish_date:
+            pos: 130..137
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - :group: Account owner 8
+        - owner_8_name_type:
+            pos: 138
+            value: B|P
+            exported: true
+        - owner_8_primary_name_code:
+            pos: 139
+            value: P
+            exported: true
+        - :one_of:
+            scope: owner_8_name_type
+            groups:
+              - when: P
+                fields:
+                  - owner_8_first_name:
+                      pos: 140..151
+                      exported: true
+                  - owner_8_middle_name:
+                      pos: 152..161
+                      exported: true
+                  - owner_8_last_name:
+                      pos: 162..186
+                      exported: true
+                  - owner_8_name_title_prefix:
+                      pos: 187..196
+                      exported: true
+                  - owner_8_name_title_suffix:
+                      pos: 197..206
+                      exported: true
+                  - owner_8_date_of_birth:
+                      pos: 207..214
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+                  - owner_8_date_of_death:
+                      pos: 215..222
+                      type: :date
+                      format: CCYYMMDD
+                      exported: true
+              - when: B
+                fields:
+                  - owner_8_business_trust_name:
+                      pos: 140..189
+                      exported: true
+                  - :blank: 190..222
+        - owner_8_relationship_code:
+            pos: 223..226
+            exported: true
+        - owner_8_ssn_number:
+            pos: 227..235
+            key: true
+            exported: true
+        - owner_8_ssn_code:
+            pos: 236
+            value: N|S|T
+            key: true
+            exported: true
+        - owner_8_xref:
+            pos: 237..245
+            exported: true
+        - owner_8_customer_establish_date:
+            pos: 246..253
+            type: :date
+            format: CCYYMMDD
+            exported: true
+
+        - owner_7_trusted_contact_status_code:
+            pos: 254
+            value: F|Y
+            exported: true
+        - owner_8_trusted_contact_status_code:
+            pos: 255
+            value: F|Y
+            exported: true
+        - :blank: 256..700
+
+    - id: '115'
+      name: Record 115. Legal information
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '115'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - auto_address_update_indicator:
+            pos: 18
+            value: Y|N
+            type: :bool
+        - address_type:
+            pos: 19..20
+            value: CA|CE|CL|CM|LA
+            exported: true
+        - address_line_1:
+            pos: 21..52
+            exported: true
+        - address_line_2:
+            pos: 53..84
+            exported: true
+        - address_line_3:
+            pos: 85..116
+            exported: true
+        - city_name:
+            pos: 117..148
+            exported: true
+        - state:
+            pos: 149..150
+            exported: true
+        - postal_code:
+            pos: 151..155
+            exported: true
+        - extended_zip:
+            pos: 156..159
+            exported: true
+        - province:
+            pos: 160..174
+            exported: true
+        - country_name: 175..203
+        - state_country_code:
+            pos: 204..206
+            exported: true
+        - update_user: 207..216
+        - last_update_date:
+            pos: 217..224
+            type: :date
+            format: CCYYMMDD
+        - seasonal_address_type_code:
+            pos: 225..226
+            value: S1|SP
+        - seasonal_address_status_code:
+            pos: 227
+            value: A|I|X
+        - seasonal_address_start_date:
+            pos: 228..235
+            type: :date
+            format: CCYYMMDD
+        - seasonal_address_end_date:
+            pos: 236..243
+            type: :date
+            format: CCYYMMDD
+        - seasonal_address_auto_address_update_indicator:
+            pos: 244
+            value: Y|N
+            type: :bool
+        - seasonal_address_ncoa_address_update_indicator:
+            pos: 245
+            value: Y|N
+            type: :bool
+        - seasonal_address_line_1: 246..277
+        - seasonal_address_line_2: 278..309
+        - seasonal_address_line_3: 310..341
+        - seasonal_address_foreign_address_code:
+            pos: 342
+            value: D|F|M
+        - seasonal_address_city_name: 343..372
+        - seasonal_address_state: 373..374
+        - seasonal_address_postal_code: 375..383
+        - seasonal_address_province: 384..398
+        - seasonal_address_state_country_code: 399..401
+        - seasonal_address_update_user: 402..411
+        - seasonal_address_last_update_date:
+            pos: 412..419
+            type: :date
+            format: CCYYMMDD
+        - :blank: 420..700
+
+    - id: 2X0
+      pattern: 2\d0
+      name: Record 2X0. Customer and telephone information
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - xref:
+            pos: 18..26
+            exported: true
+        - mail_code:
+            pos: 27
+            value: Y|N
+            type: :bool
+        - legal_code:
+            pos: 28
+            value: Y|N
+            type: :bool
+        - aff_code:
+            pos: 29
+            value: Y|N
+            type: :bool
+        - day_tel_code:
+            pos: 30
+            value: Y|N
+            type: :bool
+        - nte_tel_code:
+            pos: 31
+            value: Y|N
+            type: :bool
+        - book_name_count: 32
+        - cust_state_id:
+            pos: 33..62
+            exported: true
+        - cust_state_id_type:
+            pos: 63
+            value: D|O
+            exported: true
+        - cust_state_issued:
+            pos: 64..65
+            exported: true
+        - broker_affiliation_code:
+            pos: 66
+            value: Y|N
+            type: :bool
+        - employee_occupation:
+            pos: 67..98
+            exported: true
+        - citizen_organization_country:
+            pos: 99..101
+            exported: true
+        - last_maint_date:
+            pos: 102..109
+            type: :date
+            format: CCYYMMDD
+        - update_user: 110..119
+        - update_timestamp:
+            pos: 120..145
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - name_format:
+            pos: 146
+            value: F|U
+        - name_title_prefix:
+            pos: 147..156
+            exported: true
+        - name_title_suffix:
+            pos: 157..166
+            exported: true
+        - first_name:
+            pos: 167..191
+            exported: true
+        - middle_name:
+            pos: 192..201
+            exported: true
+        - last_name:
+            pos: 202..231
+            exported: true
+        - relationship_code:
+            pos: 232..235
+            exported: true
+        - irs_code:
+            pos: 236
+            value: N|S|T
+            exported: true
+        - irs_no:
+            pos: 237..245
+            exported: true
+        - birth_date:
+            pos: 246..253
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - telephone_type:
+            pos: 254
+            value: D|N
+            exported: true
+        - telephone_format:
+            pos: 255
+            value: D|F
+            exported: true
+        - telephone_number:
+            pos: 256..270
+            exported: true
+        - telephone_extension:
+            pos: 271..274
+            exported: true
+        - telephone_pin: 275..284
+        - contact_name: 285..304
+        - priority_number: 305..309
+        - update_user_1: 310..319
+        - update_timestamp_1:
+            pos: 320..345
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - telephone_type_2:
+            pos: 346
+            value: D|N
+            exported: true
+        - telephone_format_2:
+            pos: 347
+            value: D|F
+            exported: true
+        - telephone_number_2:
+            pos: 348..362
+            exported: true
+        - telephone_extension_2:
+            pos: 363..366
+            exported: true
+        - telephone_pin_2: 367..376
+        - contact_name_2: 377..396
+        - priority_number_2: 397..401
+        - update_user_2: 402..411
+        - update_timestamp_2:
+            pos: 412..437
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - :blank: 438..700
+
+    - id: 2X1
+      pattern: 2\d1
+      name: Record 2X1. Mailing address information
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - address_type:
+            pos: 18..19
+            value: CA|CE|CL|CM|LA
+            exported: true
+        - label_line_1: 20..51
+        - label_line_2: 52..83
+        - auto_address_update_indicator:
+            pos: 84
+            value: Y|N
+            type: :bool
+        - ncoa_address_update_indicator:
+            pos: 85
+            value: Y|N
+            type: :bool
+        - address_line_1:
+            pos: 86..117
+            exported: true
+        - address_line_2:
+            pos: 118..149
+            exported: true
+        - address_line_3:
+            pos: 150..181
+            exported: true
+        - po_box:
+            pos: 182..191
+            exported: true
+        - city_name:
+            pos: 192..221
+            exported: true
+        - state:
+            pos: 222..223
+            exported: true
+        - postal_code:
+            pos: 224..228
+            exported: true
+        - extended_zip:
+            pos: 229..232
+            exported: true
+        - province:
+            pos: 233..262
+            exported: true
+        - last_maint_date:
+            pos: 263..270
+            type: :date
+            format: CCYYMMDD
+        - foreign_address_code:
+            pos: 271
+            value: D|F
+            exported: true
+        - state_country_code:
+            pos: 272..274
+            exported: true
+        - country_name: 275..324
+        - international_po_code:
+            pos: 325..334
+            exported: true
+        - update_user: 335..344
+        - update_timestamp:
+            pos: 345..370
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - :blank: 371..700
+
+    - id: 2X2
+      pattern: 2\d2
+      name: Record 2X1. Legal address information
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - address_type:
+            pos: 18..19
+            value: CA|CE|CL|CM|LA
+            exported: true
+        - label_line_1: 20..51
+        - label_line_2: 52..83
+        - auto_address_update_indicator:
+            pos: 84
+            value: Y|N
+            type: :bool
+        - ncoa_address_update_indicator:
+            pos: 85
+            value: Y|N
+            type: :bool
+        - address_line_1:
+            pos: 86..117
+            exported: true
+        - address_line_2:
+            pos: 118..149
+            exported: true
+        - address_line_3:
+            pos: 150..181
+            exported: true
+        - po_box:
+            pos: 182..191
+            exported: true
+        - city_name:
+            pos: 192..221
+            exported: true
+        - state:
+            pos: 222..223
+            exported: true
+        - postal_code:
+            pos: 224..228
+            exported: true
+        - extended_zip:
+            pos: 229..232
+            exported: true
+        - province:
+            pos: 233..262
+            exported: true
+        - last_maint_date:
+            pos: 263..270
+            type: :date
+            format: CCYYMMDD
+        - address_format:
+            pos: 271
+            value: D|F|M
+            exported: true
+        - state_country_code:
+            pos: 272..274
+            exported: true
+        - country_name: 275..324
+        - international_po_code:
+            pos: 325..334
+            exported: true
+        - update_user: 335..344
+        - update_timestamp:
+            pos: 345..370
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - :blank: 371..700
+
+    - id: 2X3
+      pattern: 2\d3
+      name: Record 2X3. Affiliation address information
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_segment:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - address_type:
+            pos: 18..19
+            value: CA|CE|CL|CM|LA
+            exported: true
+        - label_line_1: 20..51
+        - label_line_2: 52..83
+        - :blank: 84..85
+        - address_line_1:
+            pos: 86..117
+            exported: true
+        - address_line_2:
+            pos: 118..149
+            exported: true
+        - address_line_3:
+            pos: 150..181
+            exported: true
+        - po_box:
+            pos: 182..191
+            exported: true
+        - city_name:
+            pos: 192..221
+            exported: true
+        - state:
+            pos: 222..223
+            exported: true
+        - postal_code:
+            pos: 224..228
+            exported: true
+        - extended_zip:
+            pos: 229..232
+            exported: true
+        - province:
+            pos: 233..262
+            exported: true
+        - last_maint_date:
+            pos: 263..270
+            type: :date
+            format: CCYYMMDD
+        - address_format:
+            pos: 271
+            value: D|F|M
+            exported: true
+        - state_country_code:
+            pos: 272..274
+            exported: true
+        - country_name: 275..324
+        - international_po_code:
+            pos: 325..334
+            exported: true
+        - update_user: 335..344
+        - update_timestamp:
+            pos: 345..370
+            type: :datetime
+            format: YYYY-MM-DD-HH.MM.SS
+        - :blank: 371..700
+
+    - id: 3X0
+      pattern: 3\d0
+      name: Record 3X0. Email and e-notification
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - xref:
+            pos: 18..26
+            exported: true
+        - email_address:
+            pos: 27..106
+            exported: true
+        - email_address_of_record:
+            pos: 107
+            value: Y|N
+            type: :bool
+        - statement_suppression_indicator:
+            pos: 108
+            value: N|P|X|Y
+        - statement_suppression_pending_indicator:
+            pos: 109
+            value: N|P|X|Y
+        - confirm_suppression_indicator:
+            pos: 110
+            value: N|P|X|Y
+        - confirm_suppression_pending_indicator:
+            pos: 111
+            value: N|P|X|Y
+        - rap_suppression_indicator:
+            pos: 112
+            value: N|P|X|Y
+            exported: true
+        - rap_suppression_pending_indicator:
+            pos: 113
+            value: N|P|X|Y
+        - shareholder_document_suppression_indicator:
+            pos: 114
+            value: N|P|X|Y
+        - shareholder_document_suppression_pending_indicator:
+            pos: 115
+            value: Y|N
+            type: :bool
+        - tax_forms_suppression_indicator:
+            pos: 116
+            value: N|P|X|Y
+        - tax_forms_suppression_pending_indicator:
+            pos: 117
+            value: Y|N
+            type: :bool
+        - qpr_suppression_indicator:
+            pos: 118
+            value: N|P|X|Y
+        - qpr_suppression_pending_indicator:
+            pos: 119
+            value: Y|N
+            type: :bool
+        - :blank: 120..700
+
+    - id: '900'
+      name: Record 900. Account stakeholder information and trusted contacts
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            value: '900'
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - astk_tcpn_first_name:
+            pos: 18..42
+            exported: true
+        - astk_tcpn_middle_name:
+            pos: 43..52
+            exported: true
+        - astk_tcpn_last_name:
+            pos: 53..82
+            exported: true
+        - astk_tcpn_customer_id:
+            pos: 83..91
+            exported: true
+        - astk_tcpn_address_line_1:
+            pos: 92..141
+            exported: true
+        - astk_tcpn_address_line_2:
+            pos: 142..191
+            exported: true
+        - astk_tcpn_city:
+            pos: 192..221
+            exported: true
+        - astk_tcpn_province:
+            pos: 222..251
+            exported: true
+        - astk_tcpn_state:
+            pos: 252..253
+            exported: true
+        - astk_tcpn_zip_5:
+            pos: 254..258
+            exported: true
+        - astk_tcpn_zip_4:
+            pos: 259..262
+            exported: true
+        - astk_tcpn_date_of_birth:
+            pos: 263..270
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - citizen_status_code:
+            pos: 271..272
+            value: 01|02|03|04
+            exported: true
+        - citizen_organization_country:
+            pos: 273..275
+            exported: true
+        - astk_tcpn_mail_address_country_code:
+            pos: 276..278
+            exported: true
+        - irs_no:
+            pos: 279..289
+            exported: true
+        - irs_code:
+            pos: 290
+            value: N|S|T
+            exported: true
+        - astk_tcpn_relationship_code:
+            pos: 291..294
+            value: 3PC|ADVR|AS|DPA|DSCR|FTA|INQ|LTA|MEMO|NPA|POA|TPA
+            exported: true
+        - astk_tcpn_stakeholder_type:
+            pos: 295..298
+            value: ADV|AUTH|CNTL|CUST|DECG|DREP|EOWN|GRNT|REVA|ST01|ST02|ST03|SUBO|TAXO|TBEN|TC|TCP
+            exported: true
+        - update_date:
+            pos: 299..306
+            type: :date
+            format: CCYYMMDD
+        - astk_tcpn_name_format_code:
+            pos: 307
+            value: F|U
+        - astk_institution_name: 308..357
+        - :blank: 358..360
+
+        - trusted_contact_id:
+            pos: 361..369
+            exported: true
+        - trusted_contact_primary_secondary_code:
+            pos: 370
+            value: P|S
+        - trusted_contact_relationship_to_owner:
+            pos: 371..374
+            value: AUUN|BROT|DAUT|FRND|FTHR|GRDD|GRDF|GRDM|GRDS|MTHR|NENI|NHBR|OTHR|SON|SPS|SSTR
+            exported: true
+        - trusted_contact_prefix:
+            pos: 375..384
+            exported: true
+        - trusted_contact_suffix:
+            pos: 385..394
+            exported: true
+        - trusted_contact_address_format:
+            pos: 395
+            value: D|F|U
+        - trusted_contact_attention_line: 396..445
+        - trusted_contact_email_address:
+            pos: 446..525
+            exported: true
+        - trusted_contact_day_phone_format:
+            pos: 526
+            value: D|F
+            exported: true
+        - trusted_contact_day_phone_number:
+            pos: 527..541
+            exported: true
+        - trusted_contact_day_phone_extension:
+            pos: 542..545
+            exported: true
+        - trusted_contact_day_mobile_indicator:
+            pos: 546
+            value: Y|N
+            type: :bool
+            exported: true
+        - trusted_contact_night_phone_format:
+            pos: 547
+            value: D|F
+            exported: true
+        - trusted_contact_night_phone_number:
+            pos: 548..562
+            exported: true
+        - trusted_contact_night_phone_extension:
+            pos: 563..566
+            exported: true
+        - trusted_contact_night_mobile_indicator:
+            pos: 567
+            value: Y|N
+            type: :bool
+            exported: true
+        - astk_primary_id_number: 568..597
+        - astk_primary_id_type:
+            pos: 598
+            value: D|E|F|I|M|O|P|S|V
+        - astk_primary_id_state: 599..600
+        - astk_primary_id_issue_date:
+            pos: 601..608
+            type: :date
+            format: CCYYMMDD
+        - astk_primary_id_expiration_date:
+            pos: 609..616
+            type: :date
+            format: CCYYMMDD
+        - astk_percent_ownership:
+            pos: 617..621
+            type: :num(5,2)
+            format: 9(03)v9(02)
+        - :blank: 622..700
+
+    - id: '901'
+      pattern: 9\d\d
+      name: Record 901. Account interested parties
+      multiple: true
+      fields:
+        - record_type:
+            pos: 1
+            value: D
+            required: true
+        - record_number:
+            pos: 2..4
+            key: true
+            required: true
+            exported: true
+        - firm:
+            pos: 5..8
+            exported: true
+        - branch:
+            pos: 9..11
+            key: true
+            required: true
+            exported: true
+        - account_number:
+            pos: 12..17
+            key: true
+            required: true
+            exported: true
+        - ipcs_number_of_confirms:
+            pos: 18..19
+            type: :int
+        - ipcs_no_statements:
+            pos: 20..21
+            type: :int
+        - ipcs_zip_code:
+            pos: 22..30
+            exported: true
+        - state_country_code:
+            pos: 31..33
+            exported: true
+        - last_update_code:
+            pos: 34
+            value: A|C
+        - last_update_date:
+            pos: 35..42
+            type: :date
+            format: CCYYMMDD
+        - number_of_address_lines:
+            pos: 43
+            type: :int
+        - ipcs_address_line_1:
+            pos: 44..75
+            exported: true
+        - ipcs_address_line_2:
+            pos: 76..107
+            exported: true
+        - ipcs_address_line_3:
+            pos: 108..139
+            exported: true
+        - ipcs_address_line_4: 140..171
+        - ipcs_address_line_5: 172..203
+        - ipcs_address_line_6: 204..235
+        - :blank: 236..700
+
+processing:
+  staging: false
+  update_strategy: delete_insert
+  check_file_loaded: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    default: false
+    type: :python
+    data_source: :bnr
+    plugin: bnr/master_accounts

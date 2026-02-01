@@ -1,0 +1,277 @@
+etl_template: :import
+version: 2
+file:
+  type: schwab.accounts
+  format: :fixed-length
+
+description: Schwab B/D Core Account Information file
+
+layout:
+  record_size: 1450
+  record_id:
+    pos: 1..2
+  header:
+    tag: H1\|SCHWAB
+    file_type:
+      tag: BDACCINF
+      pos: 64..71
+    date:
+      pos: 55..62
+      format: CCYYMMDD
+    subheaders:
+      - H2
+      - H3
+  trailer:
+    tag: T1\|SCHWAB
+    record_count:
+      pos: 73..80
+
+  records:
+    - id: D1
+      name: DETAIL RECORD D1
+      required: true
+      fields:
+        - record_type:
+            pos: 1..2
+            value: D1
+            exported: true
+            required: true
+        - custodian_id:
+            pos: 4..11
+            value: SCHWAB
+            exported: true
+            required: true
+        - master_account_number:
+            pos: 13..22
+            exported: true
+        - master_account_name:
+            pos: 24..53
+            exported: true
+        - business_date:
+            pos: 55..62
+            type: :date
+            format: CCYYMMDD
+        - account_id:
+            pos: 64..73
+            required: true
+            key: true
+        - account_title_line_1:
+            pos: 75..119
+            exported: true
+        - account_title_line_2:
+            pos: 121..165
+            exported: true
+        - account_title_line_3:
+            pos: 167..211
+            exported: true
+        - account_status:
+            pos: 213..220
+            value: O|C|I
+            exported: true
+        - account_registration:
+            pos: 222..226
+            exported: true
+            required: true
+        - account_type:
+            pos: 228..232
+            exported: true
+        - taxpayer_title: 234..238
+        - taxpayer_first_name:
+            pos: 240..269
+            exported: true
+        - taxpayer_middle_name:
+            pos: 271..300
+            exported: true
+        - taxpayer_last_name:
+            pos: 302..331
+            exported: true
+        - taxpayer_suffix:
+            pos: 333..337
+            exported: true
+        - tax_withhold_code:
+            pos: 339..340
+            value: AS|\d{2}
+        - primary_contact: 342..445
+        - alias_name: 447..508
+        - mailing_address_line_1:
+            pos: 510..554
+            exported: true
+        - mailing_address_line_2:
+            pos: 556..600
+            exported: true
+        - mailing_address_line_3: 602..646
+        - account_mailing_city: 
+            pos: 648..677
+            exported: true
+        - account_mailing_state:
+            pos: 679..680
+            exported: true
+        - account_mailing_zip:
+            pos: 682..691
+            exported: true
+        - account_mailing_country_code:
+            pos: 693..714
+            exported: true
+        - email_address:
+            pos: 716..843
+            exported: true
+        - phone:
+            pos: 845..856
+            exported: true
+        - business_phone:
+            pos: 858..869
+            exported: true
+        - date_opened:
+            pos: 871..878
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - schwab_branch_code: 880..887
+        - sweep_status_code:
+            pos: 889
+            value: A|E|T|W|H|K|L|N|1|2|3|4|5
+        - account_cash_instructions_cash: 891..892
+        - account_cash_instructions_margin: 894..895
+        - margin_account_indicator:
+            pos: 897
+            value: Y|N
+        - account_restrictions:
+            pos: 899
+            value: A|B|C|D|L|M|P|S|T|U|X|Z
+            exported: true
+        - additional_mailings:
+            pos: 901
+            value: Y|N
+        - number_of_additional_mailings:
+            pos: 903..904
+            type: :int
+        - approved_option_level_obsolete:
+            pos: 906
+            type: :int
+        - beneficiary_on_file:
+            pos: 908
+            value: Y|N
+        - number_of_beneficiaries:
+            pos: 910..911
+            type: :int
+        - payment_features_check:
+            pos: 913
+            value: Y|N
+        - payment_features_debit_card:
+            pos: 915
+            value: Y|N
+        - payment_features_bill_pay:
+            pos: 917
+            value: Y|N
+        - undeliverable_mail_flag:
+            pos: 919
+            value: Y|N
+        - fa_fee_status:
+            pos: 921
+            value: Y|N|P
+        - interest_bearing_feature_code: 923..927
+        - interest_bearing_feature_money_market_code: 929..933
+        - interest_bearing_feature_ticker_symbol: 935..964
+        - interest_bearing_feature_item_issue_id:
+            pos: 966..975
+            type: :bigint
+        - interest_bearing_feature_rule_set_suffix:
+            pos: 977..981
+            type: :int
+        - proxy_voting_authority:
+            pos: 983
+            value: D|M|A
+        - proxy_mailing:
+            pos: 985
+            value: D|M|A|S|N
+        - statement_preferences: 987..994
+        - account_taxable_indicator:
+            pos: 996
+            value: Y|N
+        - default_lot_selection_method:
+            pos: 998..1002
+            value: FIFO|LIFO|HCLOT|LCLOT|BTAX
+        - cost_method:
+            pos: 1004
+            value: A|I|M
+        - cost_basis_method_for_mutual_funds:
+            pos: 1006..1010
+            value: FIFO|LIFO|HCLOT|LCLOT|BTAX|AVG
+        - cost_basis_method_for_non_mutual_funds:
+            pos: 1012..1016
+            value: FIFO|LIFO|HCLOT|LCLOT|BTAX
+        - cost_basis_method_date:
+            pos: 1018..1025
+            type: :date
+            format: CCYYMMDD
+        - version_marker_number_1: 1027..1034
+        - customer_type:
+            pos: 1036..1043
+            value: IND|TRUST|ORG
+            exported: true
+            required: true
+        - organization_primary_name:
+            pos: 1045..1104
+            exported: true
+        - version_marker_number_2: 1106..1113
+        - restriction_reason_code_1:
+            pos: 1115..1118
+            exported: true
+        - restriction_reason_code_2:
+            pos: 1120..1123
+            exported: true
+        - restriction_reason_code_3:
+            pos: 1125..1128
+            exported: true
+        - restriction_reason_code_4:
+            pos: 1130..1133
+            exported: true
+        - restriction_reason_code_5:
+            pos: 1135..1138
+            exported: true
+        - version_marker_number_3: 1140..1147
+        - schwab_bank_investor_checking_account_number: 1149..1160
+        - version_marker_number_4: 1162..1169
+        - tax_id_number:
+            pos: 1171..1181
+            exported: true
+            required: true
+        - version_marker_number_5: 1183..1190
+        - prime_broker_enabled_indicator:
+            pos: 1192
+            value: Y|N
+        - managed_account_platform_code:
+            pos: 1194..1201
+            value: ACC|MAA|MAM|MAS|SMPF|SMPS
+        - managed_account_money_manager: 1203..1302
+        - managed_account_investment_strategy: 1304..1353
+        - version_marker_number_6: 1355..1362
+        - bank_sweep_display_name: 1364..1413
+        - version_marker_number_7: 1415..1422
+        - approved_option_level:
+            pos: 1424
+            value: 0|1|2|3
+        - version_marker_number_8: 1426..1433
+        - date_of_birth:
+            pos: 1435..1442
+            type: :date
+            format: CCYYMMDD
+            exported: true
+        - jurisdiction_country: 1444..1446
+        - jurisdiction_state: 1448..1449
+
+processing:
+  staging: false
+  update_strategy: delete_insert
+  check_file_loaded: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    default: false
+    type: :python
+    data_source: :bnr
+    plugin: bnr/master_accounts
