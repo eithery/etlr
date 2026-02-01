@@ -13,3 +13,8 @@ pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> Result<T>
     let file = File::open(file_path)?;
     Ok(serde_yaml::from_reader(file)?)
 }
+
+
+pub(crate) fn load_from_str<T: DeserializeOwned>(yaml_str: &str) -> Result<T> {
+    Ok(serde_yaml::from_str(yaml_str)?)
+}

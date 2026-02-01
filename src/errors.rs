@@ -10,6 +10,7 @@ pub(crate) enum ErrorKind {
     InvalidTemplateName,
     IOError,
     TemplateNotFound,
+    InvalidTemplate,
     YamlDeserializationError
 }
 

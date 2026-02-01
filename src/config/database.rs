@@ -47,7 +47,28 @@ impl Default for DatabaseConfiguration {
 }
 
 
+#[allow(dead_code)]
 impl DatabaseConfiguration {
+    pub(super) fn dialect(&self) -> DatabaseDialect {
+        self.dialect.unwrap_or(defaults::db::DIALECT)
+    }
+
+
+    pub(super) fn host(&self) -> &str {
+        self.host.as_deref().unwrap_or(defaults::db::HOST)
+    }
+
+
+    pub(super) fn db_name(&self) -> &str {
+        self.db_name.as_deref().unwrap_or(defaults::db::NAME)
+    }
+
+
+    pub(super) fn connection_type(&self) -> ConnectionType {
+        self.connection_type.unwrap_or(defaults::db::CONNECTION_TYPE)
+    }
+
+
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
             dialect: other.dialect.or(self.dialect),

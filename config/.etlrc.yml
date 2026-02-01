@@ -99,7 +99,7 @@ logging:
     # Logging level, available values: :debug | :info | :warning | :error | :critical
     level: :warning
 
-    # Determines the application source in the Splunk
+    # Determines the application source in Splunk
     source: ETL Toolkit
 
     # Splunk connection settings

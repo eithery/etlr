@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, MAIN_SEPARATOR_STR};
 use colored::{ColoredString, Colorize};
 use crate::env;
 
@@ -23,6 +23,11 @@ pub(crate) fn display_app_header(template_name: &str, command: &str) {
 
 pub(crate) fn file_loaded(file_path: &Path) {
     println!("{}  {}", file_path.display(), green("LOADED"));
+}
+
+
+pub(crate) fn template_loaded(file_path: &Path) {
+    println!("<integrated_templates>{MAIN_SEPARATOR_STR}{}  {}", file_path.display(), green("LOADED"));
 }
 
 

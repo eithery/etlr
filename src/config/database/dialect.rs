@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
-pub(super) enum DatabaseDialect {
+pub(crate) enum DatabaseDialect {
     #[serde(rename = ":mssql")]
     MSSql,
 
