@@ -19,8 +19,8 @@ layout:
     include_record_count: true
   include_column_names: true
 
-data_source:
+dataset:
   id: :bnr
-  table: outbound.products
+  source: outbound.products
   columns:
     include: :all

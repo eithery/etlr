@@ -7,7 +7,7 @@ mod trailer;
 use std::collections::HashMap;
 use serde::Deserialize;
 use self::header::FileHeaderTemplate;
-use self::file::OutputFileTemplate;
+use self::file::OutboundFileTemplate;
 use self::trailer::FileTrailerTemplate;
 use super::defaults::default_true;
 
@@ -21,5 +21,5 @@ pub(crate) struct RecordLayoutTemplate {
     #[serde(default = "default_true")]
     include_column_names: bool,
 
-    files: Vec<HashMap<String, OutputFileTemplate>>
+    files: Vec<HashMap<String, OutboundFileTemplate>>
 }
