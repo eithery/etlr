@@ -4,4 +4,5 @@ mod defaults;
 mod export;
 mod import;
 mod logging;
+mod plugins;
 mod workflow;

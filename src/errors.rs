@@ -7,6 +7,7 @@ use crate::std::result::Result;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ErrorKind {
     FileDoesNotExist,
+    InvalidConfiguration,
     InvalidTemplateName,
     IOError,
     TemplateNotFound,

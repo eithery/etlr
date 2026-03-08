@@ -37,6 +37,12 @@ impl Deref for FileLogConfiguration {
 
 
 impl FileLogConfiguration {
+    #[allow(dead_code)]
+    pub(super) fn path(&self) -> &str {
+        self.path.as_deref().unwrap_or(DEFAULT_LOG_DIR)
+    }
+
+
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
             base: self.base.merge(other.base),

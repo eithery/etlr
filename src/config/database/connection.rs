@@ -1,6 +1,9 @@
 use std::str::FromStr;
 use serde::Deserialize;
+use crate::errors::EtlError;
+use crate::std::result::Result;
 use crate::std::string::Normalize;
+use super::errors as err;
 
 
 #[derive(Debug, Deserialize, Clone, Copy)]
@@ -19,24 +22,35 @@ pub(crate) enum ConnectionType {
     Windows,
 
     #[serde(rename = ":username")]
-    Username,
+    Username
+}
 
-    #[serde(other)]
-    Unknown
+
+impl Default for ConnectionType {
+    fn default() -> Self {
+        Self::Default
+    }
 }
 
 
 impl FromStr for ConnectionType {
-    type Err = ();
+    type Err = EtlError;
 
-    fn from_str(str_value: &str) -> Result<Self, Self::Err> {
-        Ok(match str_value.normalize().as_str() {
-            ":default" => ConnectionType::Default,
-            ":auto" => ConnectionType::Auto,
-            ":sspi" => ConnectionType::Sspi,
-            ":windows" => ConnectionType::Windows,
-            ":username" => ConnectionType::Username,
-            _ => ConnectionType::Unknown,
-        })
+    fn from_str(str_value: &str) -> Result<Self> {
+        match str_value.normalize().as_str() {
+            ":default" => Ok(ConnectionType::Default),
+            ":auto" => Ok(ConnectionType::Auto),
+            ":sspi" => Ok(ConnectionType::Sspi),
+            ":windows" => Ok(ConnectionType::Windows),
+            ":username" => Ok(ConnectionType::Username),
+            value => Err(err::invalid_connection_type(value))
+        }
+    }
+}
+
+
+impl ConnectionType {
+    pub(crate) fn is_trusted(&self) -> bool {
+        matches!(self, ConnectionType::Auto | ConnectionType::Sspi | ConnectionType::Windows)
     }
 }

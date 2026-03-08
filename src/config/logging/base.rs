@@ -20,6 +20,18 @@ impl Default for BaseLogConfiguration {
 
 
 impl BaseLogConfiguration {
+    #[allow(dead_code)]
+    pub(super) fn enabled(&self) -> bool {
+        self.enabled.unwrap_or(false)
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn level(&self) -> Option<LogLevel> {
+        self.level
+    }
+
+
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
             enabled: other.enabled.or(self.enabled),

@@ -1,3 +1,4 @@
+use std::fmt::Display;
 use serde::Deserialize;
 
 
@@ -17,8 +18,19 @@ pub(crate) enum LogLevel {
     Error,
 
     #[serde(rename = ":critical")]
-    Critical,
+    Critical
+}
 
-    #[serde(other)]
-    Unknown
+
+impl Display for LogLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = match self {
+            Self::Debug => ":debug",
+            Self::Info => ":info",
+            Self::Warning => ":warning",
+            Self::Error => ":error",
+            Self::Critical => ":critical"
+        };
+        f.write_str(value)
+    }
 }

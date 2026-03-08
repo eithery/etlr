@@ -1,7 +1,8 @@
 use std::env::{self, VarError};
 use std::fmt::Display;
-use crate::std::string::Normalize;
 use crate::config::database::connection::ConnectionType;
+use crate::std::result::Result;
+use crate::std::string::Normalize;
 
 
 const ENVIRONMENT_ENV_VAR: &str = "ETL_ENVIRONMENT";
@@ -11,7 +12,7 @@ const DB_INSTANCE_ENV_VAR: &str = "ETL_DB_INSTANCE";
 const DB_NAME_ENV_VAR: &str = "ETL_DB_NAME";
 const DB_USER_ENV_VAR: &str = "ETL_DB_USER";
 const DB_PWD_ENV_VAR : &str = "ETL_DB_PWD";
-const DB_AUTH_TYPE_ENV_VAR: &str = "DB_AUTH_TYPE";
+const DB_AUTH_TYPE_ENV_VAR: &str = "ETL_DB_AUTH_TYPE";
 
 const SPLUNK_HOST_ENV_VAR: &str = "SPLUNK_HOST";
 const SPLUNK_PORT_ENV_VAR: &str = "SPLUNK_PORT";
@@ -56,7 +57,7 @@ pub(crate) fn current_environment() -> Environment {
 }
 
 
-pub(crate) fn config_home() -> Result<String, VarError> {
+pub(crate) fn config_home() -> std::result::Result<String, VarError> {
     env::var(CONFIG_HOME_ENV_VAR)
 }
 
@@ -91,9 +92,10 @@ pub(crate) fn db_pwd() -> Option<String> {
 }
 
 
-pub(crate) fn db_auth_type() -> Option<ConnectionType> {
+pub(crate) fn db_auth_type() -> Result<Option<ConnectionType>> {
     env::var(DB_AUTH_TYPE_ENV_VAR).ok()
-        .map(|conn| conn.parse().unwrap())
+        .map(|conn| conn.parse())
+        .transpose()
 }
 
 

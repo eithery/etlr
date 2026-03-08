@@ -14,8 +14,12 @@ pub(crate) enum DatabaseDialect {
     MySql,
 
     #[serde(rename = ":sqlite")]
-    Sqlite,
+    Sqlite
+}
 
-    #[serde(other)]
-    Unknown
+
+impl Default for DatabaseDialect {
+    fn default() -> Self {
+        Self::MSSql
+    }
 }

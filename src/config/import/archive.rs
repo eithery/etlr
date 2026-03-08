@@ -3,6 +3,8 @@ use crate::std::string;
 
 
 const DEFAULT_PATH_VALUE: &str = ":default";
+#[allow(dead_code)]
+const DEFAULT_ARCHIVE_DIR: &str = "archive";
 
 
 #[derive(Debug, Deserialize)]
@@ -27,6 +29,13 @@ impl Default for ArchiveConfiguration {
 
 
 impl ArchiveConfiguration {
+    #[allow(dead_code)]
+    pub(super) fn path(&self) -> &str {
+        let path = self.path.as_deref().unwrap_or(DEFAULT_PATH_VALUE);
+        if path == DEFAULT_PATH_VALUE { DEFAULT_ARCHIVE_DIR } else { path }
+    }
+
+
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
             enabled: other.enabled.or(self.enabled),

@@ -23,11 +23,11 @@ impl Default for SplunkConfiguration {
     fn default() -> Self {
         Self {
             base: BaseLogConfiguration::default(),
-            source: defaults::splunk::source(),
-            host: defaults::splunk::host(),
-            port: defaults::splunk::port(),
+            source: Some(defaults::splunk::source().to_string()),
+            host: Some(defaults::splunk::host().to_string()),
+            port: Some(defaults::splunk::port()),
             token: None,
-            index: defaults::splunk::index(),
+            index: Some(defaults::splunk::index().to_string()),
             verify: Some(true)
         }
     }
@@ -44,6 +44,42 @@ impl Deref for SplunkConfiguration {
 
 
 impl SplunkConfiguration {
+    #[allow(dead_code)]
+    pub(super) fn source(&self) -> &str {
+        self.source.as_deref().unwrap_or(defaults::splunk::source())
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn host(&self) -> &str {
+        self.host.as_deref().unwrap_or(defaults::splunk::host())
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn port(&self) -> u16 {
+        self.port.unwrap_or(defaults::splunk::port())
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn index(&self) -> &str {
+        self.index.as_deref().unwrap_or(defaults::splunk::index())
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn token(&self) -> Option<&str> {
+        self.token.as_deref()
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn verify(&self) -> bool {
+        self.verify.unwrap_or(true)
+    }
+
+
     pub(super) fn merge(self, other: Self) -> Self {
         Self {
             base: self.base.merge(other.base),

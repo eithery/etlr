@@ -5,11 +5,15 @@ use serde::Deserialize;
 use crate::{cli, path};
 use crate::config::defaults;
 use crate::env::{self, Environment};
+use crate::errors::ErrorKind;
 use crate::fs::yaml;
-use crate::std::string;
+use crate::std::result::Result;
+use crate::std::string::{self, Normalize};
 use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
 use super::logging::LoggingConfiguration;
+use super::plugins::account_loader::AccountLoaderVendorConfiguration;
+use super::plugins::PluginsConfiguration;
 use super::workflow::WorkflowConfiguration;
 
 
@@ -40,6 +44,9 @@ pub(crate) struct AppConfiguration {
     logging: LoggingConfiguration,
 
     #[serde(default)]
+    plugins: PluginsConfiguration,
+
+    #[serde(default)]
     load_paths: Vec<PathBuf>
 }
 
@@ -53,6 +60,7 @@ impl Default for AppConfiguration {
             templates: Vec::new(),
             workflow: Default::default(),
             logging: Default::default(),
+            plugins: Default::default(),
             load_paths: Vec::new()
         }
     }
@@ -60,15 +68,15 @@ impl Default for AppConfiguration {
 
 
 impl AppConfiguration {
-    pub(crate) fn load(config_path: Option<&str>) -> Self {
+    pub(crate) fn load(config_path: Option<&str>) -> Result<Self> {
         Self::default()
-            .load_from_home()
-            .load_from_dir(path::config_dir)
-            .load_env_config()
-            .load_from_dir(path::current_config_dir)
-            .load_from_dir(path::current_dir)
-            .load_from_env()
-            .load_from_option(config_path)
+            .load_from_home()?
+            .load_from_dir(path::config_dir)?
+            .load_env_config()?
+            .load_from_dir(path::current_config_dir)?
+            .load_from_dir(path::current_dir)?
+            .load_from_env()?
+            .load_from_option(config_path)?
             .apply_env_vars()
     }
 
@@ -81,31 +89,60 @@ impl AppConfiguration {
     }
 
 
-    fn load_from_home(self) -> Self {
-        self.load_config(path::home_dir, CONFIG_FILE_NAME)
+    #[allow(dead_code)]
+    pub(crate) fn inbox(&self) -> Vec<String> {
+        self.inbox.to_vec()
     }
 
 
-    fn load_from_env(self) -> Self {
-        self.load_config(path::config_env_dir, CONFIG_FILE_NAME)
+    #[allow(dead_code)]
+    fn default_inbox(&self) -> String {
+        self.inbox().first().cloned().expect("Inbox path is not defined.")
     }
 
 
-    fn load_from_option(self, config_path: Option<&str>) -> Self {
-        match config_path {
-            Some(path) => self.load_config(|| Ok(PathBuf::from(path)), CONFIG_FILE_NAME),
-            None => self
+    #[allow(dead_code)]
+    pub(crate) fn outbox(&self) -> PathBuf {
+        self.outbox.as_deref().map(PathBuf::from).expect("Outbox path is not defined.")
+    }
+
+
+    #[allow(dead_code)]
+    fn get_account_loader_config(&self, vendor: Option<&str>) -> AccountLoaderVendorConfiguration {
+        match vendor.map(|v| v.normalize()).as_deref() {
+            Some("pershing") => self.plugins.account_loader.pershing.clone(),
+            Some("schwab") => self.plugins.account_loader.schwab.clone(),
+            Some("nfs") => self.plugins.account_loader.nfs.clone(),
+            _ => Default::default()
         }
     }
 
 
-    fn load_from_dir<F>(self, config_dir: F) -> Self
+    fn load_from_home(self) -> Result<Self> {
+        self.load_config(path::home_dir, CONFIG_FILE_NAME)
+    }
+
+
+    fn load_from_env(self) -> Result<Self> {
+        self.load_config(path::config_env_dir, CONFIG_FILE_NAME)
+    }
+
+
+    fn load_from_option(self, config_path: Option<&str>) -> Result<Self> {
+        match config_path {
+            Some(path) => self.load_config(|| Ok(PathBuf::from(path)), CONFIG_FILE_NAME),
+            None => Ok(self)
+        }
+    }
+
+
+    fn load_from_dir<F>(self, config_dir: F) -> Result<Self>
         where F: FnOnce() -> io::Result<PathBuf> {
         self.load_config(config_dir, CONFIG_FILE_NAME)
     }
 
 
-    fn load_env_config(self) -> Self {
+    fn load_env_config(self) -> Result<Self> {
         let file_name = match env::current_environment() {
             Environment::Development => DEV_CONFIG_FILE_NAME,
             Environment::Testing => TEST_CONFIG_FILE_NAME,
@@ -115,23 +152,24 @@ impl AppConfiguration {
     }
 
 
-    fn load_config<F>(self, config_dir: F, file_name: &str) -> Self
+    fn load_config<F>(self, config_dir: F, file_name: &str) -> Result<Self>
         where F: FnOnce() -> io::Result<PathBuf> {
         match config_dir() {
             Ok(path) => {
                 let config_path = path.join(file_name);
                 if self.load_paths.contains(&config_path) {
-                    return self;
+                    return Ok(self);
                 }
                 match yaml::load_from_file(&config_path) {
                     Ok(config) => {
                         cli::file_loaded(&config_path);
-                        self.merge(config, config_path)
+                        Ok(self.merge(config, config_path))
                     }
-                    Err(_) => self // TODO: Log all invalid config cases
+                    Err(err) if err.kind() == ErrorKind::FileDoesNotExist => Ok(self),
+                    Err(err) => Err(err)
                 }
             },
-            Err(_) => self
+            Err(_) => Ok(self)
         }
     }
 
@@ -144,17 +182,18 @@ impl AppConfiguration {
             templates: self.templates.prepend(other.templates),
             workflow: self.workflow.merge(other.workflow),
             logging: self.logging.merge(other.logging),
+            plugins: self.plugins.merge(other.plugins),
             load_paths: [self.load_paths.as_slice(), &[config_path]].concat()
         }
     }
 
 
-    fn apply_env_vars(self) -> Self {
+    fn apply_env_vars(self) -> Result<Self> {
         cli::env_vars_applied();
-        Self {
-            database: self.database.apply_env_vars(),
+        Ok(Self {
+            database: self.database.apply_env_vars()?,
             logging: self.logging.apply_env_vars(),
             ..self
-        }
+        })
     }
 }
