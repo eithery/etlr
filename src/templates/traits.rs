@@ -49,9 +49,9 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
 
     fn build_template_path(template_name: &str, template_path: Option<&Path>) -> Result<PathBuf> {
-        let (file_source, file_name) = split_template_name(template_name)?;
+        let (file_category, file_name) = split_template_name(template_name)?;
         let file_path = Path::new(Self::TEMPLATES_ROOT)
-            .join(file_source)
+            .join(file_category)
             .join(format!("{file_name}.yml"));
         match template_path {
             Some(path) => Ok(path.join(file_path)),

@@ -12,7 +12,7 @@ use crate::std::string::*;
 #[case("\r\n")]
 #[case("\t")]
 #[case("    \r\n\t   ")]
-fn blank_strings(#[case] str_value: &str) {}
+fn blank_strings(#[case] str_value: &str) { }
 
 
 #[template]
@@ -21,7 +21,7 @@ fn blank_strings(#[case] str_value: &str) {}
 #[case("Some String.  \n\r")]
 #[case(".")]
 #[case("___")]
-fn non_blank_strings(#[case] str_value: &str) {}
+fn non_blank_strings(#[case] str_value: &str) { }
 
 
 mod is_blank {

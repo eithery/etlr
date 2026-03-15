@@ -1,6 +1,7 @@
 use serde::Deserialize;
 use super::category::TemplateCategory;
 use super::file::FileInfoTemplate;
+use super::format::FileFormat;
 use super::layout::RecordLayoutTemplate;
 use super::traits::FileTemplate;
 
@@ -36,5 +37,20 @@ impl FileExportTemplate {
 
     pub(crate) fn file_type(&self) -> &str {
         self.file.file_type()
+    }
+
+
+    pub(crate) fn file_category(&self) -> &str {
+        self.file.category()
+    }
+
+
+    pub(crate) fn outbound_file_name(&self) -> &str {
+        self.file.file_name()
+    }
+
+
+    pub(crate) fn file_format(&self) -> FileFormat {
+        self.file.format()
     }
 }

@@ -6,10 +6,10 @@ mod trailer;
 
 use std::collections::HashMap;
 use serde::Deserialize;
-use self::header::FileHeaderTemplate;
-use self::file::OutboundFileTemplate;
-use self::trailer::FileTrailerTemplate;
 use super::defaults::default_true;
+use file::OutboundFileTemplate;
+use header::FileHeaderTemplate;
+use trailer::FileTrailerTemplate;
 
 
 #[derive(Debug, Deserialize)]

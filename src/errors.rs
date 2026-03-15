@@ -8,6 +8,7 @@ use crate::std::result::Result;
 pub(crate) enum ErrorKind {
     FileDoesNotExist,
     InvalidConfiguration,
+    InvalidFormat,
     InvalidTemplateName,
     IOError,
     TemplateNotFound,
