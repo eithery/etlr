@@ -27,6 +27,7 @@ fn non_blank_strings(#[case] str_value: &str) { }
 mod is_blank {
     use super::*;
 
+
     #[apply(blank_strings)]
     fn it_returns_true_for_a_blank_string(#[case] str_value: &str) {
         expect(str_value.is_blank()).to_be_true();
@@ -45,6 +46,7 @@ mod is_blank {
 mod is_not_blank {
     use super::*;
 
+
     #[apply(blank_strings)]
     fn it_returns_false_for_a_blank_string(#[case] str_value: &str) {
         expect(str_value.is_not_blank()).to_be_false();
@@ -62,6 +64,7 @@ mod is_not_blank {
 
 mod chomp {
     use super::*;
+
 
     #[rstest]
     #[case("test string\n\r", "test string")]
@@ -89,6 +92,7 @@ mod chomp {
 mod remove {
     use super::*;
 
+
     #[rstest]
     #[case("abracadabra", "a", "brcdbr")]
     #[case("abracadabra", "abrc", "d")]
@@ -107,6 +111,7 @@ mod remove {
 
 mod normalize {
     use super::*;
+
 
     #[rstest]
     #[case("\r\n \t  Some STRING   \n\t\r", "some string")]
@@ -127,6 +132,7 @@ mod normalize {
 
 mod try_parse {
     use super::*;
+
 
     #[rstest]
     fn it_parses_truthy_string_values(

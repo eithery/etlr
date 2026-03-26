@@ -9,10 +9,10 @@ pub(crate) fn template_not_found(template_name: &str) -> EtlError {
 }
 
 
-pub(crate) fn invalid_template_content(template_name: &str) -> EtlError {
+pub(crate) fn invalid_template_format(template_name: &str) -> EtlError {
     EtlError::new(
-        format!("Template `{template_name}` has invalid content."),
-        ErrorKind::InvalidTemplate
+        format!("Template `{template_name}` has invalid format."),
+        ErrorKind::InvalidTemplateFormat
     )
 }
 

@@ -1,5 +1,7 @@
 use std::io;
 use std::path::{Path, PathBuf};
+use path_absolutize::Absolutize;
+use path_clean::PathClean;
 use crate::env;
 
 
@@ -8,7 +10,8 @@ pub(crate) const CONFIG_DIR_NAME: &str = "config";
 
 
 pub(crate) fn config_dir() -> io::Result<PathBuf> {
-    Ok(Path::new(ROOT_DIR).join(CONFIG_DIR_NAME))
+    let path = Path::new(ROOT_DIR).join(CONFIG_DIR_NAME);
+    Ok(path.absolutize()?.clean())
 }
 
 

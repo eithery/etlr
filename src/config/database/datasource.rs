@@ -13,7 +13,7 @@ pub(super) struct DataSource {
 
 impl Default for DataSource {
     fn default() -> Self {
-        Self { id: ":default".to_string(), db_name: defaults::db::name().to_string() }
+        Self { id: ":default".to_string(), db_name: defaults::db::name() }
     }
 }
 

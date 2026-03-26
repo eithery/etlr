@@ -1,7 +1,8 @@
+use chrono::NaiveDateTime;
 use serde::Deserialize;
-use crate::templates::defaults::{default_true, default_date_format};
-use crate::std::date;
+use crate::std::datetime::DateTime;
 use crate::std::result::Result;
+use crate::templates::defaults::{default_true, default_date_format};
 
 
 const FILE_VERSION: &str = "v1.0";
@@ -58,7 +59,7 @@ impl FileHeaderTemplate {
             Some(self.tag.clone()),
             self.include_file_type.then(|| file_type.to_string()),
             self.include_file_name.then(|| file_name.to_string()),
-            Some(date::timestamp(self.date_format(), false)?),
+            Some(NaiveDateTime::format_timestamp_with(self.date_format(), false)?),
             self.include_file_version.then(|| FILE_VERSION.to_string())
         ]
         .into_iter()

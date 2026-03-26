@@ -6,15 +6,15 @@ use crate::std::string::Normalize;
 
 
 const ENVIRONMENT_ENV_VAR: &str = "ETL_ENVIRONMENT";
-const DB_HOST_ENV_VAR: &str = "ETL_DB_HOST";
-const DB_PORT_ENV_VAR: &str = "ETL_DB_PORT";
+const DB_HOST_ENV_VARS: [&str; 2] = ["ETL_DB_HOST", "DB_HOST"];
+const DB_PORT_ENV_VARS: [&str; 2] = ["ETL_DB_PORT", "DB_PORT"];
 const DB_INSTANCE_ENV_VAR: &str = "ETL_DB_INSTANCE";
 const DB_NAME_ENV_VAR: &str = "ETL_DB_NAME";
-const DB_USER_ENV_VAR: &str = "ETL_DB_USER";
-const DB_PWD_ENV_VAR : &str = "ETL_DB_PWD";
-const DB_AUTH_TYPE_ENV_VAR: &str = "ETL_DB_AUTH_TYPE";
+const DB_USER_ENV_VARS: [&str; 2] = ["ETL_DB_USER", "DB_USER_APP"];
+const DB_PWD_ENV_VARS : [&str; 2] = ["ETL_DB_PWD", "DB_PASSWORD_APP"];
+const DB_AUTH_TYPE_ENV_VARS: [&str; 2] = ["ETL_DB_AUTH_TYPE", "DB_AUTH_TYPE"];
 
-const SPLUNK_HOST_ENV_VAR: &str = "SPLUNK_HOST";
+const SPLUNK_HOST_ENV_VARS: [&str; 2] = ["SPLUNK_HOST", "SPLUNK_URL"];
 const SPLUNK_PORT_ENV_VAR: &str = "SPLUNK_PORT";
 const SPLUNK_TOKEN_ENV_VAR: &str = "SPLUNK_TOKEN";
 
@@ -63,12 +63,12 @@ pub(crate) fn config_home() -> std::result::Result<String, VarError> {
 
 
 pub(crate) fn db_host() -> Option<String> {
-    env::var(DB_HOST_ENV_VAR).ok()
+    DB_HOST_ENV_VARS.iter().find_map(|var| env::var(var).ok())
 }
 
 
 pub(crate) fn db_port() -> Option<u16> {
-    env::var(DB_PORT_ENV_VAR).ok()?.parse().ok()
+    DB_PORT_ENV_VARS.iter().find_map(|var| env::var(var).ok()?.parse().ok())
 }
 
 
@@ -83,24 +83,26 @@ pub(crate) fn database_name() -> Option<String> {
 
 
 pub(crate) fn db_user() -> Option<String> {
-    env::var(DB_USER_ENV_VAR).ok()
+    DB_USER_ENV_VARS.iter().find_map(|var| env::var(var).ok())
 }
 
 
 pub(crate) fn db_pwd() -> Option<String> {
-    env::var(DB_PWD_ENV_VAR).ok()
+    DB_PWD_ENV_VARS.iter().find_map(|var| env::var(var).ok())
 }
 
 
 pub(crate) fn db_auth_type() -> Result<Option<ConnectionType>> {
-    env::var(DB_AUTH_TYPE_ENV_VAR).ok()
+    DB_AUTH_TYPE_ENV_VARS
+        .iter()
+        .find_map(|var| env::var(var).ok())
         .map(|conn| conn.parse())
         .transpose()
 }
 
 
 pub(crate) fn splunk_host() -> Option<String> {
-    env::var(SPLUNK_HOST_ENV_VAR).ok()
+    SPLUNK_HOST_ENV_VARS.iter().find_map(|var| env::var(var).ok())
 }
 
 

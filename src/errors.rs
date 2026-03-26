@@ -9,10 +9,12 @@ pub(crate) enum ErrorKind {
     FileDoesNotExist,
     InvalidConfiguration,
     InvalidFormat,
+    InvalidTemplateFormat,
     InvalidTemplateName,
     IOError,
+    ParseError,
+    RegexError,
     TemplateNotFound,
-    InvalidTemplate,
     YamlDeserializationError
 }
 
@@ -46,9 +48,23 @@ impl From<std::io::Error> for EtlError {
 }
 
 
+impl From<regex::Error> for EtlError {
+    fn from(err: regex::Error) -> Self {
+        EtlError::from_error(err, ErrorKind::RegexError, "Regex error")
+    }
+}
+
+
 impl From<serde_yaml::Error> for EtlError {
     fn from(err: serde_yaml::Error) -> Self {
-        EtlError::from_error(err, ErrorKind::YamlDeserializationError, "YAML deserialization")
+        EtlError::from_error(err, ErrorKind::YamlDeserializationError, "YAML deserialization error")
+    }
+}
+
+
+impl From<chrono::ParseError> for EtlError {
+    fn from(err: chrono::ParseError) -> Self {
+        EtlError::from_error(err, ErrorKind::ParseError, "Parse date error")
     }
 }
 
@@ -69,7 +85,7 @@ impl EtlError {
         where E: Error + Send + Sync + 'static
     {
         Self {
-            message: format!("{prefix}. {error}"),
+            message: format!("{prefix}: {error}"),
             kind,
             row_id: None,
             file_path: None,

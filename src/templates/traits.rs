@@ -80,5 +80,5 @@ fn read_integrated_template<'a>(template_name: &str, file_path: &Path) -> Result
 
 
 fn read_template_content<'a>(template_name: &str, template_file: &'a File) -> Result<&'a str> {
-    template_file.contents_utf8().ok_or_else(|| err::invalid_template_content(template_name))
+    template_file.contents_utf8().ok_or_else(|| err::invalid_template_format(template_name))
 }

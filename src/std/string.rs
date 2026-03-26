@@ -1,4 +1,7 @@
+use chrono::{NaiveDate, NaiveDateTime};
 use serde::Deserialize;
+use super::date::Date;
+use super::datetime::DateTime;
 
 
 pub(crate) fn deserialize<'a, D>(deserializer: D) -> Result<Option<String>, D::Error>
@@ -81,5 +84,25 @@ impl<T: AsRef<str>> TryParse<bool> for T {
             "0" | "n" | "no" | "f" | "false" => Some(false),
             _ => None
         }
+    }
+}
+
+
+#[allow(dead_code)]
+pub(crate) trait DateStr {
+    fn is_date(&self, date_format: &str) -> bool;
+
+    fn is_datetime(&self, datetime_format: &str) -> bool;
+}
+
+
+impl<T: AsRef<str>> DateStr for T {
+    fn is_date(&self, date_format: &str) -> bool {
+        NaiveDate::parse(self.as_ref(), date_format).is_ok()
+    }
+
+
+    fn is_datetime(&self, datetime_format: &str) -> bool {
+        NaiveDateTime::parse(self.as_ref(), datetime_format).is_ok()
     }
 }

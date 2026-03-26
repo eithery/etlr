@@ -3,7 +3,6 @@ use crate::std::string;
 
 
 const DEFAULT_PATH_VALUE: &str = ":default";
-#[allow(dead_code)]
 const DEFAULT_FAILED_IMPORTS_DIR: &str = "failed_imports";
 
 
@@ -27,6 +26,12 @@ impl Default for FailedImportsConfiguration {
 
 
 impl FailedImportsConfiguration {
+    #[allow(dead_code)]
+    pub(super) fn enabled(&self) -> bool {
+        self.enabled.unwrap_or(true)
+    }
+
+
     #[allow(dead_code)]
     pub(super) fn path(&self) -> &str {
         let path = self.path.as_deref().unwrap_or(DEFAULT_PATH_VALUE);

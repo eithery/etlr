@@ -38,9 +38,9 @@ impl Default for DatabaseConfiguration {
     fn default() -> Self {
         Self {
             dialect: Some(DatabaseDialect::default()),
-            driver: Some(defaults::db::driver().to_string()),
-            host: Some(defaults::db::host().to_string()),
-            db_name: Some(defaults::db::name().to_string()),
+            driver: Some(defaults::db::driver()),
+            host: Some(defaults::db::host()),
+            db_name: Some(defaults::db::name()),
             instance_name: None,
             port: None,
             connection_type: Some(ConnectionType::default()),
@@ -127,13 +127,13 @@ impl DatabaseConfiguration {
 
 
     fn host(&self) -> &str {
-        self.host.as_deref().unwrap_or(defaults::db::host())
+        self.host.as_deref().unwrap_or(defaults::db::HOST)
     }
 
 
     #[allow(dead_code)]
     fn db_name(&self) -> &str {
-        self.db_name.as_deref().unwrap_or(defaults::db::name())
+        self.db_name.as_deref().unwrap_or(defaults::db::NAME)
     }
 
 
@@ -143,7 +143,7 @@ impl DatabaseConfiguration {
 
 
     fn driver(&self) -> &str {
-        self.driver.as_deref().unwrap_or(defaults::db::driver())
+        self.driver.as_deref().unwrap_or(defaults::db::DRIVER)
     }
 
 

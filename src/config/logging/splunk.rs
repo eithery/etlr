@@ -23,11 +23,11 @@ impl Default for SplunkConfiguration {
     fn default() -> Self {
         Self {
             base: BaseLogConfiguration::default(),
-            source: Some(defaults::splunk::source().to_string()),
-            host: Some(defaults::splunk::host().to_string()),
+            source: Some(defaults::splunk::source()),
+            host: Some(defaults::splunk::host()),
             port: Some(defaults::splunk::port()),
             token: None,
-            index: Some(defaults::splunk::index().to_string()),
+            index: Some(defaults::splunk::index()),
             verify: Some(true)
         }
     }
@@ -46,25 +46,25 @@ impl Deref for SplunkConfiguration {
 impl SplunkConfiguration {
     #[allow(dead_code)]
     pub(super) fn source(&self) -> &str {
-        self.source.as_deref().unwrap_or(defaults::splunk::source())
+        self.source.as_deref().unwrap_or(defaults::splunk::SOURCE)
     }
 
 
     #[allow(dead_code)]
     pub(super) fn host(&self) -> &str {
-        self.host.as_deref().unwrap_or(defaults::splunk::host())
+        self.host.as_deref().unwrap_or(defaults::splunk::HOST)
     }
 
 
     #[allow(dead_code)]
     pub(super) fn port(&self) -> u16 {
-        self.port.unwrap_or(defaults::splunk::port())
+        self.port.unwrap_or(defaults::splunk::PORT)
     }
 
 
     #[allow(dead_code)]
     pub(super) fn index(&self) -> &str {
-        self.index.as_deref().unwrap_or(defaults::splunk::index())
+        self.index.as_deref().unwrap_or(defaults::splunk::INDEX)
     }
 
 

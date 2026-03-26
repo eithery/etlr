@@ -1,6 +1,8 @@
 use std::default::Default;
-use std::{fs, io};
+use std::io;
 use std::path::{Path, PathBuf};
+use path_absolutize::Absolutize;
+use path_clean::PathClean;
 use serde::Deserialize;
 use crate::{cli, path};
 use crate::config::defaults;
@@ -84,13 +86,13 @@ impl AppConfiguration {
     pub(crate) fn template_dirs(&self) -> impl Iterator<Item = PathBuf> {
         self.templates.iter().map(|p| {
             let path = Path::new(p);
-            fs::canonicalize(path).expect(&format!("Invalid template path `{path:?}`"))
+            path.absolutize().expect(&format!("Invalid template path `{path:?}`")).clean()
         })
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn inbox(&self) -> Vec<String> {
+    fn inbox(&self) -> Vec<String> {
         self.inbox.to_vec()
     }
 
@@ -102,7 +104,7 @@ impl AppConfiguration {
 
 
     #[allow(dead_code)]
-    pub(crate) fn outbox(&self) -> PathBuf {
+    fn outbox(&self) -> PathBuf {
         self.outbox.as_deref().map(PathBuf::from).expect("Outbox path is not defined.")
     }
 
