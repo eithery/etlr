@@ -8,6 +8,8 @@ use super::errors as err;
 
 #[allow(dead_code)]
 pub(crate) const DEFAULT_TIMESTAMP_FORMAT: &str = "CCYYMMDDTHHMMSS";
+#[allow(dead_code)]
+const DEFAULT_DB_TIMESTAMP_FORMAT: &str = "YYYY-MM-DD HH:MM:SS";
 
 
 static DATETIME_FORMATS: Map<&'static str, (&'static str, &'static str)> = phf_map! {
@@ -54,6 +56,9 @@ pub(crate) trait DateTime {
     fn current_timestamp() -> String;
 
     #[allow(dead_code)]
+    fn current_db_timestamp() -> String;
+
+    #[allow(dead_code)]
     fn format_timestamp(date_format: &str) -> Result<String>;
 
     fn format_timestamp_with(date_format: &str, include_time: bool) -> Result<String>;
@@ -70,6 +75,11 @@ pub(crate) trait DateTime {
 impl DateTime for NaiveDateTime {
     fn current_timestamp() -> String {
         format_with(&Local::now().naive_local(), DEFAULT_TIMESTAMP_FORMAT, None).unwrap()
+    }
+
+
+    fn current_db_timestamp() -> String {
+        format_with(&Local::now().naive_local(), DEFAULT_DB_TIMESTAMP_FORMAT, None).unwrap()
     }
 
 
