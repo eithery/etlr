@@ -106,7 +106,7 @@ impl DatabaseConfiguration {
             instance_name: env::db_instance_name().or(self.instance_name),
             port: env::db_port().or(self.port),
             db_name: env::database_name().or(self.db_name),
-            connection_type: env::db_auth_type()?.or(self.connection_type),
+            connection_type: env::db_connection_type()?.or(self.connection_type),
             uid: env::db_user(),
             pwd: env::db_pwd(),
             ..self

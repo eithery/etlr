@@ -12,7 +12,7 @@ const DB_INSTANCE_ENV_VAR: &str = "ETL_DB_INSTANCE";
 const DB_NAME_ENV_VAR: &str = "ETL_DB_NAME";
 const DB_USER_ENV_VARS: [&str; 2] = ["ETL_DB_USER", "DB_USER_APP"];
 const DB_PWD_ENV_VARS : [&str; 2] = ["ETL_DB_PWD", "DB_PASSWORD_APP"];
-const DB_AUTH_TYPE_ENV_VARS: [&str; 2] = ["ETL_DB_AUTH_TYPE", "DB_AUTH_TYPE"];
+const DB_CONNECTION_TYPE_ENV_VARS: [&str; 3] = ["ETL_DB_CONNECTION_TYPE", "ETL_DB_AUTH_TYPE", "DB_AUTH_TYPE"];
 
 const SPLUNK_HOST_ENV_VARS: [&str; 2] = ["SPLUNK_HOST", "SPLUNK_URL"];
 const SPLUNK_PORT_ENV_VAR: &str = "SPLUNK_PORT";
@@ -92,8 +92,8 @@ pub(crate) fn db_pwd() -> Option<String> {
 }
 
 
-pub(crate) fn db_auth_type() -> Result<Option<ConnectionType>> {
-    DB_AUTH_TYPE_ENV_VARS
+pub(crate) fn db_connection_type() -> Result<Option<ConnectionType>> {
+    DB_CONNECTION_TYPE_ENV_VARS
         .iter()
         .find_map(|var| env::var(var).ok())
         .map(|conn| conn.parse())
