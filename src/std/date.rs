@@ -92,7 +92,6 @@ fn format_with(date_value: &NaiveDate, date_format: &str) -> Result<String> {
 }
 
 
-#[allow(dead_code)]
 fn lookup_date_format(date_format: &str) -> Result<&str> {
     let format_key = date_format.normalize();
     DATE_FORMATS.get(&format_key)

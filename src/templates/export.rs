@@ -28,28 +28,32 @@ impl FileTemplate for FileExportTemplate {
 }
 
 
-#[allow(dead_code)]
 impl FileExportTemplate {
+    #[allow(dead_code)]
     pub(crate) fn version(&self) -> u8 {
         self.version
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn file_type(&self) -> &str {
         self.file.file_type()
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn file_category(&self) -> &str {
         self.file.category()
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn outbound_file_name(&self) -> &str {
         self.file.file_name()
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn file_format(&self) -> FileFormat {
         self.file.format()
     }

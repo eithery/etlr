@@ -3,7 +3,6 @@ use super::format::FileFormat;
 
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub(super) struct FileInfoTemplate {
     #[serde(rename = "type")]
     file_type: String,
@@ -54,19 +53,16 @@ impl FileInfoTemplate {
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn is_csv(&self) -> bool {
         self.format == FileFormat::CSV
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn is_pipe_delimited(&self) -> bool {
         self.format == FileFormat::Pipe
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn is_tab_delimited(&self) -> bool {
         self.format == FileFormat::Tab
     }

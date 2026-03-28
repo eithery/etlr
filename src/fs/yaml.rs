@@ -7,7 +7,7 @@ use crate::std::result::Result;
 
 pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> Result<T> {
     if !file_path.is_file() {
-        return err::file_does_not_exist(file_path);
+        return Err(err::file_does_not_exist(file_path));
     }
 
     let file = File::open(file_path)?;

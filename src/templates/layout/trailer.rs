@@ -3,7 +3,6 @@ use crate::templates::defaults::{default_true, default_date_format};
 
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub(super) struct FileTrailerTemplate {
     tag: String,
 

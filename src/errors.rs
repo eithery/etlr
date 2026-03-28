@@ -1,7 +1,6 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::path::Path;
-use crate::std::result::Result;
 
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -100,9 +99,9 @@ impl EtlError {
 }
 
 
-pub(crate) fn file_does_not_exist<T>(file_path: &Path) -> Result<T> {
-    Err(EtlError::new(
+pub(crate) fn file_does_not_exist(file_path: &Path) -> EtlError {
+    EtlError::new(
         format!("The file {file_path:?} doesn't exist."),
         ErrorKind::FileDoesNotExist
-    ))
+    )
 }

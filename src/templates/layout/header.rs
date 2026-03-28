@@ -9,7 +9,6 @@ const FILE_VERSION: &str = "v1.0";
 
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub(super) struct FileHeaderTemplate {
     tag: String,
 
