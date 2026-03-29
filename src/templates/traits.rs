@@ -14,11 +14,11 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
 
     fn load<I, P>(template_name: &str, template_dirs: I) -> Result<Self>
-        where I: IntoIterator<Item = P>, P: AsRef<Path>
+        where I: IntoIterator<Item = Result<P>>, P: AsRef<Path>
     {
         cli::echo("Lookup file template:");
         for path in template_dirs {
-            match Self::load_template(template_name, path.as_ref()) {
+            match Self::load_template(template_name, path?.as_ref()) {
                 Ok(template) => return Ok(template),
                 Err(err) if err.kind() == ErrorKind::FileDoesNotExist => continue,
                 Err(err) => return Err(err)

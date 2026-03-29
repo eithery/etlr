@@ -13,6 +13,7 @@ use crate::std::result::Result;
 use crate::std::string::{self, Normalize};
 use crate::std::vector::Prepend;
 use super::database::DatabaseConfiguration;
+use super::errors as err;
 use super::logging::LoggingConfiguration;
 use super::plugins::account_loader::AccountLoaderVendorConfiguration;
 use super::plugins::PluginsConfiguration;
@@ -83,29 +84,42 @@ impl AppConfiguration {
     }
 
 
-    pub(crate) fn template_dirs(&self) -> impl Iterator<Item = PathBuf> {
-        self.templates.iter().map(|p| {
-            let path = Path::new(p);
-            path.absolutize().expect(&format!("Invalid template path `{path:?}`")).clean()
-        })
+    pub(crate) fn template_dirs(&self) -> impl Iterator<Item = Result<PathBuf>> {
+        self.templates
+            .iter()
+            .map(|p| {
+                let path = Path::new(p);
+                Ok(path.absolutize()?.clean())
+            })
     }
 
 
     #[allow(dead_code)]
-    fn inbox(&self) -> Vec<String> {
-        self.inbox.to_vec()
+    fn inbox(&self) -> impl Iterator<Item = Result<PathBuf>> {
+        self.inbox
+            .iter()
+            .map(|p| {
+                let path = Path::new(p);
+                Ok(path.absolutize()?.clean())
+            })
     }
 
 
     #[allow(dead_code)]
-    fn default_inbox(&self) -> String {
-        self.inbox().first().cloned().expect("Inbox path is not defined.")
+    fn default_inbox(&self) -> Result<PathBuf> {
+        self.inbox()
+            .next()
+            .transpose()?
+            .ok_or_else(err::inbox_not_defined)
     }
 
 
     #[allow(dead_code)]
-    fn outbox(&self) -> PathBuf {
-        self.outbox.as_deref().map(PathBuf::from).expect("Outbox path is not defined.")
+    fn outbox(&self) -> Result<PathBuf> {
+        let path = self.outbox
+            .as_deref()
+            .ok_or_else(err::outbox_not_defined)?;
+        Ok(Path::new(path).absolutize()?.clean())
     }
 
 

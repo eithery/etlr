@@ -153,7 +153,7 @@ impl DatabaseConfiguration {
         }
         self.uid.as_deref()
             .map(|val| Some(val))
-            .ok_or_else(|| err::user_credentials_not_specified())
+            .ok_or_else(err::user_credentials_not_specified)
     }
 
 
@@ -163,6 +163,6 @@ impl DatabaseConfiguration {
         }
         self.pwd.as_deref()
             .map(|val| Some(val))
-            .ok_or_else(|| err::user_credentials_not_specified())
+            .ok_or_else(err::user_credentials_not_specified)
     }
 }

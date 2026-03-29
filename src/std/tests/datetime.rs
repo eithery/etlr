@@ -24,7 +24,7 @@ mod format_with {
     #[case("CCYYMMDDTHHMMSS", "20260314T125306")]
     #[case("YYYY-MM-DD", "2026-03-14")]
     #[case("YYYY-MM-DDTHH:MM:SS", "2026-03-14T12:53:06")]
-    fn it_crates_timestamp_with_date_format(
+    fn it_creates_timestamp_with_date_format(
         #[case] date_format: &str,
         #[case] expected: &str,
     ) {
