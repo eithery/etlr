@@ -13,12 +13,8 @@ pub(crate) struct FileExportTemplate {
     kind: TemplateCategory,
 
     version: u8,
-
     file: FileInfoTemplate,
-
-    #[serde(default)]
-    description: String,
-
+    description: Option<String>,
     layout: RecordLayoutTemplate
 }
 

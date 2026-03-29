@@ -56,7 +56,7 @@ impl From<regex::Error> for EtlError {
 
 impl From<serde_yaml::Error> for EtlError {
     fn from(err: serde_yaml::Error) -> Self {
-        EtlError::from_error(err, ErrorKind::YamlDeserializationError, "YAML deserialization error")
+        EtlError::from_error(err, ErrorKind::YamlDeserializationError, "YAML deserialization")
     }
 }
 
@@ -84,7 +84,7 @@ impl EtlError {
         where E: Error + Send + Sync + 'static
     {
         Self {
-            message: format!("{prefix}: {error}"),
+            message: format!("{prefix}. {error}"),
             kind,
             row_id: None,
             file_path: None,

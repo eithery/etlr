@@ -2,15 +2,16 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
-use crate::templates::defaults::{default_true, default_date_format};
+use crate::templates::defaults::{default_true, default_false, default_date_format};
 
 
 const FILE_VERSION: &str = "v1.0";
+const DEFAULT_TAG: &str = "H";
 
 
 #[derive(Debug, Deserialize)]
-pub(super) struct FileHeaderTemplate {
-    tag: String,
+pub(crate) struct FileHeaderTemplate {
+    tag: Option<String>,
 
     #[serde(rename = "date", default = "default_date_format")]
     date_format: String,
@@ -18,17 +19,26 @@ pub(super) struct FileHeaderTemplate {
     #[serde(default = "default_true")]
     include_file_type: bool,
 
+    #[serde(default = "default_false")]
     include_file_name: bool,
 
     #[serde(default = "default_true")]
-    include_file_version: bool
+    include_file_version: bool,
+
+    #[serde(default = "default_true")]
+    enabled: bool
 }
 
 
 #[allow(dead_code)]
 impl FileHeaderTemplate {
+    pub(super) fn enabled(&self) -> bool {
+        self.enabled
+    }
+
+
     pub(super) fn tag(&self) -> &str {
-        self.tag.as_str()
+        self.tag.as_deref().unwrap_or(DEFAULT_TAG)
     }
 
 
@@ -55,7 +65,7 @@ impl FileHeaderTemplate {
     pub(super) fn build(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
     {
         Ok([
-            Some(self.tag.clone()),
+            Some(self.tag().to_string()),
             self.include_file_type.then(|| file_type.to_string()),
             self.include_file_name.then(|| file_name.to_string()),
             Some(NaiveDateTime::format_timestamp_with(self.date_format(), false)?),

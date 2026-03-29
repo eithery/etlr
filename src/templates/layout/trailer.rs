@@ -1,10 +1,16 @@
+use chrono::NaiveDateTime;
 use serde::Deserialize;
-use crate::templates::defaults::{default_true, default_date_format};
+use crate::std::datetime::DateTime;
+use crate::std::result::Result;
+use crate::templates::defaults::{default_true, default_false, default_date_format};
+
+
+const DEFAULT_TAG: &str = "T";
 
 
 #[derive(Debug, Deserialize)]
-pub(super) struct FileTrailerTemplate {
-    tag: String,
+pub(crate) struct FileTrailerTemplate {
+    tag: Option<String>,
 
     #[serde(rename = "date", default = "default_date_format")]
     date_format: String,
@@ -12,19 +18,29 @@ pub(super) struct FileTrailerTemplate {
     #[serde(default = "default_true")]
     include_file_type: bool,
 
+    #[serde(default = "default_false")]
     include_file_name: bool,
 
+    #[serde(default = "default_true")]
     include_trailer_date: bool,
 
     #[serde(default = "default_true")]
-    include_record_count: bool
+    include_record_count: bool,
+
+    #[serde(default = "default_true")]
+    enabled: bool
 }
 
 
 #[allow(dead_code)]
 impl FileTrailerTemplate {
+    pub(super) fn enabled(&self) -> bool {
+        self.enabled
+    }
+
+
     pub(super) fn tag(&self) -> &str {
-        self.tag.as_str()
+        self.tag.as_deref().unwrap_or(DEFAULT_TAG)
     }
 
 
@@ -53,15 +69,17 @@ impl FileTrailerTemplate {
     }
 
 
-    pub(super) fn build(&self, file_type: &str, file_name: &str, row_count: u32) -> impl Iterator<Item = String> {
-        [
-            Some(self.tag.clone()),
+    pub(super) fn build(&self, file_type: &str, file_name: &str, row_count: u32) -> Result<impl Iterator<Item = String>> {
+        Ok([
+            Some(self.tag().to_string()),
             self.include_file_type.then(|| file_type.to_string()),
             self.include_file_name.then(|| file_name.to_string()),
-            // self.include_trailer_date.then(|| )
+            self.include_trailer_date
+                .then(|| NaiveDateTime::format_timestamp_with(self.date_format(), false))
+                .transpose()?,
             self.include_record_count.then(|| row_count.to_string())
         ]
         .into_iter()
-        .flatten()
+        .flatten())
     }
 }

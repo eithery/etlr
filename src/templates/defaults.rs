@@ -3,6 +3,11 @@ pub(crate) fn default_true() -> bool {
 }
 
 
+pub(crate) fn default_false() -> bool {
+    false
+}
+
+
 pub(crate) fn default_date_format() -> String {
     "CCYYMMDD".to_string()
 }
