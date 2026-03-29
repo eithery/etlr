@@ -48,6 +48,32 @@ static DATETIME_FORMATS: Map<&'static str, (&'static str, &'static str)> = phf_m
     "ccyy-mm-dd 00:00:00.000" => ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d"),
     "yyyy-mm-dd 00:00:00.000" => ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d"),
     "yy-mm-dd 00:00:00.000" => ("%y-%m-%d %H:%M:%S.%f", "%y-%m-%d"),
+
+    "mm/dd/ccyy hh:mm:ss" => ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y"),
+    "mm/dd/yyyy hh:mm:ss" => ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y"),
+    "mm/dd/yy hh:mm:ss" => ("%m/%d/%y %H:%M:%S", "%m/%d/%y"),
+    "mm/dd/ccyy hh:mm:ss.ff" => ("%m/%d/%Y %H:%M:%S.%f", "%m/%d/%Y"),
+    "mm/dd/yyyy hh:mm:ss.ff" => ("%m/%d/%Y %H:%M:%S.%f", "%m/%d/%Y"),
+    "mm/dd/yy hh:mm:ss.ff" => ("%m/%d/%y %H:%M:%S.%f", "%m/%d/%y"),
+    "mm/dd/ccyy 00:00:00" => ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y"),
+    "mm/dd/yyyy 00:00:00" => ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y"),
+    "mm/dd/yy 00:00:00" => ("%m/%d/%y %H:%M:%S", "%m/%d/%y"),
+    "mm/dd/ccyy 00:00:00.000" => ("%m/%d/%Y %H:%M:%S.%f", "%m/%d/%Y"),
+    "mm/dd/yyyy 00:00:00.000" => ("%m/%d/%Y %H:%M:%S.%f", "%m/%d/%Y"),
+    "mm/dd/yy 00:00:00.000" => ("%m/%d/%y %H:%M:%S.%f", "%m/%d/%y"),
+
+    "dd/mm/ccyy hh:mm:ss" => ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y"),
+    "dd/mm/yyyy hh:mm:ss" => ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y"),
+    "dd/mm/yy hh:mm:ss" => ("%d/%m/%y %H:%M:%S", "%d/%m/%y"),
+    "dd/mm/ccyy hh:mm:ss.ff" => ("%d/%m/%Y %H:%M:%S.%f", "%d/%m/%Y"),
+    "dd/mm/yyyy hh:mm:ss.ff" => ("%d/%m/%Y %H:%M:%S.%f", "%d/%m/%Y"),
+    "dd/mm/yy hh:mm:ss.ff" => ("%d/%m/%y %H:%M:%S.%f", "%d/%m/%y"),
+    "dd/mm/ccyy 00:00:00" => ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y"),
+    "dd/mm/yyyy 00:00:00" => ("%d/%m/%Y %H:%M:%S", "%d/%m/%Y"),
+    "dd/mm/yy 00:00:00" => ("%d/%m/%y %H:%M:%S", "%d/%m/%y"),
+    "dd/mm/ccyy 00:00:00.000" => ("%d/%m/%Y %H:%M:%S.%f", "%d/%m/%Y"),
+    "dd/mm/yyyy 00:00:00.000" => ("%d/%m/%Y %H:%M:%S.%f", "%d/%m/%Y"),
+    "dd/mm/yy 00:00:00.000" => ("%d/%m/%y %H:%M:%S.%f", "%d/%m/%y"),
 };
 
 
