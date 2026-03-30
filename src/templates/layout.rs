@@ -5,7 +5,6 @@ mod join;
 mod header;
 mod trailer;
 
-use std::collections::HashMap;
 use serde::Deserialize;
 use super::defaults::default_true;
 use dataset::DatasetTemplate;
@@ -25,8 +24,8 @@ pub(super) struct RecordLayoutTemplate {
 
     dataset: Option<DatasetTemplate>,
 
-    #[serde(default)]
-    files: Vec<HashMap<String, OutboundFileTemplate>>
+    #[serde(default, deserialize_with = "OutboundFileTemplate::deserialize_files")]
+    files: Vec<OutboundFileTemplate>
 }
 
 
