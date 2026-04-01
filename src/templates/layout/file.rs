@@ -5,7 +5,7 @@ use super::dataset::DatasetTemplate;
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
-pub(super) struct OutboundFileTemplate {
+pub(crate) struct OutboundFileTemplate {
     file_type: String,
     file_name: String,
     dataset: DatasetTemplate
@@ -13,6 +13,11 @@ pub(super) struct OutboundFileTemplate {
 
 
 impl OutboundFileTemplate {
+    pub(crate) fn file_type(&self) -> &str {
+        &self.file_type
+    }
+
+
     pub(super) fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
         where D: Deserializer<'de>
     {
