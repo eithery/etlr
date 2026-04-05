@@ -1,0 +1,248 @@
+etl_template: :export
+version: 2
+file:
+  type: dtcc.networking
+  name: dtcc_networking_b5051_{CCYYMMDDTHHMMSS}.txt
+  format: :fixed-length
+
+description: >
+  Networking is the U.S. industry standard for reconciling accounts and processing dividends and capital gains
+  for mutual funds and other pooled investments. Networking streamlines the reconciliation of account records
+  through efficient transmission of data between funds and intermediaries.
+  The firm uses record type B50 to establish Networking account at the fund.
+  Record type B51 allows the firm or fund to update existing Networking account.
+
+layout:
+  header:
+    enabled: false
+  trailer:
+    enabled: false
+  include_column_names: false
+
+  section_selector: record_type
+  sections:
+    - id: B50
+      description: Used to establish networking account at the fund
+      record_size: 100
+      records:
+        - id: B5001
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '50'
+            - sequence_number:
+                pos: 4..5
+                value: '01'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - reference_number:
+                pos: 10..20
+            - network_control_indicator:
+                pos: 21
+                value: '4'
+            - security_issue_number:
+                pos: 22..30
+                source: product_cusip
+                required: true
+            - fund_account_indicator:
+                pos: 31
+                value: '0'
+            - customer_account_number:
+                pos: 32..51
+                source: account_number
+                required: true
+            - ssn_ein_number_indicator:
+                pos: 55
+                source: primary_owner_tax_id_type
+                required: true
+            - ssn_ein_number:
+                pos: 56..64
+                source: primary_owner_tax_id
+                required: true
+            - account_line_indicator:
+                pos: 66
+                value: '2'
+            - customer_zip_code:
+                pos: 67..75
+                source: legal_address_zip
+            - social_code:
+                pos: 78..79
+                required: true
+            - customer_account_number_indicator:
+                pos: 80
+                source: account_number_indicator
+                required: true
+
+        - id: B5002
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '50'
+            - sequence_number:
+                pos: 4..5
+                value: '02'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - account_name_address_line_1:
+                pos: 10..44
+                source: legal_address_line_1
+                required: true
+            - account_name_address_line_2:
+                pos: 45..79
+                source: legal_address_line_2
+
+        - id: B5004
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '50'
+            - sequence_number:
+                pos: 4..5
+                value: '04'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - account_city:
+                pos: 45..77
+                source: legal_address_city
+                required: true
+            - account_state:
+                pos: 78..79
+                source: legal_address_state
+                required: true
+
+        - id: B5009
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '50'
+            - sequence_number:
+                pos: 4..5
+                value: '09'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - account_representative_number:
+                pos: 10..18
+                source: rep_code
+                required: true
+            - account_representative_name:
+                pos: 19..33
+                source: rep_name
+                required: true
+            - branch_identification_number:
+                pos: 38..46
+                source: office_code
+                required: true
+
+    - id: B51
+      description: Contains update info for existing networking accounts
+      record_size: 100
+      records:
+        - id: B5101
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '51'
+            - sequence_number:
+                pos: 4..5
+                value: '01'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - reference_number:
+                pos: 10..20
+            - network_control_indicator:
+                pos: 21
+                value: '4'
+            - security_issue_number:
+                pos: 22..30
+                source: product_cusip
+                required: true
+            - fund_account_indicator:
+                pos: 31
+                value: '0'
+            - customer_account_number:
+                pos: 32..51
+                source: account_number
+                required: true
+            - ssn_ein_number_indicator:
+                pos: 55
+                source: primary_owner_tax_id_type
+            - ssn_ein_number:
+                pos: 56..64
+                source: primary_owner_tax_id
+            - account_line_indicator:
+                pos: 66
+                value: '2'
+            - customer_zip_code:
+                pos: 67..75
+                source: legal_address_zip
+            - social_code:
+                pos: 78..79
+            - customer_account_number_indicator:
+                pos: 80
+                source: account_number_indicator
+                required: true
+
+        - id: B5109
+          required: true
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '51'
+            - sequence_number:
+                pos: 4..5
+                value: '09'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                source: firm_id
+                required: true
+            - account_representative_number:
+                pos: 10..18
+                source: rep_code
+                required: true
+            - account_representative_name:
+                pos: 19..33
+                source: rep_name
+                required: true
+            - branch_identification_number:
+                pos: 38..46
+                source: office_code
+                required: true
+
+  dataset:
+    id: :bnr
+    source: dtcc.networking_b5051
+    columns:
+      include: :all

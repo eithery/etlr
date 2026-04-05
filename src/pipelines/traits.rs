@@ -25,8 +25,7 @@ pub(crate) trait DataPipeline {
         let config = AppConfiguration::load(config_path)?;
         cli::blank_line();
         let template = Self::Template::load(template_name, config.template_dirs())?;
-        let templates = Self::Template::list(config.template_dirs());
-        println!("{:#?}", templates);
+        println!("{:#?}", template);
         Ok(Self::new(template, config))
     }
 }

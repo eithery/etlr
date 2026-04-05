@@ -20,6 +20,7 @@ log = "0.4"
 path-absolutize = "3.1"
 path-clean = "1.0"
 phf = { version = "0.13", features = ["macros"] }
+polars = "0.53"
 regex = "1.12"
 rust_decimal = "1.40"
 rust_decimal_macros = "1.40"

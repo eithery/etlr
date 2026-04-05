@@ -1,8 +1,12 @@
 mod columns;
 mod dataset;
+mod field;
 mod file;
 mod join;
 mod header;
+mod position;
+mod record;
+mod section;
 mod trailer;
 
 use serde::Deserialize;
@@ -10,6 +14,7 @@ use super::defaults::default_true;
 use dataset::DatasetTemplate;
 use file::OutboundFileTemplate;
 use header::FileHeaderTemplate;
+use section::FileSectionTemplate;
 use trailer::FileTrailerTemplate;
 
 
@@ -25,7 +30,11 @@ pub(crate) struct RecordLayoutTemplate {
     dataset: Option<DatasetTemplate>,
 
     #[serde(default, deserialize_with = "OutboundFileTemplate::deserialize_files")]
-    files: Vec<OutboundFileTemplate>
+    files: Vec<OutboundFileTemplate>,
+
+    #[serde(default)]
+    sections: Vec<FileSectionTemplate>,
+    section_selector: Option<String>
 }
 
 

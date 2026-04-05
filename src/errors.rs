@@ -5,6 +5,12 @@ use std::path::Path;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ErrorKind {
+    #[allow(dead_code)]
+    ConnectorXError,
+
+    #[allow(dead_code)]
+    DBConnectionError,
+
     FileDoesNotExist,
     InvalidConfiguration,
     InvalidFormat,
@@ -66,6 +72,27 @@ impl From<chrono::ParseError> for EtlError {
         EtlError::from_error(err, ErrorKind::ParseError, "Parse date error")
     }
 }
+
+
+// impl From<MsSQLSourceError> for EtlError {
+//     fn from(err: MsSQLSourceError) -> Self {
+//         EtlError::from_error(err, ErrorKind::ConnectorXError, "ConnectorX error")
+//     }
+// }
+
+
+// impl From<MsSQLArrowTransportError> for EtlError {
+//     fn from(err: MsSQLArrowTransportError) -> Self {
+//         EtlError::from_error(err, ErrorKind::DBConnectionError, "DB connection error")
+//     }
+// }
+
+
+// impl From<ArrowDestinationError> for EtlError {
+//     fn from(err: ArrowDestinationError) -> Self {
+//         EtlError::from_error(err, ErrorKind::ConnectorXError, "ConnectorX error")
+//     }
+// }
 
 
 impl EtlError {

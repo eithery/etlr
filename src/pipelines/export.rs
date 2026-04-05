@@ -28,6 +28,20 @@ impl DataPipeline for FileExportPipeline {
 
 
     fn run<'a>(&self, _options: FileExportOptions<'a>) -> Result<()> {
+        // let rt = Arc::new(Runtime::new()?);
+        // let connection_string = "mssql://sa:mandozebra_9@localhost:1433/packageme";
+        // let query = "select * from dtcc.networking_b5051";
+        // let source = MsSQLSource::new(rt, connection_string, 1)?;
+        // let mut destination = ArrowDestination::new();
+        // let dispatcher = Dispatcher::<MsSQLSource, ArrowDestination, MsSQLArrowTransport>::new(
+        //     source,
+        //     &mut destination,
+        //     &[query],
+        //     None
+        // );
+        // dispatcher.run()?;
+        // let df = destination.polars()?;
+        println!("{:?}", "Test");
         Ok(())
     }
 }
