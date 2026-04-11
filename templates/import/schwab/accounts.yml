@@ -208,6 +208,7 @@ layout:
         - customer_type:
             pos: 1036..1043
             value: IND|TRUST|ORG
+            preserve_invalid : true
             exported: true
             required: true
         - organization_primary_name:

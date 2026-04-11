@@ -1,0 +1,33 @@
+etl_template: :export
+version: 2
+file:
+  type: bnr.outside_accounts
+  name: outside_accounts_{CCYYMMDDTHHMMSS}.txt
+  format: :pipe
+
+description: >
+  Configures the target file attributes and data source for outside accounts export.
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_name: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_name: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :bnr
+    source: outside_accounts
+    columns:
+      include: :all
+    join:
+      - source: carrier
+        key: carrier_id
+        columns:
+          - carrier_name

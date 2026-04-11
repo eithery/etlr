@@ -48,6 +48,7 @@ layout:
               validate: true
           - state_of_sale:
               type: :us_state
+              validate: us_state
           - active:
               type: :bool
           - established_on:
@@ -85,6 +86,30 @@ layout:
               type: :bool
           - notes:
               size: :any
+          - network_status:
+              type: :str
+              size: 1
+              validate: true
+          - network_status_updated_at:
+              type: :datetime
+          - network_command:
+              type: :str
+              size: 1
+              validate: true
+          - network_command_updated_at:
+              type: :datetime
+          - network_command_source:
+              type: :str
+              size: 10
+          - far_command:
+              type: :str
+              size: 3
+              validate: network_command
+          - far_command_updated_at:
+              type: :datetime
+          - far_command_source:
+              type: :str
+              size: 255
 
 processing:
   staging: false

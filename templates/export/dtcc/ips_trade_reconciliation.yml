@@ -1,0 +1,28 @@
+etl_template: :export
+version: 2
+file:
+  type: dtcc.ips_trade_reconciliation
+  name: ips_trade_reconciliation_detail_{CCYYMMDDTHHMMSS}.csv
+  format: :comma 
+description: Export IPS transactions details
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :default
+    source: outbound.daily_ips_details 
+    columns:
+      include: :all 
+      exclude:
+      - id 

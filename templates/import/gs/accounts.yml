@@ -1,0 +1,200 @@
+etl_template: :import
+version: 2
+file:
+  type: gs.accounts
+  format: :tab
+  name:
+    file_mask: FN(\d{6})\.ID1
+    date_format: MMDDYY
+
+description: Describes client demographic information
+
+layout:
+  header:
+    enabled: false
+  trailer:
+    enabled: false
+  include_column_names: false
+
+  files:
+    - gs.accounts:
+        columns:
+          - routing_code:
+              size: 12
+          - account_number:
+              size: 12
+              required: true
+              key: true
+          - sub_account_number:
+              size: 16
+              required: true
+              key: true
+          - model_name:
+              size: 64
+          - tax_id:
+              size: 16
+          - advisor_rep_id:
+              size: 20
+          - custodian_id: 
+              size: 2
+              value: 35|78
+          - client_name:
+              size: 77
+          - salutation:
+              size: 1
+          - title:
+              size: 5
+          - first_name:
+              size: 20
+          - middle_name:
+              size: 20
+          - last_name:
+              size: 35
+          - suffix:
+              size: 5
+          - home_phone:
+              size: 14
+          - work_phone:
+              size: 14
+          - date_of_birth_string:
+              size: 10
+          - email:
+              size: 75
+          - address_type:
+              size: 1
+              value: M|S|U|H|W|B
+          - address_line_1:
+              size: 35
+          - address_line_2:
+              size: 35
+          - address_line_3:
+              size: 35
+          - city:
+              size: 32
+          - state:
+              size: 35
+          - zip_code:
+              size: 10
+          - country_code:
+              size: 2
+              type: :country
+          - company:
+              size: 45
+          - employment_title:
+              size: 35
+          -  website:
+              size: 1
+          - account_type:
+              size: 1
+              value: 1|2|9|I|J|K|L|M|P|Q|R|S|T|U|X|Y
+          - registration_info:
+              size: 255
+          - sweep_ticker:
+              size: 1
+          - sweep_cusip:
+              size: 1
+          - allocation:
+              size: 255
+          - account_name:
+              size: 255
+          - plan_participant_name:
+              size: 85
+          - tax_lot_strategy:
+              size: 4
+              VALUE: AVGC|LGHL|HGLL|FIFO|LSTG|WLFS|HLTG|HSTG|WGFS|LIFO|LLTG
+          - st_capital_gains_rate:
+              size: 100
+          - lt_capital_gains_rate:
+              size: 100
+          - sub_account_name:
+              size: 50
+          - sub_account_status:
+              size: 1
+              value: C|O
+          - first_name_2:
+              size: 20
+          - last_name_2:
+              size: 35
+          - tax_id_2:
+              size: 16
+          - address_type_2:
+              size: 1
+              value: M|S|U|H|W|B
+          - address_2_line_1:
+              size: 35
+          - address_2_line_2:
+              size: 35
+          - address_2_line_3:
+              size: 35
+          - city_2:
+              size: 32
+          - state_2:
+              size: 35
+          - zip_code_2:
+              size: 10
+          - restricted_title:
+              size: 50
+          - restricted_value:
+              size: 50
+          - option_enabled:
+              size: 1
+          - account_open_date_string:
+              size: 10
+          - account_margin_indicator:
+              size: 1
+              value: C|M|W|Z
+          - account_type_description:
+              size: 50
+          - pm_code:
+              size: 15
+          - dividend_reinvestment_flag:
+              size: 1
+          - restriction_code:
+              size: 2
+              value: CR|SR
+          - restriction_reason_code:
+              size: 3
+              value: ^0[0-3][0-9]$
+          - date_of_birth:
+              size: 10
+              type: :date
+              format: MM/DD/YYYY
+          - account_open_date: 
+              size: 10
+              type: :date
+              format: MM/DD/YYYY
+          - rmd_amount:
+              size: 24
+          - ytd_distribution:
+              size: 24
+          - rmd_date:
+              size: 10
+              type: :date
+              format: MM/DD/YYYY
+          - broker_dealer:
+              size: 35
+          - date_of_formation:
+              size: 10
+          - all_parties_individuals:
+              size: 1
+          - statutory_trust:
+              size: 1
+          - country_of_organization:
+              size: 2
+          - state_of_organization:
+              size: 2
+          - account_category:
+              size: 20
+
+processing:
+  staging: false
+  update_strategy: delete_insert
+  check_file_loaded: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: false
+    default: false

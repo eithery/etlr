@@ -1,0 +1,28 @@
+etl_template: :export
+version: 2
+file:
+  type: insights.payme_cycle_calendar
+  name: payme_cycle_calendar_{CCYYMMDDTHHMMSS}.txt
+  format: :pipe 
+description: Export PCS payme cycle calendar details for Insights
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :default
+    source: outbound.payme_cycle_calendar_tk
+    columns:
+      include: :all
+      exclude:
+      - id

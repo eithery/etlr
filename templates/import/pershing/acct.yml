@@ -2048,7 +2048,6 @@ layout:
             exported: true
         - account_holder_participant_role:
             pos: 48..51
-            key: true
             required: true
             exported: true
 
@@ -2490,7 +2489,6 @@ layout:
         - :blank: 564..568
         - account_holder_participant_role_code:
             pos: 569..572
-            key: true
             required: true
             exported: true
         - participant_short_name: 573..582
@@ -2658,7 +2656,6 @@ layout:
         - id_verification_comments: 519..568
         - account_holder_participant_role_code:
             pos: 569..572
-            key: true
             required: true
             exported: true
         - beneficiary_percent_allocation:
@@ -2760,7 +2757,6 @@ layout:
             exported: true
         - account_holder_participant_role:
             pos: 48..51
-            key: true
             required: true
             exported: true
 
@@ -2985,7 +2981,6 @@ layout:
             exported: true
         - account_holder_participant_role:
             pos: 48..51
-            key: true
             required: true
             exported: true
         - type_of_trust:

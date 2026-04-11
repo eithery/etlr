@@ -1,0 +1,48 @@
+etl_template: :export
+version: 2
+file:
+  type: bnr.fund_accounts
+  name: fund_accounts_{CCYYMMDDTHHMMSS}.txt
+  format: :pipe
+
+description: >
+  Configures the target file attributes and data source for fund accounts export.
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_name: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_name: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :bnr
+    source: fund_account_info
+    columns:
+      include:
+        - fund_account_number
+        - cusip
+        - cust_account
+        - office_id: office_code
+        - rep_id: rep_code
+    join:
+      - source: reps
+        key: rep_id
+        foreign_key: repId
+        columns:
+          - name: rep_name
+      - source: product
+        key: cusip
+        columns:
+          - type_id: product_type_code
+          - carrier_id
+      - source: carrier
+        key: carrier_id
+        columns:
+          - carrier_name

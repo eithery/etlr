@@ -1,0 +1,949 @@
+etl_template: :import
+version: 3
+file:
+  type: dtcc.networking
+  format: :fixed-length
+
+description: >
+  Networking is the U.S. industry standard for reconciling accounts and processing dividends and capital gains
+  for mutual funds and other pooled investments. Networking streamlines the reconciliation of account records
+  through efficient transmission of data between funds and intermediaries.
+
+layout:
+  record_size: 100
+  record_id:
+    pos: 1..5
+  header:
+    tag: \w{14}\s{2}084Y2K MFN CONV. FUND
+    file_type:
+      tag: 084Y2K MFN CONV. FUND
+      pos: 17..37
+    date:
+      pos: 82..89
+      format: YYYYMMDD
+    subheaders:
+      - N0001
+  trailer:
+    tag: F54
+    record_count:
+      pos: 40..46
+      include_header: true
+      include_trailer: true
+
+  records:
+    - id: F5101
+      name: Contains update info for existing networking accounts
+      required: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '01'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - reference_number: 10..20
+        - network_control_indicator:
+            pos: 21
+            value: 0|3|4
+            required: true
+        - security_issue_number:
+            pos: 22..30
+            required: true
+        - fund_account_indicator:
+            pos: 31
+            value: 0|1|2|3|4|5
+        - customer_account_number:
+            pos: 32..51
+            required: true
+        - bool_physical_share_indicator:
+            pos: 52
+            value: 0|1|2|3
+        - payable_information_indicator:
+            pos: 53
+            value: 0|1|2|3|4|5
+        - dividend_code:
+            pos: 54
+            value: 0|1|2|3|4|5|6|7
+        - ssn_ein_number_indicator:
+            pos: 55
+            value: 0|1|2
+            required: true
+        - ssn_ein_number:
+            pos: 56..64
+            required: true
+        - withhold_indicator:
+            pos: 65
+            value: 0|1|2|3|4|5|6|7|8|9|A|B|C|D|E|F|G|H|I|J
+        - account_line_indicator:
+            pos: 66
+            value: 1|2|3|4
+        - customer_zip_code: 67..75
+        - nra_tax:
+            pos: 76..77
+            type: :u8
+        - social_code:
+            pos: 78..79
+            required: true
+        - customer_account_number_indicator:
+            pos: 80
+            value: 1|2|3
+            required: true
+        - scrub_indicator:
+            pos: 81
+            value: 0|1
+        - fund_account_response_indicator:
+            pos: 82
+            value: 0|1|2
+        - clearing_fund_number:
+            pos: 83..86
+            type: :int
+            required: true
+        - returned_from_post_office_indicator:
+            pos: 87
+            value: 0|1
+        - account_type:
+            pos: 88
+            value: 0|1
+            required: true
+            discriminator: true
+        - account_owner_us_citizenship_indicator:
+            pos: 89
+            value: 0|1
+        - owner_date_of_birth:
+            pos: 90..97
+            type: :date
+            format: MMDDCCYY
+        - :blank: 98
+        - reject_code:
+            pos: 99..100
+
+    - id: F5102
+      name: Contains address information
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '02'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - account_name_address_line_1: 10..44
+        - account_name_address_line_2: 45..79
+        - pi_delivery_indicator:
+            pos: 80
+            value: 0|1|2
+        - roa_number: 81..100
+
+    - id: F5103
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '03'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - account_name_address_line_3: 10..44
+        - account_name_address_line_4: 45..79
+        - fund_serv_control_number: 80..94
+        - target_date_fund_indicator:
+            pos: 95
+            value: 0|1
+        - age_based_indicator:
+            pos: 96
+            value: 1|2|3
+        - age_based_exempt_indicator:
+            pos: 97
+            value: 0|1
+        - account_owner_us_resident_alien_indicator:
+            pos: 98
+            value: 0|1
+        - :blank: 99..100
+
+    - id: F5104
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '04'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - account_name_address_line_5: 10..44
+        - :one_of:
+            scope: F5101::account_type
+            groups:
+              - when: '1'
+                fields:
+                  - account_city:
+                      pos: 45..77
+                  - account_state:
+                      pos: 78..79
+                      type: :us_state
+              - else:
+                fields:
+                  - account_name_address_line_6: 45..79
+        - number_of_beneficiaries_or_additional_account_owner:
+            pos: 80..81
+            type: :u8
+        - successor_owner_indicator:
+            pos: 82
+            value: 0|1
+        - :blank: 83..100
+
+    - id: F5105
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '05'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - payable_account_number: 10..29
+        - payable_zip_code: 30..38
+        - memo_field: 39..50
+        - payable_line_indicator:
+            pos: 51
+            value: 1|2|3|4
+        - nav_account_indicator:
+            pos: 52
+            value: 0|1|2|3|4|5|6|7|8|A|B
+        - payable_address_options:
+            pos: 53
+            value: 1|2|3|4|5|6|7|8|9
+        - purged_account_indicator:
+            pos: 54
+            value: 0|1
+        - payable_opption_delete_indicator:
+            pos: 55
+            value: 0|1
+        - payable_address_delete_option:
+            pos: 56
+            value: 1|2|3|4|5|6|7|8|9
+        - payable_ac_number_indicator:
+            pos: 57
+            value: 1|2
+        - membership_identifier:
+            pos: 58..59
+            value: 01|02
+        - trust_tpa_investment_agent_number: 60..63
+        - underlying_firm_symbol: 64..67
+        - plan_account_number: 68..87
+        - plan_account_number_indicator:
+            pos: 88
+            value: 1|2|3
+        - :blank: 89..100
+
+    - id: F5106
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '06'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - payee_name_address_line_1: 10..44
+        - payee_name_address_line_2: 45..79
+        - :blank: 80..100
+
+    - id: F5107
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '07'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - payee_name_address_line_3: 10..44
+        - payee_name_address_line_4: 45..79
+        - :blank: 80..100
+
+    - id: F5108
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '08'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - payee_name_address_line_5: 10..44
+        - payee_name_address_line_6: 45..79
+        - :blank: 80..100
+
+    - id: F5109
+      required: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '09'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - account_representative_number: 10..18
+        - account_representative_name: 19..33
+        - agent_for_firm_number: 34..37
+        - branch_identification_number: 38..46
+        - new_firm_identification: 47..66
+        - ach_indicator:
+            pos: 67
+            value: 0|1
+            required: true
+        - systematic_contribution_indicator:
+            pos: 68
+            value: 0|1
+            required: true
+        - swp_indicator:
+            pos: 69
+            value: 0|1
+            required: true
+        - check_writing_privileges:
+            pos: 70
+            value: 0|1
+            required: true
+        - new_contra_broker_of_record: 71..74
+        - margin_account_indicator:
+            pos: 75
+            value: 0|1
+        - state_of_sale:
+            pos: 76..77
+            type: :us_state
+        - change_in_broker_dealer_indicator:
+            pos: 78
+            value: 1|2
+        - swip_indicator:
+            pos: 79
+            value: 1|2|3|4
+        - account_open_date:
+            pos: 80..87
+            type: :date
+            format: MMDDCCYY
+            required: true
+        - :blank: 88..100
+
+    - id: F5110
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '10'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - aba_routing_number: 10..18
+        - roa_loi_value:
+            pos: 19..34
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - loi_number_date: 35..42
+        - related_trade_indicator:
+            pos: 43
+            value: 0|1
+        - related_account_number: 44..63
+        - country_of_origin:
+            pos: 64..65
+            type: :country
+        - w8_certification_date:
+            pos: 66..73
+            type: :date
+            format: MMDDCCYY
+        - w8_expiration_date:
+            pos: 74..81
+            type: :date
+            format: MMDDCCYY
+        - w8_qualified_intermediary_indicator:
+            pos: 82
+            value: 1|2|3|4|5|6|7|8|9
+        - w8_override_country_code:
+            pos: 83..84
+            type: :country
+        - w8_override_nra_special_rate:
+            pos: 85..89
+            type: :num(5,3)
+            format: 9(02)v9(03)
+        - :blank: 90..100
+
+    - id: F5111
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '11'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - systematic_withdrawal_contribution_effective_date:
+            pos: 10..17
+            type: :date
+            format: MMDDCCYY
+        - sdsc_payment_code:
+            pos: 18
+            value: 0|1|2
+        - disbursement_options:
+            pos: 19
+            value: 0|1|2|3
+        - disbursement_amount:
+            pos: 20..35
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - monthly_payment_indicators:
+            pos: 36..47
+            value: (0|1){12}
+        - payment_date_indicators:
+            pos: 48..49
+            value: L|N|0[1-9]|[1-2][0-9]|3[0-1]
+        - retirement_tax_indicator:
+            pos: 50..51
+            value: 0[1-9]|10|11|99
+        - shareholder_bank_account_number: 52..71
+        - shareholder_bank_account_type:
+            pos: 72
+            value: 0|1|2
+        - first_check_date:
+            pos: 73..80
+            type: :date
+            format: MMDDCCYY
+        - cost_basis_option:
+            pos: 81
+            value: 0|1|2|3|4|5|6
+        - :blank: 82..100
+
+    - id: F5112
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '12'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - payable_security_issue_country_code: 10..11
+        - payable_security_issue_id: 12..20
+        - payable_security_issue_check_digit: 21
+        - alternate_payable_indicator:
+            pos: 22
+            value: 0|1|2
+        - alternate_payable_reason: 23..42
+        - systematic_trade_changed_from_amount:
+            pos: 43..58
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - systematic_trade_changed_to_amount:
+            pos: 59..74
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - systematic_trade_changed_from_frequency:
+            pos: 75..76
+            value: 0[1-9]|1[0-2]
+        - systematic_trade_changed_to_frequency:
+            pos: 77..78
+            value: 0[1-9]|1[0-2]
+        - :blank: 79..100
+
+    - id: F5113
+      pattern: F51(13|17|21|25|29|33)
+      multiple: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: 13|17|21|25|29|33
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - beneficiary_successor_additional_owner_address_option:
+            pos: 10
+            value: A|B|C|D|E
+        - beneficiary_successor_additional_owner_date_of_birth:
+            pos: 11..18
+            type: :date
+            format: MMDDCCYY
+        - beneficiary_successor_additional_owner_us_citizenship_indicator:
+            pos: 19
+            value: 0|1
+        - beneficiary_successor_additional_owner_ssn_ein_number: 20..28
+        - beneficiary_successor_additional_owner_ssn_ein_indicator:
+            pos: 29
+            value: 0|1
+        - beneficiary_successor_additional_owner_relationship_indicator:
+            pos: 30
+            value: 1|2|3|4|5
+        - beneficiary_successor_additional_owner_name_end_line_indicator:
+            pos: 31
+            value: 1|2|3|4
+        - beneficiary_successor_additional_owner_zip_code: 32..42
+        - date_of_event:
+            pos: 43..50
+            type: :date
+            format: MMDDCCYY
+        - :blank: 51..100
+
+    - id: F5114
+      pattern: F51(14|18|22|26|30|34)
+      multiple: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: 14|18|22|26|30|34
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - beneficiary_successor_additional_owner_name_address_line_1: 10..44
+        - beneficiary_successor_additional_owner_name_address_line_2: 45..79
+        - :blank: 80..100
+
+    - id: F5115
+      pattern: F51(15|19|23|27|31|35)
+      multiple: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: 15|19|23|27|31|35
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - beneficiary_successor_additional_owner_name_address_line_3: 10..44
+        - beneficiary_successor_additional_owner_name_address_line_4: 45..79
+        - :blank: 80..100
+
+    - id: F5116
+      pattern: F51(16|20|24|28|32|36)
+      multiple: true
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: 16|20|24|28|32|36
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - beneficiary_successor_additional_owner_name_address_line_5: 10..44
+        - beneficiary_successor_additional_owner_city: 45..77
+        - beneficiary_successor_additional_owner_state:
+            pos: 78..79
+            type: :us_state
+        - :blank: 80..100
+
+    - id: F5137
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '37'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - chapter_4_status_code: 10..11
+        - global_intermediary_identification_number: 12..36
+        - underlying_client_foreign_tax_id: 37..61
+        - fatca_override_special_rate:
+            pos: 62..66
+            type: :num(5,3)
+            format: 9(02)v9(03)
+        - :blank: 67..100
+
+    - id: F5138
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '51'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '38'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - intermediary_program_indicator_1: 10..13
+        - intermediary_program_indicator_2: 14..17
+        - servicing_group_id: 18..26
+        - additional_relationship_id_1: 27..46
+        - additional_relationship_id_2: 47..66
+        - :blank: 67..100
+
+    - id: F5301
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '53'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '01'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - clearing_settling_fund_number:
+            pos: 10..13
+            required: true
+        - nscc_control_number_reference_number:
+            pos: 14..24
+            required: true
+        - transaction_type:
+            pos: 25
+            value: 1|2|3|4|5|6|7|8|9
+            required: true
+        - security_issue_number:
+            pos: 26..34
+            required: true
+        - account_number_indicator:
+            pos: 35
+            value: 1|2|3
+        - account_number: 36..55
+        - credit_account_indicator:
+            pos: 56
+            value: 1|2|3
+            required: true
+        - credit_account_number: 57..76
+        - transfer_type:
+            pos: 77
+            value: 1|2
+        - network_control_indicator:
+            pos: 78
+            value: 0|3|4
+            required: true
+        - fund_reject_code: 79..80
+        - firm_reference_number: 81..91
+        - transfer_529_reason_code:
+            pos: 92
+            value: 1|2|3|4|5|6|7
+        - irs_529_annual_strategy_change_counter:
+            pos: 93
+            value: '[0-9]'
+        - gift_indicator:
+            pos: 94
+            value: '1'
+        - :blank: 95..98
+        - reject_code: 99..100
+
+    - id: F5302
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '53'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '02'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - clearing_settling_fund_number:
+            pos: 10..13
+            required: true
+        - share_amount:
+            pos: 14..26
+            type: :num(13,4)
+            format: 9(09)v9(04)
+        - effective_date:
+            pos: 27..34
+            type: :date
+            format: MMDDCCYY
+        - transaction_code:
+            pos: 35
+            value: 1|2
+        - book_physical_share_indicator:
+            pos: 36
+            value: 1|2
+        - pi_delivery_indicator:
+            pos: 37
+            value: 0|1|2|3
+        - agent_for_firm_number: 38..41
+        - closing_balance_credit_account:
+            pos: 55..67
+            type: :num(13,4)
+            format: 9(09)v9(04)
+        - firm_confirm_indicator: 68..69
+        - membership_identifier:
+            pos: 70..71
+            value: 01|02
+        - tpa_investment_agent_number: 72..75
+        - receiving_firm_membership_identifier:
+            pos: 76..77
+            value: '01'
+        - delivering_firm_share_aging_indicator:
+            pos: 78
+            value: 1|2
+        - plan_account_number: 79..98
+        - plan_account_number_indicator:
+            pos: 99
+            value: 1|2|3
+        - :blank: 100
+
+    - id: F5303
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '53'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '03'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - clearing_settling_fund_number:
+            pos: 10..13
+            required: true
+        - physical_share_amount:
+            pos: 14..26
+            type: :num(13,4)
+            format: 9(09)v9(04)
+        - receiving_firm_clearing_settling_number: 27..30
+        - receiving_agent_for_firm_number: 31..34
+        - transfer_disbursement_option_accruals:
+            pos: 35
+            value: 2|4
+        - accrual_money_amount:
+            pos: 36..51
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - all_or_none_indicator:
+            pos: 52
+            value: A|B|C
+        - cost_basis_money_amount:
+            pos: 53..68
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - earnings_to_date_money_amount:
+            pos: 69..84
+            type: :num(16,2)
+            format: 9(14)v9(02)
+        - negative_earnings_to_date_indicator:
+            pos: 85
+            value: 'N'
+        - initiating_firm: 86..89
+        - blank: 90..100
+
+    - id: F5304
+      fields:
+        - system_code:
+            pos: 1
+            value: F
+            required: true
+        - record_type:
+            pos: 2..3
+            value: '53'
+            required: true
+        - sequence_number:
+            pos: 4..5
+            value: '04'
+            required: true
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: \d{4}
+            required: true
+        - clearing_settling_fund_number:
+            pos: 10..13
+            required: true
+        - closing_balance_debit_account_extended:
+            pos: 14..29
+            type: :num(16,4)
+            format: 9(12)v9(04)
+        - closing_balance_credit_account_extended:
+            pos: 30..45
+            type: :num(16,4)
+            format: 9(12)v9(04)
+        - credit_sub_account_number: 46..65
+        - debit_sub_account_number: 66..85
+        - acats_control_number: 86..99
+        - :blank: 100
+
+processing:
+  staging: false
+  update_strategy: default
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    default: false
+    type: :python
+    data_source: :bnr
+    plugin: bnr/networking

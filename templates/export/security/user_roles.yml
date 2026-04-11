@@ -1,0 +1,38 @@
+etl_template: :export
+version: 2
+file:
+  type: security.user_roles
+  name: user_roles_{CCYYMMDDTHHMMSS}.txt
+  format: :pipe
+
+description: Exports all SecureMe roles by user
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_name: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_name: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :sec
+    source: dbo.v_roles_by_user
+    columns:
+      include:
+        - Login
+        - Email: Email Address
+        - FirstName: First Name
+        - LastName: Last Name
+        - EmployeeId: Employee ID
+        - IsLocked: Locked
+        - SsoOnly: SSO Only
+        - CompanyName: Company
+        - DepartmentName: Department
+        - RoleName: Role
+        - IsPrimary: Primary

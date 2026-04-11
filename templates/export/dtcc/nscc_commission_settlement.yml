@@ -1,0 +1,29 @@
+etl_template: :export
+version: 2
+file:
+  type: dtcc.nscc_commission_settlement
+  name: commission_settlement_loaded_detail_{CCYYMMDDTHHMMSS}.csv
+  format: :comma 
+description: Export nscc comission statement details
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :default
+    source: outbound.daily_nscc_details_tk 
+    columns:
+      include: :all 
+      exclude:
+      - id 
+      - fileid

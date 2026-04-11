@@ -1,0 +1,109 @@
+etl_template: :import
+version: 2
+file:
+  type: pcs.custodial_advisory_transactions
+  format: :pipe
+
+description: >
+  Describes a standard BRACS records layout and processing workflow for
+  custodial advisory transactions
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+    include_file_version: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_record_count: true
+  files:
+    - pcs.custodial_advisory_transactions:
+        columns:
+          - trid:
+              size: 1
+              value: A
+              required: true
+          - account_number:
+              size: 20
+              required: true
+              pii: :account_number
+          - account_short_name:
+              size: 10
+              pii: :short_name
+          - firm_id:
+              size: 4
+          - rep_code:
+              size: 10
+              required: true
+              validate: false
+          - rep_name:
+              size: 50
+              pii: :name
+          - rep_firm:
+              size: 50
+          - product_type:
+              size: 20
+              required: true
+              validate: false
+          - product_cusip:
+              size: 9
+              required: true
+              validate: 
+                reject_invalid: :row
+          - product_name:
+              size: 100
+              required: true
+          - invested_on:
+              type: :date
+          - period_start:
+              type: :date
+              required: true
+          - period_end:
+              type: :date
+              required: true
+          - period_days:
+              type: :int
+          - billable_days:
+              type: :int
+              required: true
+          - billable_value:
+              type: :money
+          - fee_type:
+              size: 20
+          - advisor_fee:
+              type: :money
+              required: true
+          - client_fee:
+              type: :money
+              required: true
+          - manager_fee:
+              type: :money
+          - vendor_fee:
+              type: :money
+          - sponsor_fee:
+              type: :money
+          - firm_fee:
+              type: :money
+          - custody_fee:
+              type: :money
+
+processing:
+  staging: false
+  update_strategy: default
+  check_file_loaded: true
+  multiple_daily_files: false
+  fail_on_errors: true
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    default: false
+    type: :python
+    data_source: :bnr
+    plugin: pcs/custodial_advisory_transactions

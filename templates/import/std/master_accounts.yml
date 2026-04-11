@@ -152,6 +152,8 @@ layout:
               type: :bool
           - last_cip_sent:
               type: :datetime
+          - next_review_on:
+              type: :date
     - std.master_accounts:
         columns:
           - account_id:
@@ -243,6 +245,7 @@ layout:
           - privacy_mail_sent:
               type: :datetime
     - std.account_interested_parties:
+        allow_duplicates: true
         columns:
           - account_id:
           - account_number:
@@ -304,6 +307,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: customer_financial_profile
           - level:
               type: :ref
@@ -326,6 +330,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: customer_investment_experience
           - experience_level:
               type: :ref
@@ -355,6 +360,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: customer_assets_held_away
           - percentage:
               type: :u8
@@ -375,9 +381,11 @@ layout:
           - question:
               type: :ref
               required: true
+              key: true
               validate: customer_question
           - logical_answer:
               type: :bool
+              required: true
           - qualified_answer:
           - secondary_answer:
     - std.account_investment_objectives:
@@ -390,6 +398,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: account_investment_objective
           - rank:
               type: :u8
@@ -404,6 +413,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: account_investment_purpose
           - rank:
               type: :u8
@@ -418,6 +428,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: account_investment_strategy
           - note:
     - std.account_sources_of_funds:
@@ -430,6 +441,7 @@ layout:
           - category:
               type: :ref
               required: true
+              key: true
               validate: account_source_of_funds
           - note:
     - std.account_questions:
@@ -442,9 +454,11 @@ layout:
           - question:
               type: :ref
               required: true
+              key: true
               validate: account_question
           - logical_answer:
               type: :bool
+              required: true
           - qualified_answer:
           - secondary_answer:
 

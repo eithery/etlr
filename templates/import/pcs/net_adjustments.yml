@@ -1,0 +1,63 @@
+etl_template: :import
+version: 2
+file:
+  type: pcs.net_adjustments
+  format: :pipe
+
+description: >
+  Describes a standard BRACS records layout and processing workflow for
+  Net Adjustments
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+    include_file_version: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_record_count: true
+  files:
+    - pcs.net_adjustments:
+        columns:
+          - office_code:
+              size: 10
+              validate: net_adjustment_office_code
+          - rep_code:
+              size: 10
+              required: true
+              validate: net_adjustment_rep_code
+          - adjustment_type:
+              size: 5
+              required: true
+              validate: true
+          - debit_credit:
+              size: 2
+              required: true
+              validate: debit_credit
+          - net_amount:
+              type: :money
+              required: true
+          - posted_date:
+              type: :date
+              required: true
+          - notes:
+
+processing:
+  staging: false
+  update_strategy: default
+  check_file_loaded: true
+  multiple_daily_files: true
+  fail_on_errors: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    type: :sql
+    data_source: :adj
+    run: pcs.process_net_adjustments

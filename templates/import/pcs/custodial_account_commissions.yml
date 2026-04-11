@@ -1,0 +1,83 @@
+etl_template: :import
+version: 2
+file:
+  type: pcs.custodial_account_commissions
+  format: :pipe
+
+description: >
+  Describes a standard BRACS records layout and processing workflow for
+  custodial account commissions
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_type: true
+    include_file_version: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_type: true
+    include_record_count: true
+  files:
+    - pcs.custodial_account_commissions:
+        columns:
+          - account_number:
+              size: 20
+              required: true
+              pii: :account_number
+          - tax_id:
+              size: 15
+              pii: :ssn
+          - customer_name:
+              size: 80
+              pii: :name
+          - firm_id:
+              size: 4
+              validate:
+                reject_invalid: false
+          - rep_code:
+              size: 10
+              required: true
+          - product_cusip:
+              size: 9
+              required: true
+              validate:
+                reject_invalid: :row
+          - trade_type:
+              size: 5
+              required: true
+              validate:
+                reject_invalid: :row
+          - trade_date:
+              type: :date
+              required: true
+          - invested_amount:
+              type: :money
+              required: true
+          - gdc:
+              type: :money
+              required: true
+          - rep_commission:
+              type: :money
+              required: true
+          - account_aum:
+              type: :money
+
+processing:
+  staging: false
+  update_strategy: default
+  check_file_loaded: true
+  multiple_daily_files: true
+  fail_on_errors: true
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: true
+    default: false
+    type: :python
+    data_source: :bnr
+    plugin: pcs/custodial_account_commissions

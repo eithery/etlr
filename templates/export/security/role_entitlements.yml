@@ -1,0 +1,33 @@
+etl_template: :export
+version: 2
+file:
+  type: security.role_entitlements
+  name: role_entitlements_{CCYYMMDDTHHMMSS}.txt
+  format: :pipe
+
+description: Exports all SecureMe entitlements by role
+
+layout:
+  header:
+    tag: H
+    date: CCYYMMDD
+    include_file_name: true
+  trailer:
+    tag: T
+    date: CCYYMMDD
+    include_file_name: true
+    include_trailer_date: true
+    include_record_count: true
+  include_column_names: true
+
+  dataset:
+    id: :sec
+    source: dbo.v_entitlements_by_role
+    columns:
+      include:
+        - RoleName: Role Name
+        - RoleDescription: Role Description
+        - RootElementName: Application
+        - EntitlementName: Entitlement Code
+        - EntitlementDisplayName: Entitlement Name
+        - EntitlementDescription: Entitlement Description
