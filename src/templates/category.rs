@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
-pub(super) enum TemplateCategory {
+pub(crate) enum TemplateCategory {
     #[serde(rename = ":import")]
     Import,
 

@@ -1,18 +1,35 @@
+use std::ops::Deref;
 use serde::Deserialize;
+use super::base::FileTemplateBase;
 use super::file::FileInfoTemplate;
-use super::layout::RecordLayoutTemplate;
+use super::file::inbound::InboundFileInfoTemplate;
+use super::layout::inbound::InboundLayoutTemplate;
 use super::traits::FileTemplate;
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct FileImportTemplate {
-    file: FileInfoTemplate,
-    layout: RecordLayoutTemplate
+    #[serde(flatten)]
+    base: FileTemplateBase,
+
+    file: InboundFileInfoTemplate,
+    layout: InboundLayoutTemplate
+}
+
+
+impl Deref for FileImportTemplate {
+    type Target = FileTemplateBase;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
+    }
 }
 
 
 impl FileTemplate for FileImportTemplate {
     const TEMPLATES_ROOT: &'static str = "import";
+
+    type Layout = InboundLayoutTemplate;
 
 
     fn file_type(&self) -> &str {
@@ -20,8 +37,7 @@ impl FileTemplate for FileImportTemplate {
     }
 
 
-    #[allow(dead_code)]
-    fn layout(&self) -> &RecordLayoutTemplate {
+    fn layout(&self) -> &InboundLayoutTemplate {
         &self.layout
     }
 }

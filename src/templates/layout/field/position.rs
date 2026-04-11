@@ -2,24 +2,31 @@ use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 
 
-#[derive(Debug, Deserialize)]
-pub(super) struct FieldPosition {
-    #[allow(dead_code)]
+#[derive(Debug, Deserialize, Clone, Copy)]
+pub(crate) struct FieldPosition {
     start: usize,
-
-    #[allow(dead_code)]
     end: usize
 }
 
 
 impl FieldPosition {
+    pub(crate) fn start(&self) -> usize {
+        self.start
+    }
+
+
     #[allow(dead_code)]
-    fn len(&self) -> usize {
+    pub(super) fn end(&self) -> usize {
+        self.end
+    }
+
+
+    pub(super) fn len(&self) -> usize {
         self.end - self.start + 1
     }
 
 
-    pub(super) fn from_yaml<'de, D>(payload: &Value) -> Result<Self, D::Error>
+    pub(crate) fn from_yaml<'de, D>(payload: &Value) -> Result<Self, D::Error>
         where D: Deserializer<'de>
     {
         match payload {

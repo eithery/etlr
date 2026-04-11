@@ -1,19 +1,50 @@
+use std::collections::HashMap;
 use serde::Deserialize;
+use super::field::exportable::ExportableFieldTemplate;
 use super::record::FileRecordTemplate;
 
 
 #[derive(Debug, Deserialize)]
 pub(super) struct FileSectionTemplate {
-    #[allow(dead_code)]
     id: String,
 
-    #[allow(dead_code)]
     description: Option<String>,
 
-    #[allow(dead_code)]
     record_size: usize,
 
-    #[allow(dead_code)]
     #[serde(default)]
-    records: Vec<FileRecordTemplate>
+    records: Vec<FileRecordTemplate<ExportableFieldTemplate>>
+}
+
+
+impl FileSectionTemplate {
+    pub(super) fn id(&self) -> &str {
+        &self.id
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn record_size(&self) -> usize {
+        self.record_size
+    }
+
+
+    #[allow(dead_code)]
+    pub(super) fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ExportableFieldTemplate>> {
+        self.records.iter()
+    }
+
+
+    pub(super) fn build_fixed_length_rows(&self, fields: &HashMap<String, String>) -> Vec<String> {
+        self.records
+            .iter()
+            .filter_map(|rec| rec.build_fixed_length_row(self.record_size, fields))
+            .collect()
+    }
 }

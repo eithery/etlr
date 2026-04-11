@@ -1,91 +1,57 @@
+mod base;
 mod columns;
-mod dataset;
+pub(crate) mod dataset;
 mod field;
-mod file;
-mod join;
+pub(crate) mod file;
+pub(crate) mod join;
 mod header;
-mod position;
+pub(super) mod inbound;
+mod multitenant;
+pub(super) mod outbound;
 mod record;
+mod record_id;
 mod section;
 mod trailer;
 
-use serde::Deserialize;
-use super::defaults::default_true;
-use dataset::DatasetTemplate;
-use file::OutboundFileTemplate;
 use header::FileHeaderTemplate;
-use section::FileSectionTemplate;
 use trailer::FileTrailerTemplate;
 
 
-#[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-pub(crate) struct RecordLayoutTemplate {
-    header: FileHeaderTemplate,
-    trailer: FileTrailerTemplate,
-
-    #[serde(default = "default_true")]
-    include_column_names: bool,
-
-    dataset: Option<DatasetTemplate>,
-
-    #[serde(default, deserialize_with = "OutboundFileTemplate::deserialize_files")]
-    files: Vec<OutboundFileTemplate>,
-
-    #[serde(default)]
-    sections: Vec<FileSectionTemplate>,
-    section_selector: Option<String>
-}
-
-
-impl RecordLayoutTemplate {
-    pub(super) fn has_multiple_files(&self) -> bool {
-        self.files.len() > 1
-    }
+pub(crate) trait LayoutTemplate {
+    type Header: FileHeaderTemplate;
+    type Trailer: FileTrailerTemplate;
 
 
     #[allow(dead_code)]
-    pub(super) fn has_single_file(&self) -> bool {
-        !self.has_multiple_files()
-    }
-
-
-    pub(super) fn files(&self) -> impl Iterator<Item = &OutboundFileTemplate> {
-        self.files.iter()
-    }
-
-
-    pub(super) fn included_file_types(&self) -> impl Iterator<Item = &str> {
-        self.files().map(|f| f.file_type())
-    }
+    fn header(&self) -> &Self::Header;
 
 
     #[allow(dead_code)]
-    pub(super) fn has_header(&self) -> bool {
+    fn has_header(&self) -> bool {
         self.header().enabled()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn header(&self) -> &FileHeaderTemplate {
-        &self.header
-    }
+    fn trailer(&self) -> &Self::Trailer;
 
 
     #[allow(dead_code)]
-    pub(super) fn has_trailer(&self) -> bool {
+    fn has_trailer(&self) -> bool {
         self.trailer().enabled()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn trailer(&self) -> &FileTrailerTemplate {
-        &self.trailer
+    fn include_column_names(&self) -> bool;
+
+    fn has_multiple_files(&self) -> bool;
+
+
+    fn has_single_file(&self) -> bool {
+        !self.has_multiple_files()
     }
 
 
-    #[allow(dead_code)]
-    pub(super) fn include_column_names(&self) -> bool {
-        self.include_column_names
-    }
+    fn included_file_types(&self) -> impl Iterator<Item = &str>;
 }

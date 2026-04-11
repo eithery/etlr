@@ -18,6 +18,18 @@ impl OutboundFileTemplate {
     }
 
 
+    #[allow(dead_code)]
+    fn outbound_file_name(&self) -> &str {
+        &self.file_name
+    }
+
+
+    #[allow(dead_code)]
+    fn dataset(&self) -> &DatasetTemplate {
+        &self.dataset
+    }
+
+
     pub(super) fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
         where D: Deserializer<'de>
     {

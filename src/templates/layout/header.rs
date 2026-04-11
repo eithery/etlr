@@ -1,77 +1,14 @@
-use chrono::NaiveDateTime;
-use serde::Deserialize;
-use crate::std::datetime::DateTime;
-use crate::std::result::Result;
-use crate::templates::defaults::{default_true, default_false, default_date_format};
+mod base;
+mod date;
+mod file_type;
+pub(super) mod inbound;
+pub(super) mod outbound;
 
 
-const FILE_VERSION: &str = "v1.0";
-const DEFAULT_TAG: &str = "H";
+pub(crate) trait FileHeaderTemplate {
+    #[allow(dead_code)]
+    fn enabled(&self) -> bool;
 
-
-#[derive(Debug, Deserialize)]
-pub(crate) struct FileHeaderTemplate {
-    tag: Option<String>,
-
-    #[serde(rename = "date", default = "default_date_format")]
-    date_format: String,
-
-    #[serde(default = "default_true")]
-    include_file_type: bool,
-
-    #[serde(default = "default_false")]
-    include_file_name: bool,
-
-    #[serde(default = "default_true")]
-    include_file_version: bool,
-
-    #[serde(default = "default_true")]
-    enabled: bool
-}
-
-
-#[allow(dead_code)]
-impl FileHeaderTemplate {
-    pub(super) fn enabled(&self) -> bool {
-        self.enabled
-    }
-
-
-    pub(super) fn tag(&self) -> &str {
-        self.tag.as_deref().unwrap_or(DEFAULT_TAG)
-    }
-
-
-    pub(super) fn date_format(&self) -> &str {
-        self.date_format.as_str()
-    }
-
-
-    pub(super) fn include_file_type(&self) -> bool {
-        self.include_file_type
-    }
-
-
-    pub(super) fn include_file_name(&self) -> bool {
-        self.include_file_name
-    }
-
-
-    pub(super) fn include_file_version(&self) -> bool {
-        self.include_file_version
-    }
-
-
-    pub(super) fn build(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
-    {
-        Ok([
-            Some(self.tag().to_string()),
-            self.include_file_type.then(|| file_type.to_string()),
-            self.include_file_name.then(|| file_name.to_string()),
-            Some(NaiveDateTime::format_timestamp_with(self.date_format(), false)?),
-            self.include_file_version.then(|| FILE_VERSION.to_string())
-        ]
-        .into_iter()
-        .flatten())
-    }
+    #[allow(dead_code)]
+    fn tag(&self) -> Option<&str>;
 }

@@ -5,7 +5,7 @@ use crate::cli;
 use crate::fs::yaml;
 use crate::errors::ErrorKind;
 use crate::std::result::Result;
-use crate::templates::layout::RecordLayoutTemplate;
+use crate::templates::layout::LayoutTemplate;
 use super::errors as err;
 use super::INTEGRATED_TEMPLATES;
 
@@ -16,10 +16,12 @@ const ALL_YAML: &str = "**/*.yml";
 pub(crate) trait FileTemplate: Sized + DeserializeOwned {
     const TEMPLATES_ROOT: &'static str;
 
+    type Layout: LayoutTemplate;
+
 
     fn file_type(&self) -> &str;
     
-    fn layout(&self) -> &RecordLayoutTemplate;
+    fn layout(&self) -> &Self::Layout;
 
 
     fn load<I, P>(template_name: &str, template_dirs: I) -> Result<Self>
