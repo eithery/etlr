@@ -5,7 +5,6 @@ use super::date::HeaderDateTemplate;
 use super::file_type::FileTypeTemplate;
 
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundFileHeaderTemplate {
     #[serde(flatten)]

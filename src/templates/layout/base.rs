@@ -6,7 +6,6 @@ use super::header::FileHeaderTemplate;
 use super::trailer::FileTrailerTemplate;
 
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub(crate) struct LayoutTemplateBase<H, T> {
     header: H,
@@ -36,6 +35,7 @@ impl<L, H, T> LayoutTemplate for L
     }
 
 
+    #[allow(dead_code)]
     fn include_column_names(&self) -> bool {
         self.include_column_names
     }

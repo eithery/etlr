@@ -5,10 +5,23 @@ use super::options::FileImportOptions;
 use super::traits::DataPipeline;
 
 
-#[allow(dead_code)]
 pub(crate) struct FileImportPipeline {
     template: FileImportTemplate,
     config: AppConfiguration
+}
+
+
+impl FileImportPipeline {
+    #[allow(dead_code)]
+    fn template(&self) -> &FileImportTemplate {
+        &self.template
+    }
+
+
+    #[allow(dead_code)]
+    fn config(&self) -> &AppConfiguration {
+        &self.config
+    }
 }
 
 

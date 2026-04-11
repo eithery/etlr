@@ -6,7 +6,6 @@ use super::base::FieldTemplateBase;
 use super::position::FieldPosition;
 
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub(crate) struct ExportableFieldTemplate {
     #[serde(flatten)]
@@ -29,16 +28,6 @@ impl Deref for ExportableFieldTemplate {
 
 
 impl ExportableFieldTemplate {
-    pub(crate) fn pos(&self) -> &FieldPosition {
-        &self.pos
-    }
-
-
-    pub(crate) fn len(&self) -> usize {
-        self.pos().len()
-    }
-
-
     pub(crate) fn source(&self) -> Option<&str> {
         self.source.as_deref()
     }
@@ -100,13 +89,7 @@ impl ExportableFieldTemplate {
                     .unwrap_or(false);
 
                 Ok(Self {
-                    base: FieldTemplateBase {
-                        name: field_name,
-                        pos,
-                        value,
-                        required,
-                        pii: None
-                    },
+                    base: FieldTemplateBase::new(field_name, pos, value, required),
                     source,
                     preserve_invalid
                 })

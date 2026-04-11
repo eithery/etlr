@@ -4,7 +4,6 @@ use super::dataset::DatasetTemplate;
 
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
 pub(crate) struct OutboundFileTemplate {
     file_type: String,
     file_name: String,

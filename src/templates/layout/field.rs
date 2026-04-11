@@ -9,8 +9,13 @@ use position::FieldPosition;
 pub(super) trait FieldTemplate {
     fn name(&self) -> &str;
 
-    #[allow(dead_code)]
     fn pos(&self) -> FieldPosition;
+
+
+    fn len(&self) -> usize {
+        self.pos().len()
+    }
+
 
     fn value(&self) -> Option<&str>;
 

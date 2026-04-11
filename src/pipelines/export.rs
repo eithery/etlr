@@ -5,10 +5,23 @@ use super::options::FileExportOptions;
 use super::traits::DataPipeline;
 
 
-#[allow(dead_code)]
 pub(crate) struct FileExportPipeline {
     template: FileExportTemplate,
     config: AppConfiguration
+}
+
+
+impl FileExportPipeline {
+    #[allow(dead_code)]
+    fn template(&self) -> &FileExportTemplate {
+        &self.template
+    }
+
+
+    #[allow(dead_code)]
+    fn config(&self) -> &AppConfiguration {
+        &self.config
+    }
 }
 
 

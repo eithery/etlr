@@ -4,7 +4,6 @@ use crate::templates::defaults::default_false;
 use super::base::FieldTemplateBase;
 
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub(crate) struct ImportableFieldTemplate {
     #[serde(flatten)]

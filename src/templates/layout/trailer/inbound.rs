@@ -4,7 +4,6 @@ use super::base::FileTrailerTemplateBase;
 use super::record_count::RecordCountTemplate;
 
 
-#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundFileTrailerTemplate {
     #[serde(flatten)]

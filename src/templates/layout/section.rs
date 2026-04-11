@@ -7,9 +7,7 @@ use super::record::FileRecordTemplate;
 #[derive(Debug, Deserialize)]
 pub(super) struct FileSectionTemplate {
     id: String,
-
     description: Option<String>,
-
     record_size: usize,
 
     #[serde(default)]

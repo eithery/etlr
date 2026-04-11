@@ -22,7 +22,6 @@ pub(crate) trait LayoutTemplate {
     type Trailer: FileTrailerTemplate;
 
 
-    #[allow(dead_code)]
     fn header(&self) -> &Self::Header;
 
 
@@ -32,7 +31,6 @@ pub(crate) trait LayoutTemplate {
     }
 
 
-    #[allow(dead_code)]
     fn trailer(&self) -> &Self::Trailer;
 
 

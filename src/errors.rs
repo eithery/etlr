@@ -6,9 +6,6 @@ use std::path::Path;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ErrorKind {
     #[allow(dead_code)]
-    ConnectorXError,
-
-    #[allow(dead_code)]
     DBConnectionError,
 
     FileDoesNotExist,
@@ -25,11 +22,10 @@ pub(crate) enum ErrorKind {
 
 
 #[derive(Debug)]
-#[allow(dead_code)]
 pub struct EtlError {
     message: String,
     kind: ErrorKind,
-    row_id: Option<u32>,
+    row_id: Option<usize>,
     file_path: Option<String>,
     inner_error: Option<Box<dyn Error + Send + Sync>>
 }
@@ -37,7 +33,7 @@ pub struct EtlError {
 
 impl Display for EtlError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.message)
+        write!(f, "{}", self.message())
     }
 }
 
@@ -74,28 +70,37 @@ impl From<chrono::ParseError> for EtlError {
 }
 
 
-// impl From<MsSQLSourceError> for EtlError {
-//     fn from(err: MsSQLSourceError) -> Self {
-//         EtlError::from_error(err, ErrorKind::ConnectorXError, "ConnectorX error")
-//     }
-// }
-
-
-// impl From<MsSQLArrowTransportError> for EtlError {
-//     fn from(err: MsSQLArrowTransportError) -> Self {
-//         EtlError::from_error(err, ErrorKind::DBConnectionError, "DB connection error")
-//     }
-// }
-
-
-// impl From<ArrowDestinationError> for EtlError {
-//     fn from(err: ArrowDestinationError) -> Self {
-//         EtlError::from_error(err, ErrorKind::ConnectorXError, "ConnectorX error")
-//     }
-// }
-
-
 impl EtlError {
+    fn message(&self) -> &str {
+        &self.message
+    }
+
+
+    pub(crate) fn kind(&self) -> ErrorKind {
+        self.kind
+    }
+
+
+    #[allow(dead_code)]
+    fn row_id(&self) -> Option<usize> {
+        self.row_id
+    }
+
+
+    #[allow(dead_code)]
+    fn file_path(&self) -> Option<&str> {
+        self.file_path.as_deref()
+    }
+
+
+    #[allow(dead_code)]
+    fn inner_error(&self) -> Option<String> {
+        self.inner_error
+            .as_ref()
+            .map(ToString::to_string)
+    }
+
+
     pub(crate) fn new<S: Into<String>>(message: S, kind: ErrorKind) -> Self {
         Self {
             message: message.into(),
@@ -117,11 +122,6 @@ impl EtlError {
             file_path: None,
             inner_error: Some(Box::new(error))
         }
-    }
-
-
-    pub(crate) fn kind(&self) -> ErrorKind {
-        self.kind
     }
 }
 

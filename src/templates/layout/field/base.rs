@@ -7,14 +7,14 @@ use super::position::FieldPosition;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct FieldTemplateBase {
-    pub(super) name: String,
-    pub(super) pos: FieldPosition,
-    pub(super) value: Option<String>,
+    name: String,
+    pos: FieldPosition,
+    value: Option<String>,
 
     #[serde(default = "default_false")]
-    pub(super) required: bool,
+    required: bool,
 
-    pub(super) pii: Option<String>
+    pii: Option<String>
 }
 
 
@@ -45,5 +45,12 @@ impl<F> FieldTemplate for F
     #[allow(dead_code)]
     fn pii(&self) -> Option<&str> {
         self.pii.as_deref()
+    }
+}
+
+
+impl FieldTemplateBase {
+    pub(super) fn new(name: String, pos: FieldPosition, value: Option<String>, required: bool) -> Self {
+        Self { name, pos, value, required, pii: None }
     }
 }

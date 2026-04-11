@@ -12,11 +12,11 @@ pub(crate) fn deserialize<'a, D>(deserializer: D) -> Result<Option<String>, D::E
 }
 
 
-#[allow(dead_code)]
 pub(crate) trait Blank {
     fn is_blank(&self) -> bool;
 
 
+    #[allow(dead_code)]
     fn is_not_blank(&self) -> bool {
         !self.is_blank()
     }
