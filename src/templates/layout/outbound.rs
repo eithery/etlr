@@ -20,14 +20,14 @@ pub(crate) struct OutboundLayoutTemplate {
     #[serde(default = "default_false")]
     extra_trailing_delimiters: bool,
 
-    dataset: Option<DatasetTemplate>,
+    #[serde(default)]
+    sections: Vec<FileSectionTemplate>,
+    section_selector: Option<String>,
 
     #[serde(default, deserialize_with = "OutboundFileTemplate::deserialize_files")]
     files: Vec<OutboundFileTemplate>,
 
-    #[serde(default)]
-    sections: Vec<FileSectionTemplate>,
-    section_selector: Option<String>
+    dataset: Option<DatasetTemplate>
 }
 
 
@@ -42,30 +42,30 @@ impl Deref for OutboundLayoutTemplate {
 
 impl OutboundLayoutTemplate {
     #[allow(dead_code)]
-    pub(crate) fn has_multiple_files(&self) -> bool {
+    fn has_multiple_files(&self) -> bool {
         self.files.len() > 1
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn included_file_types(&self) -> impl Iterator<Item = &str> {
+    fn included_file_types(&self) -> impl Iterator<Item = &str> {
         self.files().map(|f| f.file_type())
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn extra_trailing_delimiters(&self) -> bool {
+    fn extra_trailing_delimiters(&self) -> bool {
         self.extra_trailing_delimiters
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn dataset(&self) -> Option<&DatasetTemplate> {
+    fn dataset(&self) -> Option<&DatasetTemplate> {
         self.dataset.as_ref()
     }
 
 
-    pub(crate) fn files(&self) -> impl Iterator<Item = &OutboundFileTemplate> {
+    fn files(&self) -> impl Iterator<Item = &OutboundFileTemplate> {
         self.files.iter()
     }
 
@@ -77,7 +77,7 @@ impl OutboundLayoutTemplate {
 
 
     #[allow(dead_code)]
-    pub(crate) fn build_fixed_length_rows(&self, fields: &HashMap<String, String>) -> Result<Vec<String>> {
+    fn build_fixed_length_rows(&self, fields: &HashMap<String, String>) -> Result<Vec<String>> {
         let selector = self.section_selector.as_ref().ok_or_else(err::missing_section_selector)?;
         let section_id = fields.get(selector).ok_or_else(|| err::missing_discriminator_field(selector))?;
         self.sections()

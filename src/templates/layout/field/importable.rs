@@ -1,16 +1,20 @@
 use std::ops::Deref;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use crate::templates::defaults::default_false;
-use super::base::FieldTemplateBase;
+use super::{Field, Importable, ImportableField};
+use super::base::DataElementTemplate;
+use super::position::FieldPosition;
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ImportableFieldTemplate {
     #[serde(flatten)]
-    base: FieldTemplateBase,
+    base: DataElementTemplate,
+
+    pos: FieldPosition,
 
     #[serde(rename = "type")]
-    field_type: String,
+    data_type: String,
 
     format: Option<String>,
 
@@ -21,12 +25,15 @@ pub(crate) struct ImportableFieldTemplate {
     exported: bool,
 
     #[serde(default = "default_false")]
-    discriminator: bool
+    discriminator: bool,
+
+    #[serde(default = "default_false")]
+    preserve_invalid: bool
 }
 
 
 impl Deref for ImportableFieldTemplate {
-    type Target = FieldTemplateBase;
+    type Target = DataElementTemplate;
 
     fn deref(&self) -> &Self::Target {
         &self.base
@@ -34,33 +41,55 @@ impl Deref for ImportableFieldTemplate {
 }
 
 
-impl ImportableFieldTemplate {
+impl Field for ImportableFieldTemplate {
+    fn pos(&self) -> FieldPosition {
+        self.pos
+    }
+
+
+    fn deserialize_fields<'de, D>(_deserializer: D) -> Result<Vec<Self>, D::Error>
+        where D: Deserializer<'de>
+    {
+        todo!();
+    }
+}
+
+
+impl Importable for ImportableFieldTemplate {
     #[allow(dead_code)]
-    pub(super) fn field_type(&self) -> &str {
-        &self.field_type
+    fn data_type(&self) -> &str {
+        &self.data_type
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn format(&self) -> Option<&str> {
+    fn key(&self) -> bool {
+        self.key
+    }
+}
+
+
+impl ImportableField for ImportableFieldTemplate{
+    #[allow(dead_code)]
+    fn format(&self) -> Option<&str> {
         self.format.as_deref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn key(&self) -> bool {
-        self.key
-    }
-
-
-    #[allow(dead_code)]
-    pub(super) fn exported(&self) -> bool {
+    fn exported(&self) -> bool {
         self.exported
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn discriminator(&self) -> bool {
+    fn discriminator(&self) -> bool {
         self.discriminator
+    }
+
+
+    #[allow(dead_code)]
+    fn preserve_invalid(&self) -> bool {
+        self.preserve_invalid
     }
 }

@@ -1,3 +1,5 @@
+pub(super) mod inbound;
+
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 use super::dataset::DatasetTemplate;

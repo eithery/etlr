@@ -1,25 +1,23 @@
 use std::ops::Deref;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::{Value, Mapping};
-use crate::templates::defaults::default_false;
-use super::base::FieldTemplateBase;
+use super::{Field, ExportableField};
+use super::base::DataElementTemplate;
 use super::position::FieldPosition;
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct ExportableFieldTemplate {
     #[serde(flatten)]
-    base: FieldTemplateBase,
+    base: DataElementTemplate,
 
-    source: Option<String>,
-
-    #[serde(default = "default_false")]
-    preserve_invalid: bool
+    pos: FieldPosition,
+    source: Option<String>
 }
 
 
 impl Deref for ExportableFieldTemplate {
-    type Target = FieldTemplateBase;
+    type Target = DataElementTemplate;
 
     fn deref(&self) -> &Self::Target {
         &self.base
@@ -27,20 +25,13 @@ impl Deref for ExportableFieldTemplate {
 }
 
 
-impl ExportableFieldTemplate {
-    pub(crate) fn source(&self) -> Option<&str> {
-        self.source.as_deref()
+impl Field for ExportableFieldTemplate {
+    fn pos(&self) -> FieldPosition {
+        self.pos
     }
 
 
-    #[allow(dead_code)]
-    pub(super) fn preserve_invalid(&self) -> bool {
-        self.preserve_invalid
-    }
-
-
-    #[allow(dead_code)]
-    pub(crate) fn deserialize_fields<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
+    fn deserialize_fields<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
         where D: Deserializer<'de>
     {
         let payload = Value::deserialize(deserializer)?;
@@ -54,8 +45,17 @@ impl ExportableFieldTemplate {
             _ => Err(de::Error::custom("`fields` element must contain a sequence."))
         }
     }
+}
 
 
+impl ExportableField for ExportableFieldTemplate {
+    fn source(&self) -> Option<&str> {
+        self.source.as_deref()
+    }
+}
+
+
+impl ExportableFieldTemplate {
     pub(super) fn from_yaml<'de, D>(payload: Value) -> Result<Self, D::Error>
         where D: Deserializer<'de>
     {
@@ -85,13 +85,11 @@ impl ExportableFieldTemplate {
                 };
                 let required = get_bool::<D>(mapping, "required")?
                     .unwrap_or(false);
-                let preserve_invalid = get_bool::<D>(mapping, "preserve_invalid")?
-                    .unwrap_or(false);
 
                 Ok(Self {
-                    base: FieldTemplateBase::new(field_name, pos, value, required),
+                    base: DataElementTemplate::new(field_name, value, required),
+                    pos,
                     source,
-                    preserve_invalid
                 })
             }
             _ => Err(de::Error::custom("`fields` entries must be single-entry maps."))

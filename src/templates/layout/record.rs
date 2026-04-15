@@ -2,14 +2,16 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::default_false;
-use super::field::base::FieldTemplateBase;
-use super::field::FieldTemplate;
+use super::field::base::DataElementTemplate;
+use super::field::{DataElement, Field, ExportableField};
 use super::field::exportable::ExportableFieldTemplate;
 
 
 #[derive(Debug, Deserialize)]
 #[serde(bound(deserialize = "F: Deserialize<'de>"))]
-pub(super) struct FileRecordTemplate<F> {
+pub(super) struct FileRecordTemplate<F>
+    where F: Field + Deref<Target = DataElementTemplate>
+{
     id: String,
     name: Option<String>,
 
@@ -19,34 +21,34 @@ pub(super) struct FileRecordTemplate<F> {
     #[serde(default = "default_false")]
     multiple: bool,
 
-    #[serde(default)]
+    #[serde(default, deserialize_with = "Field::deserialize_fields")]
     fields: Vec<F>
 }
 
 
 impl<F> FileRecordTemplate<F>
-    where F: FieldTemplate + Deref<Target = FieldTemplateBase>
+    where F: Field + Deref<Target = DataElementTemplate>
 {
     #[allow(dead_code)]
-    pub(super) fn id(&self) -> &str {
+    fn id(&self) -> &str {
         &self.id
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn name(&self) -> Option<&str> {
+    fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn required(&self) -> bool {
+    fn required(&self) -> bool {
         self.required
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn multiple(&self) -> bool {
+    fn multiple(&self) -> bool {
         self.multiple
     }
 

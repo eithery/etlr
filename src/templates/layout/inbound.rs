@@ -1,12 +1,13 @@
 use std::ops::Deref;
 use serde::Deserialize;
 use super::base::LayoutTemplateBase;
+use super::field::importable::ImportableFieldTemplate;
+use super::file::inbound::InboundFileTemplate;
 use super::header::inbound::InboundFileHeaderTemplate;
 use super::multitenant::MultitenantLayoutTemplate;
 use super::record::FileRecordTemplate;
 use super::record_id::RecordIdTemplate;
 use super::trailer::inbound::InboundFileTrailerTemplate;
-use super::field::importable::ImportableFieldTemplate;
 
 
 #[derive(Debug, Deserialize)]
@@ -19,7 +20,10 @@ pub(crate) struct InboundLayoutTemplate {
     multitenant: Option<MultitenantLayoutTemplate>,
 
     #[serde(default)]
-    records: Vec<FileRecordTemplate<ImportableFieldTemplate>>
+    records: Vec<FileRecordTemplate<ImportableFieldTemplate>>,
+
+    #[serde(default, deserialize_with = "InboundFileTemplate::deserialize_files")]
+    files: Vec<InboundFileTemplate>
 }
 
 
@@ -34,25 +38,31 @@ impl Deref for InboundLayoutTemplate {
 
 impl InboundLayoutTemplate {
     #[allow(dead_code)]
-    pub(super) fn record_size(&self) -> Option<usize> {
+    fn record_size(&self) -> Option<usize> {
         self.record_size
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn record_id(&self) -> Option<&RecordIdTemplate> {
+    fn record_id(&self) -> Option<&RecordIdTemplate> {
         self.record_id.as_ref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn multitenant(&self) -> Option<&MultitenantLayoutTemplate> {
+    fn multitenant(&self) -> Option<&MultitenantLayoutTemplate> {
         self.multitenant.as_ref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ImportableFieldTemplate>> {
+    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ImportableFieldTemplate>> {
         self.records.iter()
+    }
+
+
+    #[allow(dead_code)]
+    fn files(&self) -> impl Iterator<Item = &InboundFileTemplate> {
+        self.files.iter()
     }
 }

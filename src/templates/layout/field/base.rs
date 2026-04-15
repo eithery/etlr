@@ -1,14 +1,12 @@
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::default_false;
-use super::FieldTemplate;
-use super::position::FieldPosition;
+use super::DataElement;
 
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct FieldTemplateBase {
+pub(crate) struct DataElementTemplate {
     name: String,
-    pos: FieldPosition,
     value: Option<String>,
 
     #[serde(default = "default_false")]
@@ -18,16 +16,11 @@ pub(crate) struct FieldTemplateBase {
 }
 
 
-impl<F> FieldTemplate for F
-    where F: Deref<Target = FieldTemplateBase>
+impl<T> DataElement for T
+    where T: Deref<Target = DataElementTemplate>
 {
     fn name(&self) -> &str {
         &self.name
-    }
-
-
-    fn pos(&self) -> FieldPosition {
-        self.pos
     }
 
 
@@ -49,8 +42,8 @@ impl<F> FieldTemplate for F
 }
 
 
-impl FieldTemplateBase {
-    pub(super) fn new(name: String, pos: FieldPosition, value: Option<String>, required: bool) -> Self {
-        Self { name, pos, value, required, pii: None }
+impl DataElementTemplate {
+    pub(super) fn new(name: String, value: Option<String>, required: bool) -> Self {
+        Self { name, value, required, pii: None }
     }
 }

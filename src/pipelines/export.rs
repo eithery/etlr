@@ -1,6 +1,7 @@
 use crate::config::app::AppConfiguration;
 use crate::std::result::Result;
 use crate::templates::export::FileExportTemplate;
+use crate::templates::traits::FileTemplate;
 use super::options::FileExportOptions;
 use super::traits::DataPipeline;
 
@@ -54,7 +55,7 @@ impl DataPipeline for FileExportPipeline {
         // );
         // dispatcher.run()?;
         // let df = destination.polars()?;
-        println!("{:?}", "Test");
+        println!("{:?}", FileExportTemplate::list(Vec::<Result<std::path::PathBuf>>::new()));
         Ok(())
     }
 }

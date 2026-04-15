@@ -52,8 +52,10 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
     fn included_file_types(&self) -> impl Iterator<Item = &str> {
         if self.layout().has_single_file() {
+            println!("SINGLE FILE");
             Either::Left(std::iter::once(self.file_type()))
         } else {
+            println!("MULTIPLE FILES");
             Either::Right(self.layout().included_file_types())
         }
     }
