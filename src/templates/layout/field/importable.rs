@@ -69,7 +69,7 @@ impl Importable for ImportableFieldTemplate {
 }
 
 
-impl ImportableField for ImportableFieldTemplate{
+impl ImportableField for ImportableFieldTemplate {
     #[allow(dead_code)]
     fn format(&self) -> Option<&str> {
         self.format.as_deref()

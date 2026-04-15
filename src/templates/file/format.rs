@@ -7,7 +7,7 @@ pub(crate) enum FileFormat {
     #[serde(rename = ":pipe")]
     Pipe,
 
-    #[serde(rename = ":csv")]
+    #[serde(rename = ":csv", alias = ":comma")]
     CSV,
 
     #[serde(rename = ":tab")]

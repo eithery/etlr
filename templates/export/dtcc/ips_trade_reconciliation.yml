@@ -3,7 +3,7 @@ version: 2
 file:
   type: dtcc.ips_trade_reconciliation
   name: ips_trade_reconciliation_detail_{CCYYMMDDTHHMMSS}.csv
-  format: :csv
+  format: :comma
 description: Export IPS transactions details
 
 layout:

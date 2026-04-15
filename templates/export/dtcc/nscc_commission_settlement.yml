@@ -3,7 +3,7 @@ version: 2
 file:
   type: dtcc.nscc_commission_settlement
   name: commission_settlement_loaded_detail_{CCYYMMDDTHHMMSS}.csv
-  format: :csv
+  format: :comma
 description: Export nscc comission statement details
 
 layout:

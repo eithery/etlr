@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
 use either::Either;
+use path_absolutize::Absolutize;
+use path_clean::PathClean;
 use serde::de::DeserializeOwned;
 use crate::cli;
 use crate::fs::yaml;
@@ -27,7 +29,7 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
     fn load<I, P>(template_name: &str, template_dirs: I) -> Result<Self>
         where I: IntoIterator<Item = Result<P>>, P: AsRef<Path>
     {
-        cli::echo("Lookup file template:");
+        cli::echo(&format!("Lookup file template: `{template_name}`"));
         for path in template_dirs {
             match Self::load_template(template_name, path?.as_ref()) {
                 Ok(template) => return Ok(template),
@@ -40,22 +42,19 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
 
     #[allow(dead_code)]
-    fn list<I, P>(_template_dirs: I) -> Vec<String>
+    fn list<I, P>(_template_dirs: I) -> impl Iterator<Item = String>
         where I: IntoIterator<Item = Result<P>>, P: AsRef<Path>
     {
         Self::list_integrated_templates()
             .unwrap()
             .map(|(file_type, _)| file_type)
-            .collect()
     }
 
 
     fn included_file_types(&self) -> impl Iterator<Item = &str> {
         if self.layout().has_single_file() {
-            println!("SINGLE FILE");
             Either::Left(std::iter::once(self.file_type()))
         } else {
-            println!("MULTIPLE FILES");
             Either::Right(self.layout().included_file_types())
         }
     }
@@ -113,7 +112,7 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
             .join(file_category)
             .join(format!("{file_name}.yml"));
         match template_path {
-            Some(path) => Ok(path.join(file_path)),
+            Some(path) => Ok(path.join(file_path).absolutize()?.clean()),
             None => Ok(file_path)
         }
     }

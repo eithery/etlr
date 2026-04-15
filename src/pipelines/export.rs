@@ -55,7 +55,7 @@ impl DataPipeline for FileExportPipeline {
         // );
         // dispatcher.run()?;
         // let df = destination.polars()?;
-        println!("{:?}", FileExportTemplate::list(Vec::<Result<std::path::PathBuf>>::new()));
+        println!("{:?}", FileExportTemplate::list(Vec::<Result<std::path::PathBuf>>::new()).collect::<Vec<String>>());
         Ok(())
     }
 }

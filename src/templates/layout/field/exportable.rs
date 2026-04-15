@@ -89,7 +89,7 @@ impl ExportableFieldTemplate {
                 Ok(Self {
                     base: DataElementTemplate::new(field_name, value, required),
                     pos,
-                    source,
+                    source
                 })
             }
             _ => Err(de::Error::custom("`fields` entries must be single-entry maps."))
