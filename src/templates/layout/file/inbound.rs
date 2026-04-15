@@ -1,7 +1,6 @@
-// use std::collections::HashMap;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
-// use crate::templates::layout::field::column::DataColumnTemplate;
+use super::FileEntry;
 
 
 #[derive(Debug, Deserialize)]
@@ -13,22 +12,13 @@ pub(crate) struct InboundFileTemplate {
 }
 
 
-impl InboundFileTemplate {
-    #[allow(dead_code)]
+impl FileEntry for InboundFileTemplate {
     fn file_type(&self) -> &str {
         &self.file_type
     }
 
 
-    // #[allow(dead_code)]
-    // fn columns(&self) -> impl Iterator<Item = (&str, &DataColumnTemplate)> {
-    //     self.columns
-    //         .iter()
-    //         .map(|(name, col)| (name.as_str(), col))
-    // }
-
-
-    pub(crate) fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
+    fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
         where D: Deserializer<'de>
     {
         let value = Value::deserialize(deserializer)?;
@@ -41,6 +31,16 @@ impl InboundFileTemplate {
             _ => Err(de::Error::custom("`files` element must contain a sequence of file metadata elements."))
         }
     }
+}
+
+
+impl InboundFileTemplate {
+    // #[allow(dead_code)]
+    // fn columns(&self) -> impl Iterator<Item = (&str, &DataColumnTemplate)> {
+    //     self.columns
+    //         .iter()
+    //         .map(|(name, col)| (name.as_str(), col))
+    // }
 
 
     fn from_yaml<'de, D>(value: Value) -> Result<Self, D::Error>

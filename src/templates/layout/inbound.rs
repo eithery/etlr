@@ -13,7 +13,7 @@ use super::trailer::inbound::InboundFileTrailerTemplate;
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundLayoutTemplate {
     #[serde(flatten)]
-    base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate>,
+    base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileTemplate>,
 
     record_size: Option<usize>,
     record_id: Option<RecordIdTemplate>,
@@ -21,14 +21,11 @@ pub(crate) struct InboundLayoutTemplate {
 
     #[serde(default)]
     records: Vec<FileRecordTemplate<ImportableFieldTemplate>>,
-
-    #[serde(default, deserialize_with = "InboundFileTemplate::deserialize_files")]
-    files: Vec<InboundFileTemplate>
 }
 
 
 impl Deref for InboundLayoutTemplate {
-    type Target = LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate>;
+    type Target = LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileTemplate>;
 
     fn deref(&self) -> &Self::Target {
         &self.base
@@ -58,11 +55,5 @@ impl InboundLayoutTemplate {
     #[allow(dead_code)]
     fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ImportableFieldTemplate>> {
         self.records.iter()
-    }
-
-
-    #[allow(dead_code)]
-    fn files(&self) -> impl Iterator<Item = &InboundFileTemplate> {
-        self.files.iter()
     }
 }
