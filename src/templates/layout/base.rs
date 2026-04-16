@@ -4,7 +4,7 @@ use crate::templates::defaults::default_true;
 use super::LayoutTemplate;
 use super::header::FileHeaderTemplate;
 use super::trailer::FileTrailerTemplate;
-use super::file::FileEntry;
+use super::files::FileEntry;
 
 
 #[derive(Debug, Deserialize)]

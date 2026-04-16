@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use serde::Deserialize;
-use super::field::exportable::ExportableFieldTemplate;
+use super::fields::exportable::ExportableFieldTemplate;
 use super::record::FileRecordTemplate;
 
 

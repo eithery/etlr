@@ -1,6 +1,6 @@
 mod base;
-mod field;
-pub(crate) mod file;
+mod fields;
+pub(crate) mod files;
 mod header;
 pub(super) mod inbound;
 mod multitenant;
@@ -10,7 +10,7 @@ mod record_id;
 mod section;
 mod trailer;
 
-use file::FileEntry;
+use files::FileEntry;
 use header::FileHeaderTemplate;
 use trailer::FileTrailerTemplate;
 

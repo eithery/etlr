@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::default_false;
-use super::field::base::DataElementTemplate;
-use super::field::{DataElement, Field, ExportableField};
-use super::field::exportable::ExportableFieldTemplate;
+use super::fields::base::DataElementTemplate;
+use super::fields::{DataElement, Field, ExportableField};
+use super::fields::exportable::ExportableFieldTemplate;
 
 
 #[derive(Debug, Deserialize)]

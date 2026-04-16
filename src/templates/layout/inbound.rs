@@ -1,8 +1,8 @@
 use std::ops::Deref;
 use serde::Deserialize;
 use super::base::LayoutTemplateBase;
-use super::field::importable::ImportableFieldTemplate;
-use super::file::inbound::InboundFileTemplate;
+use super::fields::importable::ImportableFieldTemplate;
+use super::files::inbound::InboundFileTemplate;
 use super::header::inbound::InboundFileHeaderTemplate;
 use super::multitenant::MultitenantLayoutTemplate;
 use super::record::FileRecordTemplate;

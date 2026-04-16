@@ -5,9 +5,9 @@ use crate::std::result::Result;
 use crate::templates::defaults::default_false;
 use crate::templates::errors as err;
 use super::base::LayoutTemplateBase;
-use super::file::dataset::DatasetTemplate;
+use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
-use super::file::outbound::OutboundFileTemplate;
+use super::files::outbound::OutboundFileTemplate;
 use super::section::FileSectionTemplate;
 use super::trailer::outbound::OutboundFileTrailerTemplate;
 
