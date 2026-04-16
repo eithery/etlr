@@ -46,13 +46,13 @@ impl FileTemplate for FileExportTemplate {
 
 impl FileExportTemplate {
     #[allow(dead_code)]
-    pub(crate) fn outbound_file_name(&self) -> &str {
+    fn outbound_file_name(&self) -> &str {
         self.file.file_name()
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn file_format(&self) -> FileFormat {
+    fn file_format(&self) -> FileFormat {
         self.file.format()
     }
 }

@@ -16,7 +16,7 @@ impl FieldPosition {
 
 
     #[allow(dead_code)]
-    pub(super) fn end(&self) -> usize {
+    fn end(&self) -> usize {
         self.end
     }
 

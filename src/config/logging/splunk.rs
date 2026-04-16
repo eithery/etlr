@@ -45,37 +45,37 @@ impl Deref for SplunkConfiguration {
 
 impl SplunkConfiguration {
     #[allow(dead_code)]
-    pub(super) fn source(&self) -> &str {
+    fn source(&self) -> &str {
         self.source.as_deref().unwrap_or(defaults::splunk::SOURCE)
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn host(&self) -> &str {
+    fn host(&self) -> &str {
         self.host.as_deref().unwrap_or(defaults::splunk::HOST)
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn port(&self) -> u16 {
+    fn port(&self) -> u16 {
         self.port.unwrap_or(defaults::splunk::PORT)
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn index(&self) -> &str {
+    fn index(&self) -> &str {
         self.index.as_deref().unwrap_or(defaults::splunk::INDEX)
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn token(&self) -> Option<&str> {
+    fn token(&self) -> Option<&str> {
         self.token.as_deref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn verify(&self) -> bool {
+    fn verify(&self) -> bool {
         self.verify.unwrap_or(true)
     }
 

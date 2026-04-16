@@ -17,19 +17,19 @@ pub(super) struct RecordCountTemplate {
 
 impl RecordCountTemplate {
     #[allow(dead_code)]
-    pub(super) fn pos(&self) -> FieldPosition {
+    fn pos(&self) -> FieldPosition {
         self.pos
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_header(&self) -> bool {
+    fn include_header(&self) -> bool {
         self.include_header
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_trailer(&self) -> bool {
+    fn include_trailer(&self) -> bool {
         self.include_trailer
     }
 }

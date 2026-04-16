@@ -60,7 +60,7 @@ static SIGNED_DIGITS_MAP: Map<char, (bool, char)> = phf_map! {
 
 
 #[allow(dead_code)]
-pub(crate) fn parse(str_value: &str, pic_format: &str) -> Result<Decimal> {
+pub(super) fn parse(str_value: &str, pic_format: &str) -> Result<Decimal> {
     if str_value.is_blank() {
         return Err(err::blank_pic_decimal_string());
     }

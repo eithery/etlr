@@ -66,7 +66,7 @@ impl DataColumn for DataColumnTemplate {
 
 impl DataColumnTemplate {
     #[allow(dead_code)]
-    pub(crate) fn from_yaml<'de, D>(_deserializer: D) -> Result<HashMap<String, Self>, D::Error>
+    fn from_yaml<'de, D>(_deserializer: D) -> Result<HashMap<String, Self>, D::Error>
         where D: Deserializer<'de>
     {
         Ok(HashMap::new())

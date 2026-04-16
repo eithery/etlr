@@ -37,13 +37,11 @@ impl FileFormat {
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn is_excel(&self) -> bool {
         self == &FileFormat::Excel
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn is_fixed_length(&self) -> bool {
         self == &FileFormat::FixedLength
     }
@@ -54,7 +52,6 @@ impl FileFormat {
     }
 
 
-    #[allow(dead_code)]
     pub(super) fn delimiter(&self) -> Option<char> {
         match &self {
             Self::Pipe => Some('|'),

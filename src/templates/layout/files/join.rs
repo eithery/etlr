@@ -14,7 +14,7 @@ pub(super) struct DatasetJoinTemplate {
 
 impl DatasetJoinTemplate {
     #[allow(dead_code)]
-    pub(super) fn key(&self) -> &str {
+    fn key(&self) -> &str {
         &self.key
     }
 
@@ -25,13 +25,13 @@ impl DatasetJoinTemplate {
 
 
     #[allow(dead_code)]
-    pub(super) fn source(&self) -> &str {
+    fn source(&self) -> &str {
         &self.source
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn column_names(&self) -> impl Iterator<Item = &str> {
+    fn column_names(&self) -> impl Iterator<Item = &str> {
         self.columns.column_names()
     }
 }

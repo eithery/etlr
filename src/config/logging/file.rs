@@ -38,7 +38,7 @@ impl Deref for FileLogConfiguration {
 
 impl FileLogConfiguration {
     #[allow(dead_code)]
-    pub(super) fn path(&self) -> &str {
+    fn path(&self) -> &str {
         self.path.as_deref().unwrap_or(DEFAULT_LOG_DIR)
     }
 

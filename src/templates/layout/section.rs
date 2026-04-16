@@ -22,19 +22,19 @@ impl FileSectionTemplate {
 
 
     #[allow(dead_code)]
-    pub(super) fn description(&self) -> Option<&str> {
+    fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn record_size(&self) -> usize {
+    fn record_size(&self) -> usize {
         self.record_size
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ExportableFieldTemplate>> {
+    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ExportableFieldTemplate>> {
         self.records.iter()
     }
 

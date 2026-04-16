@@ -31,19 +31,19 @@ impl Deref for InboundFileHeaderTemplate {
 
 impl InboundFileHeaderTemplate {
     #[allow(dead_code)]
-    pub(super) fn file_type(&self) -> Option<&FileTypeTemplate> {
+    fn file_type(&self) -> Option<&FileTypeTemplate> {
         self.file_type.as_ref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn header_date(&self) -> Option<&HeaderDateTemplate> {
+    fn header_date(&self) -> Option<&HeaderDateTemplate> {
         self.header_date.as_ref()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn subheaders(&self) -> impl Iterator<Item = &str> {
+    fn subheaders(&self) -> impl Iterator<Item = &str> {
         self.subheaders.iter().map(String::as_str)
     }
 }

@@ -24,7 +24,7 @@ impl Deref for InboundFileTrailerTemplate {
 
 impl InboundFileTrailerTemplate {
     #[allow(dead_code)]
-    pub(super) fn record_count(&self) -> Option<&RecordCountTemplate> {
+    fn record_count(&self) -> Option<&RecordCountTemplate> {
         self.record_count.as_ref()
     }
 }

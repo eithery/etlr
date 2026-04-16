@@ -10,13 +10,13 @@ pub(super) struct FileNameTemplate {
 
 impl FileNameTemplate {
     #[allow(dead_code)]
-    pub(super) fn file_mask(&self) -> &str {
+    fn file_mask(&self) -> &str {
         &self.file_mask
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn date_format(&self) -> &str {
+    fn date_format(&self) -> &str {
         &self.date_format
     }
 }

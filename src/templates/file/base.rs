@@ -8,7 +8,7 @@ pub(crate) struct FileInfoTemplateBase {
     #[serde(rename = "type")]
     file_type: String,
 
-    format: FileFormat,
+    format: FileFormat
 }
 
 

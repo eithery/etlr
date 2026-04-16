@@ -41,31 +41,31 @@ impl Deref for OutboundFileTrailerTemplate {
 
 impl OutboundFileTrailerTemplate {
     #[allow(dead_code)]
-    pub(super) fn include_file_type(&self) -> bool {
+    fn include_file_type(&self) -> bool {
         self.include_file_type
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_file_name(&self) -> bool {
+    fn include_file_name(&self) -> bool {
         self.include_file_name
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_trailer_date(&self) -> bool {
+    fn include_trailer_date(&self) -> bool {
         self.include_trailer_date
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_record_count(&self) -> bool {
+    fn include_record_count(&self) -> bool {
         self.include_record_count
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn build(&self, file_type: &str, file_name: &str, row_count: usize) -> Result<impl Iterator<Item = String>> {
+    fn build(&self, file_type: &str, file_name: &str, row_count: usize) -> Result<impl Iterator<Item = String>> {
         Ok([
             Some(self.tag().unwrap_or(DEFAULT_TAG).to_string()),
             self.include_file_type.then(|| file_type.to_string()),

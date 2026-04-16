@@ -54,13 +54,13 @@ impl Default for DatabaseConfiguration {
 
 impl DatabaseConfiguration {
     #[allow(dead_code)]
-    pub(super) fn connection_type(&self) -> ConnectionType {
+    fn connection_type(&self) -> ConnectionType {
         self.connection_type.unwrap_or_default()
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn connection_string(&self, data_source_id: Option<&str>) -> Result<String> {
+    fn connection_string(&self, data_source_id: Option<&str>) -> Result<String> {
         let prefix = if self.is_trusted_connection() {
             ""
         } else {

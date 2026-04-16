@@ -14,19 +14,19 @@ pub(crate) struct FileTemplateBase {
 
 impl FileTemplateBase {
     #[allow(dead_code)]
-    pub(crate) fn kind(&self) -> &TemplateCategory {
+    fn kind(&self) -> &TemplateCategory {
         &self.kind
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn version(&self) -> u8 {
+    fn version(&self) -> u8 {
         self.version
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn description(&self) -> Option<&str> {
+    fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
 }

@@ -44,13 +44,13 @@ impl<'de> Deserialize<'de> for HeaderDateTemplate {
 
 impl HeaderDateTemplate {
     #[allow(dead_code)]
-    pub(super) fn pos(&self) -> Option<FieldPosition> {
+    fn pos(&self) -> Option<FieldPosition> {
         self.pos
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn format(&self) -> &str {
+    fn format(&self) -> &str {
         &self.format
     }
 }

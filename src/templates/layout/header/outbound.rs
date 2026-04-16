@@ -47,25 +47,25 @@ impl OutboundFileHeaderTemplate {
 
 
     #[allow(dead_code)]
-    pub(super) fn include_file_type(&self) -> bool {
+    fn include_file_type(&self) -> bool {
         self.include_file_type
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_file_name(&self) -> bool {
+    fn include_file_name(&self) -> bool {
         self.include_file_name
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn include_file_version(&self) -> bool {
+    fn include_file_version(&self) -> bool {
         self.include_file_version
     }
 
 
     #[allow(dead_code)]
-    pub(crate) fn build(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
+    fn build(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
     {
         Ok([
             Some(self.tag().unwrap_or(DEFAULT_TAG).to_string()),

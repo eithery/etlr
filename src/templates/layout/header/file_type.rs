@@ -11,13 +11,13 @@ pub(super) struct FileTypeTemplate {
 
 impl FileTypeTemplate {
     #[allow(dead_code)]
-    pub(super) fn tag(&self) -> &str {
+    fn tag(&self) -> &str {
         &self.tag
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn pos(&self) -> FieldPosition {
+    fn pos(&self) -> FieldPosition {
         self.pos
     }
 }

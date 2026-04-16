@@ -9,6 +9,7 @@ pub(crate) struct InboundFileInfoTemplate {
     #[serde(flatten)]
     base: FileInfoTemplateBase,
 
+    #[serde(rename = "name")]
     file_name: Option<FileNameTemplate>
 }
 
@@ -24,7 +25,7 @@ impl Deref for InboundFileInfoTemplate {
 
 impl InboundFileInfoTemplate {
     #[allow(dead_code)]
-    pub(super) fn file_name(&self) -> Option<&FileNameTemplate> {
+    fn file_name(&self) -> Option<&FileNameTemplate> {
         self.file_name.as_ref()
     }
 }

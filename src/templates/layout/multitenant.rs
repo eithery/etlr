@@ -12,19 +12,19 @@ pub(super) struct MultitenantLayoutTemplate {
 
 impl MultitenantLayoutTemplate {
     #[allow(dead_code)]
-    pub(super) fn subheader(&self) -> &str {
+    fn subheader(&self) -> &str {
         &self.subheader
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn subtrailer(&self) -> &str {
+    fn subtrailer(&self) -> &str {
         &self.subtrailer
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn trailer(&self) -> &InboundFileTrailerTemplate {
+    fn trailer(&self) -> &InboundFileTrailerTemplate {
         &self.trailer
     }
 }

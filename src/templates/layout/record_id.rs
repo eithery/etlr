@@ -10,7 +10,7 @@ pub(super) struct RecordIdTemplate {
 
 impl RecordIdTemplate {
     #[allow(dead_code)]
-    pub(super) fn pos(&self) -> FieldPosition {
+    fn pos(&self) -> FieldPosition {
         self.pos
     }
 }

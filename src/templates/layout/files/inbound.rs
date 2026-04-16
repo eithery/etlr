@@ -35,7 +35,6 @@ impl FileEntry for InboundFileTemplate {
 
 
 impl InboundFileTemplate {
-    // #[allow(dead_code)]
     // fn columns(&self) -> impl Iterator<Item = (&str, &DataColumnTemplate)> {
     //     self.columns
     //         .iter()

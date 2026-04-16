@@ -29,13 +29,13 @@ impl Default for ArchiveConfiguration {
 
 impl ArchiveConfiguration {
     #[allow(dead_code)]
-    pub(super) fn enabled(&self) -> bool {
+    fn enabled(&self) -> bool {
         self.enabled.unwrap_or(true)
     }
 
 
     #[allow(dead_code)]
-    pub(super) fn path(&self) -> &str {
+    fn path(&self) -> &str {
         let path = self.path.as_deref().unwrap_or(DEFAULT_PATH_VALUE);
         if path == DEFAULT_PATH_VALUE { DEFAULT_ARCHIVE_DIR } else { path }
     }
