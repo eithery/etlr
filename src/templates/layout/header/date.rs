@@ -1,4 +1,4 @@
-use serde::{Deserialize, Deserializer, de::Error};
+use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 use crate::templates::layout::fields::position::FieldPosition;
 
@@ -20,23 +20,24 @@ impl<'de> Deserialize<'de> for HeaderDateTemplate {
             Value::Mapping(mapping) => {
                 let pos = mapping
                     .get("pos")
-                    .map(|pos| FieldPosition::from_yaml::<D>(pos))
-                    .transpose()?
-                    .ok_or_else(|| D::Error::custom("Missing or invalid header date `pos` metadata element."))?;
+                    .map(TryInto::try_into)
+                    .transpose()
+                    .map_err(de::Error::custom)?
+                    .ok_or_else(|| de::Error::custom("Missing or invalid header date `pos` metadata element."))?;
 
                 let format = mapping
                     .get("format")
                     .map(|val| {
                         val.as_str()
-                        .ok_or_else(|| D::Error::custom("Header date `format` element must be a string."))
+                        .ok_or_else(|| de::Error::custom("Header date `format` element must be a string."))
                         .map(str::to_string)
                     })
                     .transpose()?
-                    .ok_or_else(|| D::Error::custom("Missing or invalid header date `format` element."))?;
+                    .ok_or_else(|| de::Error::custom("Missing or invalid header date `format` element."))?;
 
                 Ok(Self { pos: Some(pos), format })
             }
-            _ => Err(D::Error::custom("Header `date` element must be a string or an object."))
+            _ => Err(de::Error::custom("Header `date` element must be a string or an object."))
         }
     }
 }

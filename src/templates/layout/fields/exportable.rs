@@ -73,8 +73,9 @@ impl ExportableFieldTemplate {
 
                 let pos = mapping
                     .get("pos")
-                    .map(|pos| FieldPosition::from_yaml::<D>(pos))
-                    .transpose()?
+                    .map(TryInto::try_into)
+                    .transpose()
+                    .map_err(de::Error::custom)?
                     .ok_or_else(|| de::Error::custom("Missing or invalid `pos` metadata element."))?;
 
                 let value = get_str::<D>(mapping, "value")?;

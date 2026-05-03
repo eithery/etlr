@@ -1,8 +1,13 @@
+use std::str::FromStr;
 use serde::{Deserialize, Deserializer, de};
-use serde_yaml::Value;
+use serde_yaml::{Value, Number};
+use crate::errors::{EtlError, ErrorKind};
 
 
-#[derive(Debug, Deserialize, Clone, Copy)]
+const DELIMITER: &str = "..";
+
+
+#[derive(Debug, Clone, Copy)]
 pub(crate) struct FieldPosition {
     start: usize,
     end: usize
@@ -15,37 +20,101 @@ impl FieldPosition {
     }
 
 
-    #[allow(dead_code)]
-    fn end(&self) -> usize {
+    pub(crate) fn end(&self) -> usize {
         self.end
     }
 
 
-    pub(super) fn len(&self) -> usize {
-        self.end - self.start + 1
+    pub(crate) fn len(&self) -> usize {
+        self.end() - self.start() + 1
     }
 
 
-    pub(crate) fn from_yaml<'de, D>(payload: &Value) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
-        match payload {
-            Value::String(value) => {
-                if let Some((s, e)) = value.split_once("..") {
-                    let start = s.trim().parse::<usize>().map_err(de::Error::custom)?;
-                    let end = e.trim().parse::<usize>().map_err(de::Error::custom)?;
-                    Ok(Self { start, end })
-                } else {
-                    let val = value.trim().parse::<usize>().map_err(de::Error::custom)?;
-                    Ok(Self { start: val, end: val })
-                }
-            }
-            Value::Number(n) => {
-                let val = n.as_u64()
-                    .ok_or_else(|| de::Error::custom("Invalid `pos` element value."))? as usize;
-                Ok(FieldPosition { start: val, end: val })
-            }
-            _ => Err(de::Error::custom("Field `pos` element must be a number or string."))
+    pub(crate) fn new(start: usize, end: usize) -> Self {
+        Self { start, end }
+    }
+
+
+    pub(crate) fn single(pos: usize) -> Self {
+        Self { start: pos, end: pos }
+    }
+}
+
+
+impl FromStr for FieldPosition {
+    type Err = EtlError;
+
+    fn from_str(str_value: &str) -> Result<Self, Self::Err> {
+        if let Some((s, e)) = str_value.split_once(DELIMITER) {
+            let start = s.trim().parse::<usize>()?;
+            let end = e.trim().parse::<usize>()?;
+            Ok(Self::new(start, end))
+        } else {
+            let pos = str_value.trim().parse::<usize>()?;
+            Ok(Self::single(pos))
         }
     }
+}
+
+
+impl From<u64> for FieldPosition {
+    fn from(pos: u64) -> Self {
+        (pos as usize).into()
+    }
+}
+
+
+impl From<usize> for FieldPosition {
+    fn from(pos: usize) -> Self {
+        Self::single(pos)
+    }
+}
+
+
+impl TryFrom<&str> for FieldPosition {
+    type Error = EtlError;
+
+    fn try_from(str_value: &str) -> Result<Self, Self::Error> {
+        str_value.parse()
+    }
+}
+
+
+impl TryFrom<&Number> for FieldPosition {
+    type Error = EtlError;
+
+    fn try_from(num: &Number) -> Result<Self, Self::Error> {
+        num.as_u64()
+            .ok_or_else(invalid_field_position_value)
+            .map(Into::into)
+    }
+}
+
+
+impl TryFrom<&Value> for FieldPosition {
+    type Error = EtlError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::String(str_value) => str_value.parse(),
+            Value::Number(n) => n.try_into(),
+            _ => Err(invalid_field_position_value())
+        }
+    }
+}
+
+
+impl<'de> Deserialize<'de> for FieldPosition {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let value = &Value::deserialize(deserializer)?;
+        value.try_into().map_err(de::Error::custom)
+    }
+}
+
+
+fn invalid_field_position_value() -> EtlError {
+    EtlError::new(
+        "Invalid value format for the field `pos` element in the YAML template. Expected a number or a string.",
+        ErrorKind::YamlDeserializationError
+    )
 }

@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
+use std::num::ParseIntError;
 use std::path::Path;
 
 
@@ -45,6 +46,13 @@ impl Error for EtlError {
 impl From<std::io::Error> for EtlError {
     fn from(err: std::io::Error) -> Self {
         EtlError::from_error(err, ErrorKind::IOError, "IO error")
+    }
+}
+
+
+impl From<ParseIntError> for EtlError {
+    fn from(err: ParseIntError) -> Self {
+        EtlError::from_error(err, ErrorKind::ParseError, "Parse error")
     }
 }
 

@@ -4,9 +4,7 @@ use serde::{Deserializer, de};
 use serde::de::DeserializeOwned;
 use serde_yaml::Value;
 use crate::errors as err;
-
-
-type EtlResult<T> = crate::std::result::Result<T>;
+use crate::std::result::EtlResult;
 
 
 pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> EtlResult<T> {

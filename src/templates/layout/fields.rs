@@ -4,6 +4,9 @@ pub(super) mod exportable;
 pub(super) mod importable;
 pub(super) mod position;
 
+#[cfg(test)]
+mod tests;
+
 use std::ops::Deref;
 use base::DataElementTemplate;
 use serde::Deserializer;
