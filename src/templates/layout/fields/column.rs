@@ -5,20 +5,13 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use serde::{Deserialize, Deserializer};
 use crate::templates::defaults::default_false;
-use super::{Importable, DataColumn};
-use super::base::DataElementTemplate;
+use super::data_element::DataElementTemplate;
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct DataColumnTemplate {
     #[serde(flatten)]
     base: DataElementTemplate,
-
-    #[serde(rename = "type")]
-    data_type: String,
-
-    #[serde(default = "default_false")]
-    key: bool,
 
     size: Option<usize>,
 
@@ -27,30 +20,7 @@ pub(crate) struct DataColumnTemplate {
 }
 
 
-impl Deref for DataColumnTemplate {
-    type Target = DataElementTemplate;
-
-    fn deref(&self) -> &Self::Target {
-        &self.base
-    }
-}
-
-
-impl Importable for DataColumnTemplate {
-    #[allow(dead_code)]
-    fn data_type(&self) -> &str {
-        &self.data_type
-    }
-
-
-    #[allow(dead_code)]
-    fn key(&self) -> bool {
-        self.key
-    }
-}
-
-
-impl DataColumn for DataColumnTemplate {
+impl DataColumnTemplate {
     #[allow(dead_code)]
     fn size(&self) -> Option<usize> {
         self.size
@@ -61,14 +31,21 @@ impl DataColumn for DataColumnTemplate {
     fn validate(&self) -> bool {
         self.validate
     }
-}
 
 
-impl DataColumnTemplate {
     #[allow(dead_code)]
     fn from_yaml<'de, D>(_deserializer: D) -> Result<HashMap<String, Self>, D::Error>
         where D: Deserializer<'de>
     {
         Ok(HashMap::new())
+    }
+}
+
+
+impl Deref for DataColumnTemplate {
+    type Target = DataElementTemplate;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
     }
 }

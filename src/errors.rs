@@ -18,7 +18,7 @@ pub(crate) enum ErrorKind {
     ParseError,
     RegexError,
     TemplateNotFound,
-    YamlDeserializationError
+    YamlFormatError
 }
 
 
@@ -40,6 +40,16 @@ impl Display for EtlError {
 
 
 impl Error for EtlError {
+}
+
+
+impl PartialEq for EtlError {
+    fn eq(&self, other: &Self) -> bool {
+        self.message == other.message
+            && self.kind == other.kind
+            && self.row_id == other.row_id
+            && self.file_path == other.file_path
+    }
 }
 
 
@@ -66,7 +76,7 @@ impl From<regex::Error> for EtlError {
 
 impl From<serde_yaml::Error> for EtlError {
     fn from(err: serde_yaml::Error) -> Self {
-        EtlError::from_error(err, ErrorKind::YamlDeserializationError, "YAML deserialization")
+        EtlError::from_error(err, ErrorKind::YamlFormatError, "YAML deserialization")
     }
 }
 

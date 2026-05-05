@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
-use crate::templates::layout::fields::position::FieldPosition;
+use crate::templates::FieldPosition;
 
 
 #[derive(Debug)]

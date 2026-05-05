@@ -7,7 +7,7 @@ use crate::errors::{EtlError, ErrorKind};
 const DELIMITER: &str = "..";
 
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct FieldPosition {
     start: usize,
     end: usize
@@ -115,6 +115,6 @@ impl<'de> Deserialize<'de> for FieldPosition {
 fn invalid_field_position_value() -> EtlError {
     EtlError::new(
         "Invalid value format for the field `pos` element in the YAML template. Expected a number or a string.",
-        ErrorKind::YamlDeserializationError
+        ErrorKind::YamlFormatError
     )
 }

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use serde::Deserialize;
-use super::fields::exportable::ExportableFieldTemplate;
 use super::record::FileRecordTemplate;
 
 
@@ -11,7 +10,7 @@ pub(super) struct FileSectionTemplate {
     record_size: usize,
 
     #[serde(default)]
-    records: Vec<FileRecordTemplate<ExportableFieldTemplate>>
+    records: Vec<FileRecordTemplate>
 }
 
 
@@ -34,7 +33,7 @@ impl FileSectionTemplate {
 
 
     #[allow(dead_code)]
-    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ExportableFieldTemplate>> {
+    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate> {
         self.records.iter()
     }
 

@@ -1,18 +1,16 @@
 use std::collections::HashMap;
-use std::ops::Deref;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer, de};
+use serde_yaml::Value;
+use crate::templates::FieldTemplate;
+use crate::templates::layout::fields::Fields;
 use crate::templates::defaults::default_false;
-use super::fields::base::DataElementTemplate;
-use super::fields::{DataElement, Field, ExportableField};
-use super::fields::exportable::ExportableFieldTemplate;
 
 
 #[derive(Debug, Deserialize)]
-#[serde(bound(deserialize = "F: Deserialize<'de>"))]
-pub(super) struct FileRecordTemplate<F>
-    where F: Field + Deref<Target = DataElementTemplate>
+pub(super) struct FileRecordTemplate
 {
     id: String,
+
     name: Option<String>,
 
     #[serde(default = "default_false")]
@@ -21,16 +19,15 @@ pub(super) struct FileRecordTemplate<F>
     #[serde(default = "default_false")]
     multiple: bool,
 
-    #[serde(default, deserialize_with = "Field::deserialize_fields")]
-    fields: Vec<F>
+    #[serde(default)]
+    fields: Vec<FieldTemplate>
 }
 
 
-impl<F> FileRecordTemplate<F>
-    where F: Field + Deref<Target = DataElementTemplate>
+impl FileRecordTemplate
 {
     #[allow(dead_code)]
-    fn id(&self) -> &str {
+    pub(crate) fn id(&self) -> &str {
         &self.id
     }
 
@@ -51,15 +48,10 @@ impl<F> FileRecordTemplate<F>
     fn multiple(&self) -> bool {
         self.multiple
     }
-
-
-    fn fields(&self) -> impl Iterator<Item = &F> {
-        self.fields.iter()
-    }
 }
 
 
-impl FileRecordTemplate<ExportableFieldTemplate> {
+impl FileRecordTemplate {
     pub(super) fn build_fixed_length_row(&self, record_size: usize, field_values: &HashMap<String, String>) -> Option<String> {
         if !self.fields().any(|f| field_values.contains_key(f.name())) {
             return None;
@@ -86,5 +78,29 @@ impl FileRecordTemplate<ExportableFieldTemplate> {
             }
         }
         String::from_utf8(row).ok()
+    }
+}
+
+
+impl Fields for FileRecordTemplate
+{
+    fn fields(&self) -> impl Iterator<Item = &FieldTemplate> {
+        self.fields.iter()
+    }
+
+
+    fn deserialize<'de, D>(deserializer: D) -> Result<Vec<FieldTemplate>, D::Error>
+        where D: Deserializer<'de>
+    {
+        let payload = Value::deserialize(deserializer)?;
+        match payload {
+            Value::Sequence(fields) => {
+                fields
+                    .into_iter()
+                    .map(|payload| FieldTemplate::try_from(&payload).map_err(de::Error::custom))
+                    .collect()
+            }
+            _ => Err(de::Error::custom("`fields` element must contain a sequence."))
+        }
     }
 }

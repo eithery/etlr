@@ -2,7 +2,7 @@ use rstest::*;
 use rstest_reuse::{self, *};
 use rxpect::expect;
 use rxpect::expectations::{EqualityExpectations, ResultExpectations};
-use crate::templates::layout::fields::position::FieldPosition;
+use crate::templates::FieldPosition;
 
 
 #[template]

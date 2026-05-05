@@ -1,5 +1,5 @@
 mod base;
-mod fields;
+pub(crate) mod fields;
 pub(crate) mod files;
 mod header;
 pub(super) mod inbound;
@@ -9,6 +9,9 @@ mod record;
 mod record_id;
 mod section;
 mod trailer;
+
+#[cfg(test)]
+mod tests;
 
 use files::FileEntry;
 use header::FileHeaderTemplate;

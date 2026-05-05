@@ -1,7 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
 use super::base::LayoutTemplateBase;
-use super::fields::importable::ImportableFieldTemplate;
 use super::files::inbound::InboundFileTemplate;
 use super::header::inbound::InboundFileHeaderTemplate;
 use super::multitenant::MultitenantLayoutTemplate;
@@ -20,7 +19,7 @@ pub(crate) struct InboundLayoutTemplate {
     multitenant: Option<MultitenantLayoutTemplate>,
 
     #[serde(default)]
-    records: Vec<FileRecordTemplate<ImportableFieldTemplate>>,
+    records: Vec<FileRecordTemplate>,
 }
 
 
@@ -53,7 +52,7 @@ impl InboundLayoutTemplate {
 
 
     #[allow(dead_code)]
-    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate<ImportableFieldTemplate>> {
+    fn records(&self) -> impl Iterator<Item = &FileRecordTemplate> {
         self.records.iter()
     }
 }
