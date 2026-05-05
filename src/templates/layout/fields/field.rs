@@ -20,21 +20,25 @@ pub(crate) struct FieldTemplate {
 
 
 impl FieldTemplate {
+    #[allow(dead_code)]
     pub(crate) fn name(&self) -> &str {
         &self.name
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn pos(&self) -> FieldPosition {
         self.pos
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn len(&self) -> usize {
         self.pos().len()
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn source(&self) -> Option<&str> {
         self.source.as_deref()
     }

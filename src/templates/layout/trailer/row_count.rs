@@ -4,7 +4,7 @@ use crate::templates::defaults::default_true;
 
 
 #[derive(Debug, Deserialize)]
-pub(super) struct RecordCountTemplate {
+pub(crate) struct RowCountTemplate {
     pos: FieldPosition,
 
     #[serde(default = "default_true")]
@@ -15,21 +15,19 @@ pub(super) struct RecordCountTemplate {
 }
 
 
-impl RecordCountTemplate {
+impl RowCountTemplate {
     #[allow(dead_code)]
     fn pos(&self) -> FieldPosition {
         self.pos
     }
 
 
-    #[allow(dead_code)]
-    fn include_header(&self) -> bool {
+    pub(super) fn include_header(&self) -> bool {
         self.include_header
     }
 
 
-    #[allow(dead_code)]
-    fn include_trailer(&self) -> bool {
+    pub(super) fn include_trailer(&self) -> bool {
         self.include_trailer
     }
 }

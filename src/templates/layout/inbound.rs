@@ -19,7 +19,7 @@ pub(crate) struct InboundLayoutTemplate {
     multitenant: Option<MultitenantLayoutTemplate>,
 
     #[serde(default)]
-    records: Vec<FileRecordTemplate>,
+    records: Vec<FileRecordTemplate>
 }
 
 

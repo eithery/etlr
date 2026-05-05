@@ -2,6 +2,7 @@ use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::{default_true, default_date_format};
 use super::FileTrailerTemplate;
+use super::row_count::RowCountTemplate;
 
 
 #[derive(Debug, Deserialize)]
@@ -12,7 +13,10 @@ pub(crate) struct FileTrailerTemplateBase {
     tag: Option<String>,
 
     #[serde(rename = "date", default = "default_date_format")]
-    date_format: String
+    date_format: String,
+
+    #[serde(rename = "record_count")]
+    row_count: Option<RowCountTemplate>
 }
 
 
@@ -34,5 +38,11 @@ impl<T> FileTrailerTemplate for T
     #[allow(dead_code)]
     fn date_format(&self) -> &str {
         &self.date_format
+    }
+
+
+    #[allow(dead_code)]
+    fn row_count(&self) -> Option<&RowCountTemplate> {
+        self.row_count.as_ref()
     }
 }

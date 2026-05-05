@@ -10,6 +10,7 @@ pub(crate) mod traits;
 
 use include_dir::{include_dir, Dir};
 
+pub(crate) use layout::fields::Fields;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
 

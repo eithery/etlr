@@ -10,6 +10,8 @@ use super::data_element::DataElementTemplate;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct DataColumnTemplate {
+    name: String,
+
     #[serde(flatten)]
     base: DataElementTemplate,
 
@@ -21,6 +23,12 @@ pub(crate) struct DataColumnTemplate {
 
 
 impl DataColumnTemplate {
+    #[allow(dead_code)]
+    pub(crate) fn name(&self) -> &str {
+        &self.name
+    }
+
+
     #[allow(dead_code)]
     fn size(&self) -> Option<usize> {
         self.size

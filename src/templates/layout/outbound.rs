@@ -1,9 +1,6 @@
-use std::collections::HashMap;
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::std::result::Result;
 use crate::templates::defaults::default_false;
-use crate::templates::errors as err;
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
@@ -22,7 +19,10 @@ pub(crate) struct OutboundLayoutTemplate {
 
     #[serde(default)]
     sections: Vec<FileSectionTemplate>,
+
     section_selector: Option<String>,
+
+    record_size: Option<usize>,
 
     dataset: Option<DatasetTemplate>
 }
@@ -57,12 +57,13 @@ impl OutboundLayoutTemplate {
 
 
     #[allow(dead_code)]
-    fn build_fixed_length_rows(&self, fields: &HashMap<String, String>) -> Result<Vec<String>> {
-        let selector = self.section_selector.as_ref().ok_or_else(err::missing_section_selector)?;
-        let section_id = fields.get(selector).ok_or_else(|| err::missing_discriminator_field(selector))?;
-        self.sections()
-            .find(|s| s.id() == section_id)
-            .map(|s| s.build_fixed_length_rows(fields))
-            .ok_or_else(|| err::missing_file_section_template(section_id))
+    fn section_selector(&self) -> Option<&str> {
+        self.section_selector.as_deref()
+    }
+
+
+    #[allow(dead_code)]
+    fn record_size(&self) -> Option<usize> {
+        self.record_size
     }
 }

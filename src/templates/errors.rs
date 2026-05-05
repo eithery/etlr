@@ -38,6 +38,7 @@ pub(crate) fn invalid_template_name(template_name: &str) -> EtlError {
 }
 
 
+#[allow(dead_code)]
 pub(crate) fn missing_section_selector() -> EtlError {
     EtlError::new(
         "Missing `section_selector` element in the template.",
@@ -46,6 +47,7 @@ pub(crate) fn missing_section_selector() -> EtlError {
 }
 
 
+#[allow(dead_code)]
 pub(crate) fn missing_discriminator_field(section_selector: &str) -> EtlError {
     EtlError::new(
         format!("Missing `{section_selector}` key field used to build fixed length row."),
@@ -54,6 +56,16 @@ pub(crate) fn missing_discriminator_field(section_selector: &str) -> EtlError {
 }
 
 
+#[allow(dead_code)]
+pub(crate) fn blank_discriminator_field(section_selector: &str) -> EtlError {
+    EtlError::new(
+        format!("The `{section_selector}` key field has a blank value."),
+        ErrorKind::InvalidTemplateFormat
+    )
+}
+
+
+#[allow(dead_code)]
 pub(crate) fn missing_file_section_template(section_id: &str) -> EtlError {
     EtlError::new(
         format!("File section with ID `{section_id}` does not exist in the template."),

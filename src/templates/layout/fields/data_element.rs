@@ -38,6 +38,7 @@ impl DataElementTemplate {
     }
 
 
+    #[allow(dead_code)]
     pub(crate) fn value(&self) -> Option<&str> {
         self.value.as_deref()
     }
@@ -64,8 +65,7 @@ impl DataElementTemplate {
 
 impl Default for DataElementTemplate {
     fn default() -> Self {
-        Self
-        {
+        Self {
             data_type: Some(DEFAULT_DATA_TYPE.to_string()),
             data_format: None,
             value: None,
