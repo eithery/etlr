@@ -1,12 +1,12 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use super::base::FileTrailerTemplateBase;
+use super::FileTrailerTemplateBase;
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundFileTrailerTemplate {
     #[serde(flatten)]
-    base: FileTrailerTemplateBase,
+    base: FileTrailerTemplateBase
 }
 
 

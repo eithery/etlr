@@ -38,7 +38,6 @@ impl DataElementTemplate {
     }
 
 
-    #[allow(dead_code)]
     pub(crate) fn value(&self) -> Option<&str> {
         self.value.as_deref()
     }

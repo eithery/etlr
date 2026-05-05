@@ -115,6 +115,6 @@ impl<'de> Deserialize<'de> for FieldPosition {
 fn invalid_field_position_value() -> EtlError {
     EtlError::new(
         "Invalid value format for the field `pos` element in the YAML template. Expected a number or a string.",
-        ErrorKind::YamlFormatError
+        ErrorKind::InvalidTemplateFormat
     )
 }

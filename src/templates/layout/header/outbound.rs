@@ -5,8 +5,7 @@ use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::{Fields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false, default_date_format};
-use super::FileHeaderTemplate;
-use super::base::FileHeaderTemplateBase;
+use super::{FileHeaderTemplate, FileHeaderTemplateBase};
 
 
 const FILE_VERSION: &str = "v1.0";
@@ -30,7 +29,6 @@ pub(crate) struct OutboundFileHeaderTemplate {
     #[serde(default = "default_true")]
     include_file_version: bool,
 
-    #[allow(dead_code)]
     #[serde(default)]
     fields: Vec<FieldTemplate>
 }
@@ -70,7 +68,7 @@ impl OutboundFileHeaderTemplate {
 
 
     #[allow(dead_code)]
-    fn build(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
+    fn build_delimited(&self, file_type: &str, file_name: &str) -> Result<impl Iterator<Item = String>>
     {
         Ok([
             Some(self.tag().unwrap_or(DEFAULT_TAG).to_string()),

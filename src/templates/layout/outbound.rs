@@ -1,6 +1,9 @@
+use std::collections::HashMap;
 use std::ops::Deref;
 use serde::Deserialize;
+use crate::std::result::Result;
 use crate::templates::defaults::default_false;
+use crate::templates::errors as err;
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
@@ -50,20 +53,35 @@ impl OutboundLayoutTemplate {
     }
 
 
-    #[allow(dead_code)]
     fn sections(&self) -> impl Iterator<Item = &FileSectionTemplate> {
         self.sections.iter()
     }
 
 
-    #[allow(dead_code)]
     fn section_selector(&self) -> Option<&str> {
         self.section_selector.as_deref()
     }
 
 
-    #[allow(dead_code)]
     fn record_size(&self) -> Option<usize> {
         self.record_size
+    }
+
+
+    #[allow(dead_code)]
+    fn build_fixed_length_rows(&self, field_values: &HashMap<&str, Option<&str>>) -> Result<Vec<String>> {
+        let selector = self.section_selector()
+            .ok_or_else(err::missing_section_selector)?;
+        let record_size = self.record_size()
+            .ok_or_else(err::record_size_not_defined)?;
+        let section_id = field_values
+            .get(selector)
+            .ok_or_else(|| err::missing_discriminator_field(selector))?
+            .as_ref()
+            .ok_or_else(|| err::blank_discriminator_field(selector))?;
+        self.sections()
+            .find(|s| s.id() == *section_id)
+            .map(|s| s.build_fixed_length_rows(field_values, record_size))
+            .ok_or_else(|| err::missing_file_section_template(&section_id))
     }
 }

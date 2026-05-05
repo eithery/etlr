@@ -5,8 +5,7 @@ use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::{Fields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false};
-use super::FileTrailerTemplate;
-use super::base::FileTrailerTemplateBase;
+use super::{FileTrailerTemplate, FileTrailerTemplateBase};
 
 
 const DEFAULT_TAG: &str = "T";
@@ -29,7 +28,6 @@ pub(crate) struct OutboundFileTrailerTemplate {
     #[serde(default = "default_true")]
     include_record_count: bool,
 
-    #[allow(dead_code)]
     #[serde(default)]
     fields: Vec<FieldTemplate>
 }
@@ -70,7 +68,7 @@ impl OutboundFileTrailerTemplate {
 
 
     #[allow(dead_code)]
-    fn build(&self, file_type: &str, file_name: &str, row_count: usize) -> Result<impl Iterator<Item = String>> {
+    fn build_delimited(&self, file_type: &str, file_name: &str, row_count: usize) -> Result<impl Iterator<Item = String>> {
         Ok([
             Some(self.tag().unwrap_or(DEFAULT_TAG).to_string()),
             self.include_file_type.then(|| file_type.to_string()),

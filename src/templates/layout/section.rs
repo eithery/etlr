@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::Deserialize;
 use super::record::FileRecordTemplate;
 
@@ -14,8 +15,7 @@ pub(super) struct FileSectionTemplate {
 
 
 impl FileSectionTemplate {
-    #[allow(dead_code)]
-    fn id(&self) -> &str {
+    pub(super) fn id(&self) -> &str {
         &self.id
     }
 
@@ -26,8 +26,14 @@ impl FileSectionTemplate {
     }
 
 
-    #[allow(dead_code)]
     fn records(&self) -> impl Iterator<Item = &FileRecordTemplate> {
         self.records.iter()
+    }
+
+
+    pub(super) fn build_fixed_length_rows(&self, field_values: &HashMap<&str, Option<&str>>, record_size: usize) -> Vec<String> {
+        self.records()
+            .filter_map(|rec| rec.build_fixed_length_row(field_values, record_size))
+            .collect()
     }
 }

@@ -20,25 +20,21 @@ pub(crate) struct FieldTemplate {
 
 
 impl FieldTemplate {
-    #[allow(dead_code)]
     pub(crate) fn name(&self) -> &str {
         &self.name
     }
 
 
-    #[allow(dead_code)]
     pub(crate) fn pos(&self) -> FieldPosition {
         self.pos
     }
 
 
-    #[allow(dead_code)]
     pub(crate) fn len(&self) -> usize {
         self.pos().len()
     }
 
 
-    #[allow(dead_code)]
     pub(crate) fn source(&self) -> Option<&str> {
         self.source.as_deref()
     }
@@ -119,5 +115,5 @@ impl<'de> Deserialize<'de> for FieldTemplate {
 
 fn invalid_field_format() -> EtlError {
     let error_msg = format!("Invalid `field` value format. Expected property map, string, or integer.");
-    EtlError::new(error_msg, ErrorKind::YamlFormatError)
+    EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
 }

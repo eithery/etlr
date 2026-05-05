@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use serde::Deserialize;
 use crate::templates::{Fields, FieldTemplate};
 use crate::templates::defaults::default_false;
@@ -17,7 +18,6 @@ pub(super) struct FileRecordTemplate {
     #[serde(default = "default_false")]
     multiple: bool,
 
-    #[allow(dead_code)]
     #[serde(default)]
     fields: Vec<FieldTemplate>
 }
@@ -51,6 +51,14 @@ impl FileRecordTemplate {
     #[allow(dead_code)]
     fn multiple(&self) -> bool {
         self.multiple
+    }
+
+
+    pub(super) fn build_fixed_length_row(&self, field_values: &HashMap<&str, Option<&str>>, record_size: usize) -> Option<String> {
+        if !self.fields().any(|f| field_values.contains_key(f.name())) {
+            return None
+        }
+        self.build_fixed_length(field_values, record_size).ok()
     }
 }
 

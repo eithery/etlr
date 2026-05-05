@@ -47,7 +47,6 @@ pub(crate) fn missing_section_selector() -> EtlError {
 }
 
 
-#[allow(dead_code)]
 pub(crate) fn missing_discriminator_field(section_selector: &str) -> EtlError {
     EtlError::new(
         format!("Missing `{section_selector}` key field used to build fixed length row."),
@@ -56,7 +55,6 @@ pub(crate) fn missing_discriminator_field(section_selector: &str) -> EtlError {
 }
 
 
-#[allow(dead_code)]
 pub(crate) fn blank_discriminator_field(section_selector: &str) -> EtlError {
     EtlError::new(
         format!("The `{section_selector}` key field has a blank value."),
@@ -65,10 +63,17 @@ pub(crate) fn blank_discriminator_field(section_selector: &str) -> EtlError {
 }
 
 
-#[allow(dead_code)]
 pub(crate) fn missing_file_section_template(section_id: &str) -> EtlError {
     EtlError::new(
         format!("File section with ID `{section_id}` does not exist in the template."),
+        ErrorKind::InvalidTemplateFormat
+    )
+}
+
+
+pub(crate) fn record_size_not_defined() -> EtlError {
+    EtlError::new(
+        format!("Missing `record_size` element in the outbound fixed-length file template."),
         ErrorKind::InvalidTemplateFormat
     )
 }

@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use super::base::FileHeaderTemplateBase;
+use super::FileHeaderTemplateBase;
 use super::date::HeaderDateTemplate;
 use super::file_type::FileTypeTemplate;
 
