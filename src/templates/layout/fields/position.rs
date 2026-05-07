@@ -1,7 +1,7 @@
 use std::str::FromStr;
-use serde::{Deserialize, Deserializer, de};
 use serde_yaml::{Value, Number};
-use crate::errors::{EtlError, ErrorKind};
+use crate::errors::EtlError;
+use crate::fs::yaml::invalid_yaml_value;
 
 
 const DELIMITER: &str = "..";
@@ -104,17 +104,6 @@ impl TryFrom<&Value> for FieldPosition {
 }
 
 
-impl<'de> Deserialize<'de> for FieldPosition {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = &Value::deserialize(deserializer)?;
-        value.try_into().map_err(de::Error::custom)
-    }
-}
-
-
 fn invalid_field_position_value() -> EtlError {
-    EtlError::new(
-        "Invalid value format for the field `pos` element in the YAML template. Expected a number or a string.",
-        ErrorKind::InvalidTemplateFormat
-    )
+    invalid_yaml_value("field.pos", "Expected a number or a string")
 }

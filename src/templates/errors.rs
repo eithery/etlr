@@ -38,7 +38,6 @@ pub(crate) fn invalid_template_name(template_name: &str) -> EtlError {
 }
 
 
-#[allow(dead_code)]
 pub(crate) fn missing_section_selector() -> EtlError {
     EtlError::new(
         "Missing `section_selector` element in the template.",

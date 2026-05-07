@@ -1,5 +1,5 @@
 pub(super) mod data_element;
-pub(super) mod column;
+pub(crate) mod column;
 pub(crate) mod field;
 pub(crate) mod position;
 
@@ -10,7 +10,18 @@ use std::collections::HashMap;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 use crate::std::result::EtlResult;
+use crate::fs::yaml::from_yml;
+use column::{ColumnTemplate, validation::ColumnValidationTemplate};
 use field::FieldTemplate;
+use position::FieldPosition;
+
+
+from_yml!(
+    ColumnTemplate,
+    ColumnValidationTemplate,
+    FieldPosition,
+    FieldTemplate
+);
 
 
 pub(crate) trait Fields {
@@ -34,7 +45,6 @@ pub(crate) trait Fields {
     }
 
 
-    #[allow(dead_code)]
     fn build_fixed_length(&self, field_values: &HashMap<&str, Option<&str>>, record_size: usize) -> EtlResult<String> {
         let mut row = vec![b' '; record_size + 1];
         row[record_size] = b'\n';

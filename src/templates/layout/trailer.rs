@@ -5,7 +5,7 @@ mod row_count;
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::{default_true, default_date_format};
-use super::trailer::row_count::RowCountTemplate;
+use row_count::RowCountTemplate;
 
 
 pub(crate) trait FileTrailerTemplate {
@@ -51,25 +51,21 @@ pub(crate) struct FileTrailerTemplateBase {
 impl<T> FileTrailerTemplate for T
     where T: Deref<Target = FileTrailerTemplateBase>
 {
-    #[allow(dead_code)]
     fn enabled(&self) -> bool {
         self.enabled
     }
 
 
-    #[allow(dead_code)]
     fn tag(&self) -> Option<&str> {
         self.tag.as_deref()
     }
 
 
-    #[allow(dead_code)]
     fn date_format(&self) -> &str {
         &self.date_format
     }
 
 
-    #[allow(dead_code)]
     fn row_count(&self) -> Option<&RowCountTemplate> {
         self.row_count.as_ref()
     }

@@ -8,12 +8,28 @@ use crate::errors::{EtlError, ErrorKind};
 use crate::std::result::EtlResult;
 
 
+macro_rules! from_yml {
+    ($($type:ty),* $(,)?) => {
+        $(
+            impl<'de> Deserialize<'de> for $type {
+                fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+                    let value = &Value::deserialize(deserializer)?;
+                    value.try_into().map_err(serde::de::Error::custom)
+                }
+            }
+        )*
+    };
+}
+
+pub(crate) use from_yml;
+
+
 pub(crate) trait YamlNameValueMap {
     fn to_name_value_map(&self) -> EtlResult<(String, &Value)>;
 }
 
 
-impl YamlNameValueMap for &Value {
+impl YamlNameValueMap for Value {
     fn to_name_value_map(&self) -> EtlResult<(String, &Value)> {
         match self {
             Value::Mapping(map) if map.len() == 1 => {
@@ -34,20 +50,40 @@ impl YamlNameValueMap for &Value {
 pub(crate) trait YamlReader {
     fn get_opt_str(&self, tag_name: &str) -> EtlResult<Option<String>>;
 
+    #[allow(dead_code)]
+    fn get_opt_usize(&self, tag_name: &str) -> EtlResult<Option<usize>>;
+
     fn get_bool(&self, tag_name: &str, default: bool) -> EtlResult<bool>;
 
     fn get_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
         where T: TryFrom<&'a Value, Error = EtlError>;
+
+    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<Option<T>>
+        where T: TryFrom<&'a Value, Error = EtlError>;
+
+    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+        where T: TryFrom<&'a Value, Error = EtlError> + Default;
 }
 
 
-impl YamlReader for &Mapping {
+impl YamlReader for Mapping {
     fn get_opt_str(&self, tag_name: &str) -> EtlResult<Option<String>> {
         self.get(tag_name)
-            .map_or(Ok(None), |val| {
+            .map(|val| {
                 val.as_str()
-                    .map(|s| Some(s.to_owned()))
-                    .ok_or_else(|| invalid_yaml_value_type(tag_name, "string"))
+                    .map(String::from)
+                    .ok_or_else(|| invalid_yaml_value(tag_name, "Expected string"))
+            })
+            .transpose()
+    }
+
+
+    fn get_opt_usize(&self, tag_name: &str) -> EtlResult<Option<usize>> {
+        self.get(tag_name)
+            .map_or(Ok(None), |val| {
+                val.as_u64()
+                    .map(|n| Some(n as usize))
+                    .ok_or_else(|| invalid_yaml_value(tag_name, "Expected number"))
             })
     }
 
@@ -56,7 +92,7 @@ impl YamlReader for &Mapping {
         self.get(tag_name)
             .map_or(Ok(default), |val| {
                 val.as_bool()
-                    .ok_or_else(|| invalid_yaml_value_type(tag_name, "boolean"))
+                    .ok_or_else(|| invalid_yaml_value(tag_name, "Expected boolean"))
             })
     }
 
@@ -67,6 +103,23 @@ impl YamlReader for &Mapping {
         self.get(tag_name)
             .ok_or_else(|| missing_required_yaml_value("pos"))?
             .try_into()
+    }
+
+
+    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<Option<T>>
+        where T: TryFrom<&'a Value, Error = EtlError>
+    {
+        self.get(tag_name)
+            .map(TryInto::try_into)
+            .transpose()
+    }
+
+
+    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+        where T: TryFrom<&'a Value, Error = EtlError> + Default
+    {
+        self.get_opt_value(tag_name)
+            .map(Option::unwrap_or_default)
     }
 }
 
@@ -112,19 +165,29 @@ pub(crate) fn deserialize_columns<'de, D>(seq: Vec<Value>) -> Result<Vec<(String
 }
 
 
-fn invalid_yaml_value_type(tag_name: &str, expected: &str) -> EtlError {
-    let error_msg = format!("YAML value `{tag_name}` has invalid type. Expected `{expected}`.");
-    EtlError::new(error_msg, ErrorKind::YamlFormatError)
+pub(crate) fn invalid_yaml_value(tag_name: &str, details: &str) -> EtlError {
+    invalid_yaml_error("Invalid value", tag_name, details)
+}
+
+
+pub(crate) fn invalid_yaml_format(tag_name: &str, details: &str) -> EtlError {
+    invalid_yaml_error("Invalid format", tag_name, details)
 }
 
 
 fn missing_required_yaml_value(tag_name: &str) -> EtlError {
-    let error_msg = format!("Missing required `{tag_name}` YAML value.");
+    let error_msg = format!("Missing required `{tag_name}` value.");
     EtlError::new(error_msg, ErrorKind::YamlFormatError)
 }
 
 
 fn invalid_name_value_map(message: &str) -> EtlError {
     let error_msg = format!("Invalid name/value map format. {message}");
+    EtlError::new(error_msg, ErrorKind::YamlFormatError)
+}
+
+
+fn invalid_yaml_error(kind: &str, tag_name: &str, details: &str) -> EtlError {
+    let error_msg = format!("{kind} for `{tag_name}`. {details}.");
     EtlError::new(error_msg, ErrorKind::YamlFormatError)
 }

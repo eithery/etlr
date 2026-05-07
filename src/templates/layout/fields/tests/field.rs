@@ -53,7 +53,7 @@ record_count:
 description: 220..299
 "#;
 
-const INVALID_DATA_ELEMENT_PROPS: &str = r#"
+const INVALID_DATA_ELEMENT: &str = r#"
 account_number:
   pos: 10..20
   key: unknown
@@ -128,15 +128,15 @@ fn valid_fields(
 
 #[template]
 #[rstest]
-#[case(INVALID_FIELD_FORMAT, "Expected property map, string, or integer.")]
+#[case(INVALID_FIELD_FORMAT, "Invalid format for `field`.")]
 #[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
-#[case(INVALID_DATA_ELEMENT_PROPS, "YAML deserialization. invalid type:")]
-#[case(MISSING_POSITION, "Missing required `pos` YAML value.")]
+#[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
+#[case(MISSING_POSITION, "Missing required `pos` value.")]
 #[case(INVALID_POSITION, "Parse error.")]
-#[case(INVALID_SOURCE, "YAML value `source` has invalid type.")]
-#[case(INVALID_EXPORTED, "YAML value `exported` has invalid type.")]
-#[case(INVALID_DISCRIMINATOR, "YAML value `discriminator` has invalid type.")]
-#[case(INVALID_PRESERVE_INVALID, "YAML value `preserve_invalid` has invalid type.")]
+#[case(INVALID_SOURCE, "Invalid value for `source`.")]
+#[case(INVALID_EXPORTED, "Invalid value for `exported`.")]
+#[case(INVALID_DISCRIMINATOR, "Invalid value for `discriminator`.")]
+#[case(INVALID_PRESERVE_INVALID, "Invalid value for `preserve_invalid`.")]
 #[case(INVALID_YAML_FORMAT, "mapping values are not allowed")]
 fn invalid_fields(#[case] yaml: &str, #[case] error_message: &str) { }
 

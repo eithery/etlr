@@ -27,13 +27,11 @@ pub(crate) struct FileHeaderTemplateBase {
 impl<T> FileHeaderTemplate for T
     where T: Deref<Target = FileHeaderTemplateBase>
 {
-    #[allow(dead_code)]
     fn enabled(&self) -> bool {
         self.enabled
     }
 
 
-    #[allow(dead_code)]
     fn tag(&self) -> Option<&str> {
         self.tag.as_deref()
     }

@@ -1,8 +1,8 @@
 use std::ops::Deref;
-use serde::{Deserialize, Deserializer, de};
+use serde::Deserialize;
 use serde_yaml::Value;
-use crate::errors::{EtlError, ErrorKind};
-use crate::fs::yaml::{YamlReader, YamlNameValueMap};
+use crate::errors::EtlError;
+use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
 use crate::templates::FieldPosition;
 use super::data_element::DataElementTemplate;
 
@@ -98,22 +98,13 @@ impl TryFrom<&Value> for FieldTemplate {
                     preserve_invalid: m.get_bool("preserve_invalid", false)?
                 })
             }
-            Value::String(_) | Value::Number(_) => Ok(FieldTemplate::new(field_name, value.try_into()?)),
+            Value::String(_) | Value::Number(_) => Ok(Self::new(field_name, value.try_into()?)),
             _ => Err(invalid_field_format())
         }
     }
 }
 
 
-impl<'de> Deserialize<'de> for FieldTemplate {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = &Value::deserialize(deserializer)?;
-        value.try_into().map_err(de::Error::custom)
-    }
-}
-
-
 fn invalid_field_format() -> EtlError {
-    let error_msg = format!("Invalid `field` value format. Expected property map, string, or integer.");
-    EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
+    invalid_yaml_format("field", "Expected a mapping, string, or number")
 }

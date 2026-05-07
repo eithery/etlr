@@ -11,8 +11,16 @@ pub(crate) mod traits;
 use include_dir::{include_dir, Dir};
 
 pub(crate) use layout::fields::Fields;
+pub(crate) use layout::fields::column::ColumnTemplate;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
+
+#[allow(unused_imports)]
+pub(crate) use layout::fields::column::size::ColumnSize;
+#[allow(unused_imports)]
+pub(crate) use layout::fields::column::validation::ColumnValidationTemplate;
+#[allow(unused_imports)]
+pub(crate) use layout::fields::column::validation::InvalidValueHandling;
 
 
 static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
