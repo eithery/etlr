@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
@@ -7,7 +8,7 @@ use crate::templates::FieldPosition;
 use super::data_element::DataElementTemplate;
 
 
-#[derive(Debug)]
+#[derive(Debug, DeserializeYaml)]
 pub(crate) struct FieldTemplate {
     name: String,
     base: DataElementTemplate,

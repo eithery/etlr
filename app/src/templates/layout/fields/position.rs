@@ -1,4 +1,6 @@
 use std::str::FromStr;
+use etl_macros::DeserializeYaml;
+use serde::Deserialize;
 use serde_yaml::{Value, Number};
 use crate::errors::EtlError;
 use crate::fs::yaml::invalid_yaml_value;
@@ -7,7 +9,7 @@ use crate::fs::yaml::invalid_yaml_value;
 const DELIMITER: &str = "..";
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, DeserializeYaml)]
 pub(crate) struct FieldPosition {
     start: usize,
     end: usize

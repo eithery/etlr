@@ -8,22 +8,6 @@ use crate::errors::{EtlError, ErrorKind};
 use crate::std::result::EtlResult;
 
 
-macro_rules! from_yml {
-    ($($type:ty),* $(,)?) => {
-        $(
-            impl<'de> Deserialize<'de> for $type {
-                fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-                    let value = &Value::deserialize(deserializer)?;
-                    value.try_into().map_err(serde::de::Error::custom)
-                }
-            }
-        )*
-    };
-}
-
-pub(crate) use from_yml;
-
-
 pub(crate) trait YamlNameValueMap {
     fn to_name_value_map(&self) -> EtlResult<(String, &Value)>;
 }

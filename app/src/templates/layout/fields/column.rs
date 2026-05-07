@@ -2,6 +2,7 @@ pub(crate) mod size;
 pub(crate) mod validation;
 
 use std::ops::Deref;
+use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
@@ -11,7 +12,7 @@ use size::ColumnSize;
 use validation::ColumnValidationTemplate;
 
 
-#[derive(Debug)]
+#[derive(Debug, DeserializeYaml)]
 pub(crate) struct ColumnTemplate {
     name: String,
     base: DataElementTemplate,

@@ -1,9 +1,11 @@
+use etl_macros::DeserializeYaml;
+use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
 use crate::fs::yaml::{YamlReader, invalid_yaml_value};
 
 
-#[derive(Debug)]
+#[derive(Debug, DeserializeYaml)]
 pub(crate) struct ColumnValidationTemplate {
     validate: bool,
     rule: Option<String>,

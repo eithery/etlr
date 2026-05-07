@@ -10,18 +10,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 use crate::std::result::EtlResult;
-use crate::fs::yaml::from_yml;
-use column::{ColumnTemplate, validation::ColumnValidationTemplate};
 use field::FieldTemplate;
-use position::FieldPosition;
-
-
-from_yml!(
-    ColumnTemplate,
-    ColumnValidationTemplate,
-    FieldPosition,
-    FieldTemplate
-);
 
 
 pub(crate) trait Fields {

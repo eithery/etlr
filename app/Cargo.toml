@@ -28,6 +28,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 tiberius = "0.12"
 
+etl_macros = { path = "../macros" }
+
 [dev-dependencies]
 rstest = "0.26"
 rstest_reuse = "0.7"

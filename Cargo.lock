@@ -866,6 +866,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40404c3f5f511ec4da6fe866ddf6a717c309fdbb69fbbad7b0f3edab8f2e835f"
 
 [[package]]
+name = "etl_macros"
+version = "0.0.1"
+dependencies = [
+ "quote",
+ "syn 2.0.117",
+]
+
+[[package]]
 name = "etlr"
 version = "0.0.1"
 dependencies = [
@@ -878,6 +886,7 @@ dependencies = [
  "dotenv",
  "either",
  "env_logger",
+ "etl_macros",
  "home",
  "include_dir",
  "lazy-regex",
