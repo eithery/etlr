@@ -1,7 +1,6 @@
 use rstest::*;
-use rstest_reuse::{self, *};
 use rxpect::expect;
-use rxpect::expectations::{StringExpectations, EqualityExpectations, ResultExpectations};
+use rxpect::expectations::*;
 use crate::templates::FieldTemplate;
 
 
@@ -99,53 +98,17 @@ account_number: unknown: invalid
 "#;
 
 
-#[template]
-#[rstest]
-#[case(STR_FIELD, "account_number", 10, 20, 11, ":str", None, None, None, true, true, true, false, false, Some(":account_number"))]
-#[case(DATE_FIELD, "date_of_birth", 14, 23, 10, ":date", Some("CCYY-MM-DD"), None, None, false, false, false, false, false, Some(":dob"))]
-#[case(MIN_STR_FIELD, "description", 220, 299, 80,  ":str", None, None, None, false, false, false, false, false, None)]
-#[case(CHAR_FLAG_FIELD, "network_level", 10, 10, 1, ":str", None, None, None, false, false, false, false, false, None)]
-#[case(EXPORTED_VALUE_FIELD, "sequence_number", 4, 5, 2, ":str", None, Some("01"), None, false, false, false, false, false, None)]
-#[case(EXPORTED_SOURCE_FIELD, "record_count", 40, 46, 7, ":str", None, None, Some("row_count"), false, false, false, false, false, None)]
-fn valid_fields(
-    #[case] yaml: &str,
-    #[case] field_name: &str,
-    #[case] start_pos: usize,
-    #[case] end_pos: usize,
-    #[case] len: usize,
-    #[case] data_type: &str,
-    #[case] data_format: Option<&str>,
-    #[case] value: Option<&str>,
-    #[case] source: Option<&str>,
-    #[case] key: bool,
-    #[case] required: bool,
-    #[case] exported: bool,
-    #[case] discriminator: bool,
-    #[case] preserve_invalid: bool,
-    #[case] pii: Option<&str>
-) { }
-
-
-#[template]
-#[rstest]
-#[case(INVALID_FIELD_FORMAT, "Invalid format for `field`.")]
-#[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
-#[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
-#[case(MISSING_POSITION, "Missing required `pos` value.")]
-#[case(INVALID_POSITION, "Parse error.")]
-#[case(INVALID_SOURCE, "Invalid value for `source`.")]
-#[case(INVALID_EXPORTED, "Invalid value for `exported`.")]
-#[case(INVALID_DISCRIMINATOR, "Invalid value for `discriminator`.")]
-#[case(INVALID_PRESERVE_INVALID, "Invalid value for `preserve_invalid`.")]
-#[case(INVALID_YAML_FORMAT, "mapping values are not allowed")]
-fn invalid_fields(#[case] yaml: &str, #[case] error_message: &str) { }
-
-
 mod deserialize {
     use super::*;
 
 
-    #[apply(valid_fields)]
+    #[rstest]
+    #[case(STR_FIELD, "account_number", 10, 20, 11, ":str", None, None, None, true, true, true, false, false, Some(":account_number"))]
+    #[case(DATE_FIELD, "date_of_birth", 14, 23, 10, ":date", Some("CCYY-MM-DD"), None, None, false, false, false, false, false, Some(":dob"))]
+    #[case(MIN_STR_FIELD, "description", 220, 299, 80,  ":str", None, None, None, false, false, false, false, false, None)]
+    #[case(CHAR_FLAG_FIELD, "network_level", 10, 10, 1, ":str", None, None, None, false, false, false, false, false, None)]
+    #[case(EXPORTED_VALUE_FIELD, "sequence_number", 4, 5, 2, ":str", None, Some("01"), None, false, false, false, false, false, None)]
+    #[case(EXPORTED_SOURCE_FIELD, "record_count", 40, 46, 7, ":str", None, None, Some("row_count"), false, false, false, false, false, None)]
     fn it_deserializes_field_from_yaml(
         #[case] yaml: &str,
         #[case] field_name: &str,
@@ -181,7 +144,17 @@ mod deserialize {
     }
 
 
-    #[apply(invalid_fields)]
+    #[rstest]
+    #[case(INVALID_FIELD_FORMAT, "Invalid format for `field`.")]
+    #[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
+    #[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
+    #[case(MISSING_POSITION, "Missing required `pos` value.")]
+    #[case(INVALID_POSITION, "Parse error.")]
+    #[case(INVALID_SOURCE, "Invalid value for `source`.")]
+    #[case(INVALID_EXPORTED, "Invalid value for `exported`.")]
+    #[case(INVALID_DISCRIMINATOR, "Invalid value for `discriminator`.")]
+    #[case(INVALID_PRESERVE_INVALID, "Invalid value for `preserve_invalid`.")]
+    #[case(INVALID_YAML_FORMAT, "mapping values are not allowed")]
     fn it_returns_error_for_invalid_field_format(#[case] yaml: &str, #[case] error_message: &str) {
         let field = serde_yaml::from_str::<FieldTemplate>(yaml);
         expect(field.as_ref()).to_be_err();

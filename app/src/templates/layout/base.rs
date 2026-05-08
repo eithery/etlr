@@ -9,13 +9,12 @@ use super::files::FileEntry;
 
 #[derive(Debug, Deserialize)]
 #[serde(bound(deserialize = "H: Deserialize<'de>, T: Deserialize<'de>, F: Deserialize<'de>"))]
-pub(crate) struct LayoutTemplateBase<H, T, F>
-    where F: FileEntry
+pub(crate) struct LayoutTemplateBase<H, T, F: FileEntry>
 {
     header: H,
     trailer: T,
 
-    #[serde(default, deserialize_with = "FileEntry::deserialize_files")]
+    #[serde(default)]
     files: Vec<F>,
 
     #[serde(default = "default_true")]

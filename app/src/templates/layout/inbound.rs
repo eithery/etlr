@@ -1,7 +1,7 @@
 use std::ops::Deref;
 use serde::Deserialize;
+use crate::templates::InboundFileEntryTemplate;
 use super::base::LayoutTemplateBase;
-use super::files::inbound::InboundFileTemplate;
 use super::header::inbound::InboundFileHeaderTemplate;
 use super::multitenant::MultitenantLayoutTemplate;
 use super::record::FileRecordTemplate;
@@ -12,7 +12,7 @@ use super::trailer::inbound::InboundFileTrailerTemplate;
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundLayoutTemplate {
     #[serde(flatten)]
-    base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileTemplate>,
+    base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileEntryTemplate>,
 
     record_size: Option<usize>,
     record_id: Option<RecordIdTemplate>,
@@ -24,7 +24,7 @@ pub(crate) struct InboundLayoutTemplate {
 
 
 impl Deref for InboundLayoutTemplate {
-    type Target = LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileTemplate>;
+    type Target = LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileEntryTemplate>;
 
     fn deref(&self) -> &Self::Target {
         &self.base

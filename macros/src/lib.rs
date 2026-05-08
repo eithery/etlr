@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::quote_spanned;
 use syn::{DeriveInput, parse_macro_input};
 
 
@@ -8,7 +8,7 @@ pub fn from_yaml_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
-    let expanded = quote! {
+    let expanded = quote_spanned! { name.span() =>
         impl<'de> Deserialize<'de> for #name {
             fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
                 let value = &Value::deserialize(deserializer)?;

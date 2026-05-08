@@ -17,22 +17,6 @@ impl FileEntry for OutboundFileTemplate {
     fn file_type(&self) -> &str {
         &self.file_type
     }
-
-
-    fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
-        where D: Deserializer<'de>
-    {
-        let payload = Value::deserialize(deserializer)?;
-        match payload {
-            Value::Sequence(files) => {
-                files
-                    .into_iter()
-                    .map(|payload| Self::from_yaml::<D>(payload))
-                    .collect()
-            }
-            _ => Err(de::Error::custom("`files` element must contain a sequence of file metadata elements."))
-        }
-    }
 }
 
 
@@ -49,6 +33,7 @@ impl OutboundFileTemplate {
     }
 
 
+    #[allow(dead_code)]
     fn from_yaml<'de, D>(payload: Value) -> Result<Self, D::Error>
         where D: Deserializer<'de>
     {

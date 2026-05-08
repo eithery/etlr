@@ -1,7 +1,7 @@
 use rstest::*;
 use rstest_reuse::{self, *};
 use rxpect::expect;
-use rxpect::expectations::{EqualityExpectations, BooleanExpectations, OptionExpectations};
+use rxpect::expectations::*;
 use crate::std::string::*;
 
 

@@ -14,6 +14,8 @@ pub(crate) use layout::fields::Fields;
 pub(crate) use layout::fields::column::ColumnTemplate;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
+pub(crate) use layout::files::FileEntry;
+pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
 
 #[allow(unused_imports)]
 pub(crate) use layout::fields::column::size::ColumnSize;

@@ -1,60 +1,59 @@
-use serde::{Deserialize, Deserializer, de};
+use etl_macros::DeserializeYaml;
+use serde::Deserialize;
 use serde_yaml::Value;
-use crate::templates::ColumnTemplate;
-use super::FileEntry;
+use crate::errors::EtlError;
+use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
+use crate::templates::{FileEntry, ColumnTemplate};
 
 
-#[derive(Debug, Deserialize)]
-pub(crate) struct InboundFileTemplate {
+#[derive(Debug, DeserializeYaml)]
+pub(crate) struct InboundFileEntryTemplate {
     file_type: String,
-
-    #[serde(default)]
-    columns: Vec<ColumnTemplate>
+    columns: Vec<ColumnTemplate>,
+    allow_duplicates: bool
 }
 
 
-impl FileEntry for InboundFileTemplate {
-    fn file_type(&self) -> &str {
-        &self.file_type
-    }
-
-
-    fn deserialize_files<'de, D>(deserializer: D) -> Result<Vec<Self>, D::Error>
-        where D: Deserializer<'de>
-    {
-        let value = Value::deserialize(deserializer)?;
-        match value {
-            Value::Sequence(files) => {
-                files.into_iter()
-                    .map(|file| Self::from_yaml::<D>(file))
-                    .collect()
-            }
-            _ => Err(de::Error::custom("`files` element must contain a sequence of file metadata elements."))
-        }
-    }
-}
-
-
-impl InboundFileTemplate {
+impl InboundFileEntryTemplate {
     #[allow(dead_code)]
-    fn columns(&self) -> impl Iterator<Item = &ColumnTemplate> {
+    pub(crate) fn columns(&self) -> impl Iterator<Item = &ColumnTemplate> {
         self.columns.iter()
     }
 
 
-    fn from_yaml<'de, D>(value: Value) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
+    #[allow(dead_code)]
+    pub(crate) fn allow_duplicates(&self) -> bool {
+        self.allow_duplicates
+    }
+}
+
+
+impl FileEntry for InboundFileEntryTemplate {
+    fn file_type(&self) -> &str {
+        &self.file_type
+    }
+}
+
+
+impl TryFrom<&Value> for InboundFileEntryTemplate {
+    type Error = EtlError;
+
+    fn try_from(payload: &Value) -> Result<Self, Self::Error> {
+        let (file_type, value) = payload.to_name_value_map()?;
         match value {
-            Value::Mapping(mapping) if mapping.len() == 1 => {
-                let (key, _) = mapping.iter().next().unwrap();
-                let file_type = key
-                    .as_str()
-                    .map(str::to_string)
-                    .ok_or_else(|| de::Error::custom("File type key element must be a string."))?;
-                Ok(Self { file_type, columns: Vec::new() })
+            Value::Mapping(m) => {
+                Ok(Self {
+                    file_type,
+                    columns: m.get_vec("columns")?,
+                    allow_duplicates: m.get_bool("allow_duplicates", false)?
+                })
             }
-            _ => Err(de::Error::custom("`files` entries must be single-entry maps."))
+            _ => Err(invalid_file_entry_format())
         }
     }
+}
+
+
+fn invalid_file_entry_format() -> EtlError {
+    invalid_yaml_format("file entry", "Expected a mapping")
 }

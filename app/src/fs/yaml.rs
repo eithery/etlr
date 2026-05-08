@@ -13,7 +13,7 @@ pub(crate) trait YamlNameValueMap {
 }
 
 
-impl YamlNameValueMap for Value {
+impl YamlNameValueMap for &Value {
     fn to_name_value_map(&self) -> EtlResult<(String, &Value)> {
         match self {
             Value::Mapping(map) if map.len() == 1 => {
@@ -47,10 +47,13 @@ pub(crate) trait YamlReader {
 
     fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
         where T: TryFrom<&'a Value, Error = EtlError> + Default;
+
+    fn get_vec<'a, T>(&'a self, tag_name: &str) -> EtlResult<Vec<T>>
+        where T: TryFrom<&'a Value, Error = EtlError>;
 }
 
 
-impl YamlReader for Mapping {
+impl YamlReader for &Mapping {
     fn get_opt_str(&self, tag_name: &str) -> EtlResult<Option<String>> {
         self.get(tag_name)
             .map(|val| {
@@ -104,6 +107,22 @@ impl YamlReader for Mapping {
     {
         self.get_opt_value(tag_name)
             .map(Option::unwrap_or_default)
+    }
+
+
+    fn get_vec<'a, T>(&'a self, tag_name: &str) -> EtlResult<Vec<T>>
+        where T: TryFrom<&'a Value, Error = EtlError>
+    {
+        let value = self.get(tag_name)
+            .ok_or_else(|| missing_required_yaml_value(tag_name))?;
+        match value {
+            Value::Sequence(items) => {
+                items.iter()
+                    .map(TryInto::try_into)
+                    .collect()
+            }
+            _ => Err(invalid_yaml_format(tag_name, "Expected a sequence"))
+        }
     }
 }
 

@@ -1,5 +1,4 @@
 use rstest::*;
-use rstest_reuse::{self, *};
 use rxpect::expect;
 use rxpect::expectations::*;
 use crate::templates::{ColumnTemplate, ColumnSize};
@@ -76,44 +75,17 @@ account_number: unknown: invalid
 "#;
 
 
-#[template]
-#[rstest]
-#[case(STR_COLUMN, "account_number", ":str", None, ColumnSize::Sized(20), None, true, true, false, None)]
-#[case(BLANK_COLUMN, "approver_name", ":str", None, ColumnSize::Default, None, false, false, false, None)]
-#[case(DATE_COLUMN, "date_of_birth", ":date", Some("CCYY-MM-DD"), ColumnSize::Default, None, false, false, false, Some(":dob"))]
-#[case(REFERENCE_COLUMN, "risk_tolerance", ":ref", None, ColumnSize::Default, None, false, false, true, None)]
-#[case(BOOL_COLUMN, "active", ":bool", None, ColumnSize::Default, None, false, false, false, None)]
-#[case(ANY_SIZE_COLUMN, "notes", ":str", None, ColumnSize::Any, None, false, false, false, None)]
-fn valid_columns(
-    #[case] yaml: &str,
-    #[case] column_name: &str,
-    #[case] data_type: &str,
-    #[case] data_format: Option<&str>,
-    #[case] size: ColumnSize,
-    #[case] value: Option<&str>,
-    #[case] key: bool,
-    #[case] required: bool,
-    #[case] validate: bool,
-    #[case] pii: Option<&str>
-) { }
-
-
-#[template]
-#[rstest]
-#[case(INVALID_COLUMN_FORMAT, "Invalid format for `column`.")]
-#[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
-#[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
-#[case(INVALID_SIZE, "Invalid value for `column.size`.")]
-#[case(INVALID_VALIDATE, "Invalid value for `validate`")]
-#[case(INVALID_YAML_FORMAT, "mapping values are not allowed")]
-fn invalid_columns(#[case] yaml: &str, #[case] error_message: &str) { }
-
-
 mod deserialize {
     use super::*;
 
 
-    #[apply(valid_columns)]
+    #[rstest]
+    #[case(STR_COLUMN, "account_number", ":str", None, ColumnSize::Sized(20), None, true, true, false, None)]
+    #[case(BLANK_COLUMN, "approver_name", ":str", None, ColumnSize::Default, None, false, false, false, None)]
+    #[case(DATE_COLUMN, "date_of_birth", ":date", Some("CCYY-MM-DD"), ColumnSize::Default, None, false, false, false, Some(":dob"))]
+    #[case(REFERENCE_COLUMN, "risk_tolerance", ":ref", None, ColumnSize::Default, None, false, false, true, None)]
+    #[case(BOOL_COLUMN, "active", ":bool", None, ColumnSize::Default, None, false, false, false, None)]
+    #[case(ANY_SIZE_COLUMN, "notes", ":str", None, ColumnSize::Any, None, false, false, false, None)]
     fn it_deserializes_column_from_yaml(
         #[case] yaml: &str,
         #[case] column_name: &str,
@@ -143,7 +115,13 @@ mod deserialize {
     }
 
 
-    #[apply(invalid_columns)]
+    #[rstest]
+    #[case(INVALID_COLUMN_FORMAT, "Invalid format for `column`.")]
+    #[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
+    #[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
+    #[case(INVALID_SIZE, "Invalid value for `column.size`.")]
+    #[case(INVALID_VALIDATE, "Invalid value for `validate`")]
+    #[case(INVALID_YAML_FORMAT, "mapping values are not allowed")]
     fn it_returns_error_for_invalid_column_format(#[case] yaml: &str, #[case] error_message: &str) {
         let column = serde_yaml::from_str::<ColumnTemplate>(yaml);
         expect(column.as_ref()).to_be_err();
