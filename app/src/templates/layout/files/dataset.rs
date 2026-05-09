@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Mapping;
-use super::columns::ColumnSelectionTemplate;
+use super::columns::DataColumnsTemplate;
 use super::join::DatasetJoinTemplate;
 
 
@@ -8,7 +8,7 @@ use super::join::DatasetJoinTemplate;
 pub(crate) struct DatasetTemplate {
     id: String,
     source: String,
-    columns: ColumnSelectionTemplate,
+    columns: DataColumnsTemplate,
 
     #[serde(default)]
     join: Vec<DatasetJoinTemplate>
@@ -29,7 +29,7 @@ impl DatasetTemplate {
 
 
     #[allow(dead_code)]
-    fn columns(&self) -> &ColumnSelectionTemplate {
+    fn columns(&self) -> &DataColumnsTemplate {
         &self.columns
     }
 

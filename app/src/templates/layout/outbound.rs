@@ -3,11 +3,11 @@ use std::ops::Deref;
 use serde::Deserialize;
 use crate::std::result::Result;
 use crate::templates::defaults::default_false;
+use crate::templates::OutboundFileEntryTemplate;
 use crate::templates::errors as err;
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
-use super::files::outbound::OutboundFileTemplate;
 use super::section::FileSectionTemplate;
 use super::trailer::outbound::OutboundFileTrailerTemplate;
 
@@ -15,7 +15,7 @@ use super::trailer::outbound::OutboundFileTrailerTemplate;
 #[derive(Debug, Deserialize)]
 pub(crate) struct OutboundLayoutTemplate {
     #[serde(flatten)]
-    base: LayoutTemplateBase<OutboundFileHeaderTemplate, OutboundFileTrailerTemplate, OutboundFileTemplate>,
+    base: LayoutTemplateBase<OutboundFileHeaderTemplate, OutboundFileTrailerTemplate, OutboundFileEntryTemplate>,
 
     #[serde(default = "default_false")]
     extra_trailing_delimiters: bool,
@@ -32,7 +32,7 @@ pub(crate) struct OutboundLayoutTemplate {
 
 
 impl Deref for OutboundLayoutTemplate {
-    type Target = LayoutTemplateBase<OutboundFileHeaderTemplate, OutboundFileTrailerTemplate, OutboundFileTemplate>;
+    type Target = LayoutTemplateBase<OutboundFileHeaderTemplate, OutboundFileTrailerTemplate, OutboundFileEntryTemplate>;
 
     fn deref(&self) -> &Self::Target {
         &self.base

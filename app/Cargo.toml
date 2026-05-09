@@ -5,10 +5,10 @@ edition = "2024"
 
 [dependencies]
 chrono = "0.4"
-clap = { version = "4.5", features = ["derive"] }
-clap_builder = "4.5"
+clap = { version = "4.6", features = ["derive"] }
+clap_builder = "4.6"
 colored = "3.1"
-confy = "1.0"
+confy = "2.0"
 constcat = "0.6"
 dotenv = "0.15"
 either = "1.15"
@@ -22,7 +22,7 @@ path-clean = "1.0"
 phf = { version = "0.13", features = ["macros"] }
 polars = "0.53"
 regex = "1.12"
-rust_decimal = "1.40"
+rust_decimal = "1.42"
 rust_decimal_macros = "1.40"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
@@ -33,4 +33,4 @@ etl_macros = { path = "../macros" }
 [dev-dependencies]
 rstest = "0.26"
 rstest_reuse = "0.7"
-rxpect = "0.9"
+rxpect = "0.10"

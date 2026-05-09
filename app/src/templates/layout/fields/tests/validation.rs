@@ -1,7 +1,8 @@
 use rstest::*;
 use rxpect::expect;
 use rxpect::expectations::*;
-use crate::templates::{ColumnValidationTemplate, InvalidValueHandling};
+use crate::templates::ColumnValidationTemplate;
+use crate::templates::layout::fields::column::validation::InvalidValueHandling;
 
 
 const VALID_TEMPLATE: &str = r#"

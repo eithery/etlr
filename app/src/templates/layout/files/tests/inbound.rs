@@ -17,6 +17,31 @@ std.customers:
         validate: true
 "#;
 
+const VALID_INTERESTED_PARTIES: &str = r#"
+std.account_interested_parties:
+  allow_duplicates: true
+  columns:
+    - account_id:
+    - account_number:
+        size: 20
+        required: true
+        key: true
+    - interested_party_type:
+        type: :ref
+        required: true
+        validate: true
+    - tax_id:
+        size: 16
+        type: :tax_id
+    - tax_id_type:
+        type: :enum
+"#;
+
+const NO_COLUMNS: &str = r#"
+std.master_accounts:
+  columns:
+"#;
+
 const INVALID_FORMAT: &str = r#"
 std.master_accounts: false
 "#;
@@ -57,6 +82,7 @@ mod deserialize {
 
     #[rstest]
     #[case(VALID_CUSTOMERS, "std.customers", 3, false)]
+    #[case(VALID_INTERESTED_PARTIES, "std.account_interested_parties", 5, true)]
     fn it_deserializes_file_entry_template_from_yaml(
         #[case] yaml: &str,
         #[case] file_type: &str,
@@ -77,6 +103,7 @@ mod deserialize {
     #[case(INVALID_COLUMNS, "Invalid format for `columns`.")]
     #[case(MISSING_COLUMNS, "Missing required `columns` value.")]
     #[case(INVALID_ALLOW_DUPLICATES, "Invalid value for `allow_duplicates`.")]
+    #[case(NO_COLUMNS, "Invalid format for `columns`.")]
     fn it_returns_error_for_invalid_file_entry_format(#[case] yaml: &str, #[case] error_message: &str) {
         let file_entry = serde_yaml::from_str::<InboundFileEntryTemplate>(yaml);
         expect(file_entry.as_ref()).to_be_err();

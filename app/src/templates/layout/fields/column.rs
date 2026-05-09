@@ -7,9 +7,8 @@ use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
 use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
+use crate::templates::{ColumnSize, ColumnValidationTemplate};
 use super::data_element::DataElementTemplate;
-use size::ColumnSize;
-use validation::ColumnValidationTemplate;
 
 
 #[derive(Debug, DeserializeYaml)]

@@ -2,7 +2,7 @@ mod columns;
 pub(super) mod dataset;
 pub(crate) mod inbound;
 mod join;
-pub(super) mod outbound;
+pub(crate) mod outbound;
 
 #[cfg(test)]
 mod tests;

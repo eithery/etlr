@@ -6,21 +6,14 @@ use super::dataset::DatasetTemplate;
 
 
 #[derive(Debug, Deserialize)]
-pub(crate) struct OutboundFileTemplate {
+pub(crate) struct OutboundFileEntryTemplate {
     file_type: String,
     file_name: String,
     dataset: DatasetTemplate
 }
 
 
-impl FileEntry for OutboundFileTemplate {
-    fn file_type(&self) -> &str {
-        &self.file_type
-    }
-}
-
-
-impl OutboundFileTemplate {
+impl OutboundFileEntryTemplate {
     #[allow(dead_code)]
     fn outbound_file_name(&self) -> &str {
         &self.file_name
@@ -60,5 +53,12 @@ impl OutboundFileTemplate {
             }
             _ => Err(de::Error::custom("`files` entries must be single-entry maps."))
         }
+    }
+}
+
+
+impl FileEntry for OutboundFileEntryTemplate {
+    fn file_type(&self) -> &str {
+        &self.file_type
     }
 }
