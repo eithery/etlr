@@ -1,17 +1,37 @@
+mod category;
+mod defaults;
+pub(crate) mod errors;
+pub(crate) mod export;
+mod file;
+pub(crate) mod import;
+pub(crate) mod layout;
+
+pub(crate) use layout::fields::Fields;
+pub(crate) use layout::fields::column::ColumnTemplate;
+pub(crate) use layout::fields::column::size::ColumnSize;
+pub(crate) use layout::fields::column::validation::ColumnValidationTemplate;
+pub(crate) use layout::fields::field::FieldTemplate;
+pub(crate) use layout::fields::position::FieldPosition;
+pub(crate) use layout::files::FileEntry;
+pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
+pub(crate) use layout::files::outbound::OutboundFileEntryTemplate;
+
 use std::path::{Path, PathBuf};
 use either::Either;
+use include_dir::{include_dir, Dir};
 use path_absolutize::Absolutize;
 use path_clean::PathClean;
-use serde::de::DeserializeOwned;
+use serde::{Deserialize, de::DeserializeOwned};
 use crate::cli;
-use crate::fs::yaml;
 use crate::errors::ErrorKind;
+use crate::fs::yaml;
 use crate::std::result::Result;
 use crate::templates::layout::LayoutTemplate;
-use super::errors as err;
-use super::INTEGRATED_TEMPLATES;
+use category::TemplateCategory;
+use errors as err;
 
 
+static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
 const ALL_YAML: &str = "**/*.yml";
 
 
@@ -107,7 +127,7 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
 
     fn build_template_path(template_name: &str, template_path: Option<&Path>) -> Result<PathBuf> {
-        let (file_category, file_name) = split_template_name(template_name)?;
+        let (file_category, file_name) = Self::split_template_name(template_name)?;
         let file_path = Path::new(Self::TEMPLATES_ROOT)
             .join(file_category)
             .join(format!("{file_name}.yml"));
@@ -128,16 +148,46 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
             })
             .and_then(|content| yaml::load_from_str(content))
     }
+
+
+    fn split_template_name(template_name: &str) -> Result<(&str, &str)> {
+        let err = || err::invalid_template_name(template_name);
+        let separators = ['.', '/'];
+
+        let (source, name) = template_name.split_once(separators).ok_or_else(err)?;
+        if source.is_empty() || name.is_empty() || name.contains(separators) {
+            return Err(err::invalid_template_name(template_name));
+        }
+        Ok((source, name))
+    }
 }
 
 
-fn split_template_name(template_name: &str) -> Result<(&str, &str)> {
-    let err = || err::invalid_template_name(template_name);
-    let separators = ['.', '/'];
+#[derive(Debug, Deserialize)]
+pub(crate) struct FileTemplateBase {
+    #[serde(rename = "etl_template")]
+    kind: TemplateCategory,
 
-    let (source, name) = template_name.split_once(separators).ok_or_else(err)?;
-    if source.is_empty() || name.is_empty() || name.contains(separators) {
-        return Err(err::invalid_template_name(template_name));
+    version: u8,
+    description: Option<String>
+}
+
+
+impl FileTemplateBase {
+    #[allow(dead_code)]
+    fn kind(&self) -> &TemplateCategory {
+        &self.kind
     }
-    Ok((source, name))
+
+
+    #[allow(dead_code)]
+    fn version(&self) -> u8 {
+        self.version
+    }
+
+
+    #[allow(dead_code)]
+    fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
 }

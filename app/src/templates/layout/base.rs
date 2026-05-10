@@ -2,20 +2,21 @@ use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::default_true;
 use super::LayoutTemplate;
+use super::files::FileEntry;
 use super::header::FileHeaderTemplate;
 use super::trailer::FileTrailerTemplate;
-use super::files::FileEntry;
 
 
 #[derive(Debug, Deserialize)]
 #[serde(bound(deserialize = "H: Deserialize<'de>, T: Deserialize<'de>, F: Deserialize<'de>"))]
-pub(crate) struct LayoutTemplateBase<H, T, F: FileEntry>
-{
+pub(crate) struct LayoutTemplateBase<H, T, F: FileEntry> {
     header: H,
     trailer: T,
 
     #[serde(default)]
     files: Vec<F>,
+
+    record_size: Option<usize>,
 
     #[serde(default = "default_true")]
     include_column_names: bool
@@ -46,6 +47,12 @@ impl<L, H, T, F> LayoutTemplate for L
     #[allow(dead_code)]
     fn files(&self) -> impl Iterator<Item = &Self::File> {
         self.files.iter()
+    }
+
+
+    #[allow(dead_code)]
+    fn record_size(&self) -> Option<usize> {
+        self.record_size
     }
 
 

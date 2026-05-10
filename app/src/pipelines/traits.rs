@@ -3,7 +3,7 @@ use dotenv::dotenv;
 use crate::cli;
 use crate::config::app::AppConfiguration;
 use crate::std::result::Result;
-use crate::templates::traits::FileTemplate;
+use crate::templates::FileTemplate;
 
 
 pub(crate) trait DataPipeline {

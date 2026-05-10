@@ -14,7 +14,6 @@ pub(crate) struct InboundLayoutTemplate {
     #[serde(flatten)]
     base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileEntryTemplate>,
 
-    record_size: Option<usize>,
     record_id: Option<RecordIdTemplate>,
     multitenant: Option<MultitenantLayoutTemplate>,
 
@@ -33,12 +32,6 @@ impl Deref for InboundLayoutTemplate {
 
 
 impl InboundLayoutTemplate {
-    #[allow(dead_code)]
-    fn record_size(&self) -> Option<usize> {
-        self.record_size
-    }
-
-
     #[allow(dead_code)]
     fn record_id(&self) -> Option<&RecordIdTemplate> {
         self.record_id.as_ref()

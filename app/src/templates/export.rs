@@ -1,11 +1,10 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use super::base::FileTemplateBase;
+use super::{FileTemplate, FileTemplateBase};
 use super::file::FileInfoTemplate;
 use super::file::format::FileFormat;
 use super::file::outbound::OutboundFileInfoTemplate;
 use super::layout::outbound::OutboundLayoutTemplate;
-use super::traits::FileTemplate;
 
 
 #[derive(Debug, Deserialize)]

@@ -5,6 +5,7 @@ use crate::std::result::Result;
 use crate::templates::defaults::default_false;
 use crate::templates::OutboundFileEntryTemplate;
 use crate::templates::errors as err;
+use super::LayoutTemplate;
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
@@ -24,8 +25,6 @@ pub(crate) struct OutboundLayoutTemplate {
     sections: Vec<FileSectionTemplate>,
 
     section_selector: Option<String>,
-
-    record_size: Option<usize>,
 
     dataset: Option<DatasetTemplate>
 }
@@ -60,11 +59,6 @@ impl OutboundLayoutTemplate {
 
     fn section_selector(&self) -> Option<&str> {
         self.section_selector.as_deref()
-    }
-
-
-    fn record_size(&self) -> Option<usize> {
-        self.record_size
     }
 
 

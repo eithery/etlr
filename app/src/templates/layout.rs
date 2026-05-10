@@ -50,7 +50,9 @@ pub(crate) trait LayoutTemplate {
 
     fn included_file_types(&self) -> impl Iterator<Item = &str>;
 
-
     #[allow(dead_code)]
     fn include_column_names(&self) -> bool;
+
+    #[allow(dead_code)]
+    fn record_size(&self) -> Option<usize>;
 }

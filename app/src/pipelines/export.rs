@@ -1,7 +1,7 @@
 use crate::config::app::AppConfiguration;
 use crate::std::result::Result;
+use crate::templates::FileTemplate;
 use crate::templates::export::FileExportTemplate;
-use crate::templates::traits::FileTemplate;
 use super::options::FileExportOptions;
 use super::traits::DataPipeline;
 
