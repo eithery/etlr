@@ -44,7 +44,6 @@ struct JoinColumnsTemplate(Vec<(String, Option<String>)>);
 
 
 impl JoinColumnsTemplate {
-    #[allow(dead_code)]
     fn column_names(&self) -> impl Iterator<Item = &str> {
         self.0
             .iter()

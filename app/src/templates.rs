@@ -31,7 +31,7 @@ use category::TemplateCategory;
 use errors as err;
 
 
-static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
+static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/../templates");
 
 const ALL_YAML: &str = "**/*.yml";
 
@@ -62,7 +62,6 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
     }
 
 
-    #[allow(dead_code)]
     fn list<I, P>(_template_dirs: I) -> impl Iterator<Item = String>
         where I: IntoIterator<Item = Result<P>>, P: AsRef<Path>
     {

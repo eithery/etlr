@@ -45,13 +45,11 @@ impl<L, H, T, F> LayoutTemplate for L
     }
 
 
-    #[allow(dead_code)]
     fn record_size(&self) -> Option<usize> {
         self.record_size
     }
 
 
-    #[allow(dead_code)]
     fn files(&self) -> impl Iterator<Item = &Self::File> {
         self.files.iter()
     }

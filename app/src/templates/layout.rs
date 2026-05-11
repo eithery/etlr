@@ -40,7 +40,6 @@ pub(crate) trait LayoutTemplate {
     }
 
 
-    #[allow(dead_code)]
     fn record_size(&self) -> Option<usize>;
 
     fn files(&self) -> impl Iterator<Item = &Self::File>;
