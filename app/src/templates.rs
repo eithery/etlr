@@ -24,9 +24,9 @@ use path_clean::PathClean;
 use serde::{Deserialize, de::DeserializeOwned};
 use crate::cli;
 use crate::errors::ErrorKind;
-use crate::yaml;
 use crate::std::result::Result;
 use crate::templates::layout::LayoutTemplate;
+use crate::yaml;
 use category::TemplateCategory;
 use errors as err;
 

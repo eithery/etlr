@@ -1,15 +1,15 @@
 use serde_yaml::Value;
 use crate::errors::{EtlError, ErrorKind};
-use crate::std::result::EtlResult;
+use crate::std::result::Result;
 
 
 pub(crate) trait YamlNameValueMap {
-    fn to_name_value_map(&self) -> EtlResult<(String, &Value)>;
+    fn to_name_value_map(&self) -> Result<(String, &Value)>;
 }
 
 
 impl YamlNameValueMap for &Value {
-    fn to_name_value_map(&self) -> EtlResult<(String, &Value)> {
+    fn to_name_value_map(&self) -> Result<(String, &Value)> {
         match self {
             Value::Mapping(map) if map.len() == 1 => {
                 let (key, val) = map.iter().next().unwrap();

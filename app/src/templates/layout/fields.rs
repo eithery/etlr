@@ -9,7 +9,7 @@ mod tests;
 use std::collections::HashMap;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
-use crate::std::result::EtlResult;
+use crate::std::result::Result;
 use field::FieldTemplate;
 
 
@@ -18,7 +18,7 @@ pub(crate) trait Fields {
 
 
     #[allow(dead_code)]
-    fn deserialize<'de, D>(deserializer: D) -> Result<Vec<FieldTemplate>, D::Error>
+    fn deserialize<'de, D>(deserializer: D) -> std::result::Result<Vec<FieldTemplate>, D::Error>
         where D: Deserializer<'de>
     {
         let payload = Value::deserialize(deserializer)?;
@@ -34,7 +34,7 @@ pub(crate) trait Fields {
     }
 
 
-    fn build_fixed_length(&self, field_values: &HashMap<&str, Option<&str>>, record_size: usize) -> EtlResult<String> {
+    fn build_fixed_length(&self, field_values: &HashMap<&str, Option<&str>>, record_size: usize) -> Result<String> {
         let mut row = vec![b' '; record_size + 1];
         row[record_size] = b'\n';
         for field in self.fields() {

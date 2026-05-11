@@ -11,10 +11,10 @@ use std::fs::File;
 use std::path::Path;
 use serde::de::DeserializeOwned;
 use crate::errors as err;
-use crate::std::result::EtlResult;
+use crate::std::result::Result;
 
 
-pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> EtlResult<T> {
+pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> Result<T> {
     if !file_path.is_file() {
         return Err(err::file_does_not_exist(file_path));
     }
@@ -24,6 +24,6 @@ pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> EtlResult
 }
 
 
-pub(crate) fn load_from_str<T: DeserializeOwned>(yaml_str: &str) -> EtlResult<T> {
+pub(crate) fn load_from_str<T: DeserializeOwned>(yaml_str: &str) -> Result<T> {
     Ok(serde_yaml::from_str(yaml_str)?)
 }

@@ -1,33 +1,33 @@
 use serde_yaml::{Value, Mapping};
-use crate::std::result::EtlResult;
+use crate::std::result::Result;
 use crate::errors::EtlError;
 use super::errors as err;
 
 
 pub(crate) trait YamlReader {
-    fn get_opt_str(&self, tag_name: &str) -> EtlResult<Option<String>>;
+    fn get_opt_str(&self, tag_name: &str) -> Result<Option<String>>;
 
     #[allow(dead_code)]
-    fn get_opt_usize(&self, tag_name: &str) -> EtlResult<Option<usize>>;
+    fn get_opt_usize(&self, tag_name: &str) -> Result<Option<usize>>;
 
-    fn get_bool(&self, tag_name: &str, default: bool) -> EtlResult<bool>;
+    fn get_bool(&self, tag_name: &str, default: bool) -> Result<bool>;
 
-    fn get_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+    fn get_value<'a, T>(&'a self, tag_name: &str) -> Result<T>
         where T: TryFrom<&'a Value, Error = EtlError>;
 
-    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<Option<T>>
+    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> Result<Option<T>>
         where T: TryFrom<&'a Value, Error = EtlError>;
 
-    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> Result<T>
         where T: TryFrom<&'a Value, Error = EtlError> + Default;
 
-    fn get_vec<'a, T>(&'a self, tag_name: &str) -> EtlResult<Vec<T>>
+    fn get_vec<'a, T>(&'a self, tag_name: &str) -> Result<Vec<T>>
         where T: TryFrom<&'a Value, Error = EtlError>;
 }
 
 
 impl YamlReader for &Mapping {
-    fn get_opt_str(&self, tag_name: &str) -> EtlResult<Option<String>> {
+    fn get_opt_str(&self, tag_name: &str) -> Result<Option<String>> {
         self.get(tag_name)
             .map(|val| {
                 val.as_str()
@@ -38,7 +38,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_opt_usize(&self, tag_name: &str) -> EtlResult<Option<usize>> {
+    fn get_opt_usize(&self, tag_name: &str) -> Result<Option<usize>> {
         self.get(tag_name)
             .map_or(Ok(None), |val| {
                 val.as_u64()
@@ -48,7 +48,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_bool(&self, tag_name: &str, default: bool) -> EtlResult<bool> {
+    fn get_bool(&self, tag_name: &str, default: bool) -> Result<bool> {
         self.get(tag_name)
             .map_or(Ok(default), |val| {
                 val.as_bool()
@@ -57,7 +57,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+    fn get_value<'a, T>(&'a self, tag_name: &str) -> Result<T>
         where T: TryFrom<&'a Value, Error = EtlError>
     {
         self.get(tag_name)
@@ -66,7 +66,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> EtlResult<Option<T>>
+    fn get_opt_value<'a, T>(&'a self, tag_name: &str) -> Result<Option<T>>
         where T: TryFrom<&'a Value, Error = EtlError>
     {
         self.get(tag_name)
@@ -75,7 +75,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> EtlResult<T>
+    fn get_value_or_default<'a, T>(&'a self, tag_name: &str) -> Result<T>
         where T: TryFrom<&'a Value, Error = EtlError> + Default
     {
         self.get_opt_value(tag_name)
@@ -83,7 +83,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn get_vec<'a, T>(&'a self, tag_name: &str) -> EtlResult<Vec<T>>
+    fn get_vec<'a, T>(&'a self, tag_name: &str) -> Result<Vec<T>>
         where T: TryFrom<&'a Value, Error = EtlError>
     {
         let value = self.get(tag_name)
