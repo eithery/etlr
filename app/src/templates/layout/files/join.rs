@@ -2,7 +2,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::{LabeledColumns, invalid_yaml_format};
+use crate::yaml::{LabeledColumns, errors as err};
 
 
 #[derive(Debug, Deserialize)]
@@ -66,5 +66,5 @@ impl TryFrom<&Value> for JoinColumnsTemplate {
 
 
 fn invalid_columns_format() -> EtlError {
-    invalid_yaml_format("columns", "Expected a sequence of strings as column names")
+    err::invalid_yaml_format("columns", "Expected a sequence of strings as column names")
 }

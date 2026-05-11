@@ -3,7 +3,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::{Value, Number};
 use crate::errors::EtlError;
-use crate::fs::yaml::invalid_yaml_value;
+use crate::yaml::errors as err;
 
 
 const DELIMITER: &str = "..";
@@ -107,5 +107,5 @@ impl TryFrom<&Value> for FieldPosition {
 
 
 fn invalid_field_position_value() -> EtlError {
-    invalid_yaml_value("field.pos", "Expected a number or a string")
+    err::invalid_yaml_value("field.pos", "Expected a number or a string")
 }

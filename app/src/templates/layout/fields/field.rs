@@ -3,7 +3,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
+use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
 use crate::templates::FieldPosition;
 use super::data_element::DataElementTemplate;
 
@@ -107,5 +107,5 @@ impl TryFrom<&Value> for FieldTemplate {
 
 
 fn invalid_field_format() -> EtlError {
-    invalid_yaml_format("field", "Expected a mapping, string, or number")
+    err::invalid_yaml_format("field", "Expected a mapping, string, or number")
 }

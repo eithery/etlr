@@ -1,6 +1,6 @@
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::invalid_yaml_value;
+use crate::yaml::errors as err;
 
 
 const ANY_SIZE_TAG: &str = ":any";
@@ -39,5 +39,5 @@ impl Default for ColumnSize {
 
 
 fn invalid_column_size() -> EtlError {
-    invalid_yaml_value("column.size", "Expected a number or `:any` value")
+    err::invalid_yaml_value("column.size", "Expected a number or `:any` value")
 }

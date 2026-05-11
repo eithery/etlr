@@ -2,8 +2,8 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
 use crate::templates::{FileEntry, ColumnTemplate};
+use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
 
 
 #[derive(Debug, DeserializeYaml)]
@@ -55,5 +55,5 @@ impl TryFrom<&Value> for InboundFileEntryTemplate {
 
 
 fn invalid_file_entry_format() -> EtlError {
-    invalid_yaml_format("file entry", "Expected a mapping")
+    err::invalid_yaml_format("file entry", "Expected a mapping")
 }

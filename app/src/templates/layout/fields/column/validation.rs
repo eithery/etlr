@@ -2,7 +2,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::{YamlReader, invalid_yaml_value};
+use crate::yaml::{YamlReader, errors as err};
 
 
 #[derive(Debug, DeserializeYaml)]
@@ -94,12 +94,12 @@ impl TryFrom<&Value> for InvalidValueHandling {
 
 
 fn invalid_validate_value() -> EtlError {
-    invalid_yaml_value("validate", "Expected a mapping, string, or boolean")
+    err::invalid_yaml_value("validate", "Expected a mapping, string, or boolean")
 }
 
 
 fn invalid_reject_invalid_value() -> EtlError {
-    invalid_yaml_value(
+    err::invalid_yaml_value(
         "reject_invalid",
         "Expected values: `:field`, `:row`, `:file`, or boolean"
     )

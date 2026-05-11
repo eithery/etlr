@@ -2,11 +2,11 @@ pub mod cli;
 mod config;
 mod env;
 mod errors;
-mod fs;
 mod path;
 mod pipelines;
 pub mod std;
 mod templates;
+mod yaml;
 
 use crate::pipelines::{import::FileImportPipeline, export::FileExportPipeline};
 use crate::pipelines::options::{FileExportOptions, FileImportOptions};

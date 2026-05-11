@@ -6,8 +6,8 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::fs::yaml::{YamlReader, YamlNameValueMap, invalid_yaml_format};
 use crate::templates::{ColumnSize, ColumnValidationTemplate};
+use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
 use super::data_element::DataElementTemplate;
 
 
@@ -81,5 +81,5 @@ impl TryFrom<&Value> for ColumnTemplate {
 
 
 fn invalid_column_format() -> EtlError {
-    invalid_yaml_format("column", "Expected a mapping or empty value")
+    err::invalid_yaml_format("column", "Expected a mapping or empty value")
 }

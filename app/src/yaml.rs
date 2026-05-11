@@ -1,0 +1,29 @@
+mod columns;
+pub(crate) mod errors;
+mod name_value;
+mod reader;
+
+pub(crate) use columns::LabeledColumns;
+pub(crate) use name_value::YamlNameValueMap;
+pub(crate) use reader::YamlReader;
+
+use std::fs::File;
+use std::path::Path;
+use serde::de::DeserializeOwned;
+use crate::errors as err;
+use crate::std::result::EtlResult;
+
+
+pub(crate) fn load_from_file<T: DeserializeOwned>(file_path: &Path) -> EtlResult<T> {
+    if !file_path.is_file() {
+        return Err(err::file_does_not_exist(file_path));
+    }
+
+    let file = File::open(file_path)?;
+    Ok(serde_yaml::from_reader(file)?)
+}
+
+
+pub(crate) fn load_from_str<T: DeserializeOwned>(yaml_str: &str) -> EtlResult<T> {
+    Ok(serde_yaml::from_str(yaml_str)?)
+}
