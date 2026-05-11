@@ -1,6 +1,6 @@
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Mapping;
-use super::columns::DataColumnsTemplate;
+use super::data_columns::DataColumnsTemplate;
 use super::join::DatasetJoinTemplate;
 
 

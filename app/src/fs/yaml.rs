@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::path::Path;
-use serde::{Deserializer, de};
 use serde::de::DeserializeOwned;
 use serde_yaml::{Value, Mapping};
 use crate::errors as err;
@@ -27,6 +26,28 @@ impl YamlNameValueMap for &Value {
             }
             _ => Err(invalid_name_value_map("YAML entries must be single-entry maps."))
         }
+    }
+}
+
+
+pub(crate) trait LabeledColumns {
+    fn to_labeled_columns(&self) -> EtlResult<Vec<(String, Option<String>)>>;
+}
+
+
+impl LabeledColumns for Vec<Value> {
+    fn to_labeled_columns(&self) -> EtlResult<Vec<(String, Option<String>)>> {
+        self
+            .into_iter()
+            .map(|item| {
+                let (name, value) = item.to_name_value_map()?;
+                match value {
+                    Value::String(label) => Ok((name, Some(label.clone()))),
+                    Value::Null => Ok((name, None)),
+                    _ => Err(invalid_labeled_column())
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()
     }
 }
 
@@ -142,32 +163,6 @@ pub(crate) fn load_from_str<T: DeserializeOwned>(yaml_str: &str) -> EtlResult<T>
 }
 
 
-pub(crate) fn deserialize_columns<'de, D>(seq: Vec<Value>) -> Result<Vec<(String, Option<String>)>, D::Error>
-    where D: Deserializer<'de>
-{
-    fn as_str<'a, E: de::Error>(value: &'a Value, error_message: &str) -> Result<&'a str, E> {
-        value.as_str().ok_or_else(|| de::Error::custom(error_message))
-    }
-
-    seq
-        .into_iter()
-        .map(|item| {
-            match item {
-                Value::String(name) => Ok((name, None)),
-                Value::Mapping(map) if map.len() == 1 => {
-                    let (name, label) = map.into_iter().next().unwrap();
-                    Ok((
-                        as_str(&name, "Column name must be a string.")?.to_string(),
-                        Some(as_str(&label, "Column label must be a string.")?.to_string())
-                    ))
-                },
-                _ => Err(de::Error::custom("column entries must be strings or single-entry maps."))
-            }
-        })
-        .collect::<Result<Vec<_>, _>>()
-}
-
-
 pub(crate) fn invalid_yaml_value(tag_name: &str, details: &str) -> EtlError {
     invalid_yaml_error("Invalid value", tag_name, details)
 }
@@ -193,4 +188,12 @@ fn invalid_name_value_map(message: &str) -> EtlError {
 fn invalid_yaml_error(kind: &str, tag_name: &str, details: &str) -> EtlError {
     let error_msg = format!("{kind} for `{tag_name}`. {details}.");
     EtlError::new(error_msg, ErrorKind::YamlFormatError)
+}
+
+
+fn invalid_labeled_column() -> EtlError {
+    EtlError::new(
+        "Invalid labeled column format. Expected to be a string or `name: label` single entry map.",
+        ErrorKind::YamlFormatError
+    )
 }

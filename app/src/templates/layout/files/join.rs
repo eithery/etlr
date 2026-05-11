@@ -1,6 +1,8 @@
-use serde::{Deserialize, Deserializer, de};
+use etl_macros::DeserializeYaml;
+use serde::Deserialize;
 use serde_yaml::Value;
-use crate::fs::yaml;
+use crate::errors::EtlError;
+use crate::fs::yaml::{LabeledColumns, invalid_yaml_format};
 
 
 #[derive(Debug, Deserialize)]
@@ -37,21 +39,8 @@ impl DatasetJoinTemplate {
 }
 
 
-#[derive(Debug)]
+#[derive(Debug, DeserializeYaml)]
 struct JoinColumnsTemplate(Vec<(String, Option<String>)>);
-
-
-impl<'de> Deserialize<'de> for JoinColumnsTemplate {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
-        let value = Value::deserialize(deserializer)?;
-        match value {
-            Value::Sequence(seq) => yaml::deserialize_columns::<D>(seq).map(JoinColumnsTemplate),
-            _ => Err(de::Error::custom("`columns` must be a sequence of columns."))
-        }
-    }
-}
 
 
 impl JoinColumnsTemplate {
@@ -61,4 +50,21 @@ impl JoinColumnsTemplate {
             .iter()
             .map(|(name, _)| name.as_str())
     }
+}
+
+
+impl TryFrom<&Value> for JoinColumnsTemplate {
+    type Error = EtlError;
+
+    fn try_from(value: &Value) -> Result<Self, Self::Error> {
+        match value {
+            Value::Sequence(columns) => columns.to_labeled_columns().map(Self),
+            _ => Err(invalid_columns_format())
+        }
+    }
+}
+
+
+fn invalid_columns_format() -> EtlError {
+    invalid_yaml_format("columns", "Expected a sequence of strings as column names")
 }

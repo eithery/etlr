@@ -11,12 +11,13 @@ use super::trailer::FileTrailerTemplate;
 #[serde(bound(deserialize = "H: Deserialize<'de>, T: Deserialize<'de>, F: Deserialize<'de>"))]
 pub(crate) struct LayoutTemplateBase<H, T, F: FileEntry> {
     header: H,
+
     trailer: T,
+
+    record_size: Option<usize>,
 
     #[serde(default)]
     files: Vec<F>,
-
-    record_size: Option<usize>,
 
     #[serde(default = "default_true")]
     include_column_names: bool
@@ -45,14 +46,14 @@ impl<L, H, T, F> LayoutTemplate for L
 
 
     #[allow(dead_code)]
-    fn files(&self) -> impl Iterator<Item = &Self::File> {
-        self.files.iter()
+    fn record_size(&self) -> Option<usize> {
+        self.record_size
     }
 
 
     #[allow(dead_code)]
-    fn record_size(&self) -> Option<usize> {
-        self.record_size
+    fn files(&self) -> impl Iterator<Item = &Self::File> {
+        self.files.iter()
     }
 
 

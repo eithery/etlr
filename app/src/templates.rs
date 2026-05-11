@@ -32,6 +32,7 @@ use errors as err;
 
 
 static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/templates");
+
 const ALL_YAML: &str = "**/*.yml";
 
 
@@ -42,7 +43,7 @@ pub(crate) trait FileTemplate: Sized + DeserializeOwned {
 
 
     fn file_type(&self) -> &str;
-    
+
     fn layout(&self) -> &Self::Layout;
 
 
