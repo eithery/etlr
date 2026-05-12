@@ -1,7 +1,6 @@
 use serde_yaml::Value;
 use crate::errors::{EtlError, ErrorKind};
 use crate::std::result::Result;
-use super::YamlNameValueMap;
 
 
 pub(crate) trait LabeledColumns {
@@ -13,16 +12,30 @@ impl LabeledColumns for Vec<Value> {
     fn to_labeled_columns(&self) -> Result<Vec<(String, Option<String>)>> {
         self
             .into_iter()
-            .map(|item| {
-                let (name, value) = item.to_name_value_map()?;
-                match value {
-                    Value::String(label) => Ok((name, Some(label.clone()))),
-                    Value::Null => Ok((name, None)),
-                    _ => Err(invalid_labeled_column())
-                }
-            })
+            .map(to_labeled_column)
             .collect::<Result<Vec<_>>>()
     }
+}
+
+
+fn to_labeled_column(value: &Value) -> Result<(String, Option<String>)> {
+    match value {
+        Value::String(name) => Ok((name.clone(), None)),
+        Value::Mapping(m) if m.len() == 1 => {
+            let (key, val) = m.iter().next().unwrap();
+            let name = value_to_string(key)?;
+            let label = value_to_string(val)?;
+            Ok((name, Some(label)))
+        }
+        _ => Err(invalid_labeled_column())
+    }
+}
+
+
+fn value_to_string(value: &Value) -> Result<String> {
+    value.as_str()
+        .map(str::to_string)
+        .ok_or_else(invalid_labeled_column)
 }
 
 

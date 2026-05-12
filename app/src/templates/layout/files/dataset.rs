@@ -55,8 +55,7 @@ impl DatasetTemplate {
 
     #[allow(dead_code)]
     fn labeled_columns(&self) -> impl Iterator<Item = (&str, &str)> {
-        self.columns
-            .labeled_columns()
+        self.columns.labeled_columns()
     }
 
 

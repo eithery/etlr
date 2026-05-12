@@ -6,9 +6,10 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::templates::{ColumnSize, ColumnValidationTemplate};
 use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
 use super::data_element::DataElementTemplate;
+use size::ColumnSize;
+use validation::ColumnValidationTemplate;
 
 
 #[derive(Debug, DeserializeYaml)]

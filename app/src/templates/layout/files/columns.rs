@@ -6,7 +6,7 @@ use crate::errors::EtlError;
 use crate::yaml::{LabeledColumns, errors as err};
 
 
-#[derive(Debug, DeserializeYaml)]
+#[derive(Debug, DeserializeYaml, PartialEq, Eq)]
 pub(super) enum Columns {
     All,
     Included(Vec<(String, Option<String>)>)

@@ -8,8 +8,6 @@ pub(crate) mod layout;
 
 pub(crate) use layout::fields::Fields;
 pub(crate) use layout::fields::column::ColumnTemplate;
-pub(crate) use layout::fields::column::size::ColumnSize;
-pub(crate) use layout::fields::column::validation::ColumnValidationTemplate;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
 pub(crate) use layout::files::FileEntry;

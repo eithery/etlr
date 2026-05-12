@@ -1,7 +1,8 @@
 use rstest::*;
 use rxpect::expect;
 use rxpect::expectations::*;
-use crate::templates::{ColumnTemplate, ColumnSize};
+use crate::templates::ColumnTemplate;
+use super::ColumnSize;
 
 
 const STR_COLUMN: &str = r#"
