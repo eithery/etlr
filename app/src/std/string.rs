@@ -72,6 +72,29 @@ impl<T: AsRef<str>> Normalize for T {
 
 
 #[allow(dead_code)]
+pub(crate) trait PadLeft {
+    fn pad_left(&self, width: usize, pad_char: char) -> String;
+
+
+    fn leading_zeros(&self, width: usize) -> String {
+        self.pad_left(width, '0')
+    }
+}
+
+
+impl<T: AsRef<str>> PadLeft for T {
+    fn pad_left(&self, width: usize, pad_char: char) -> String {
+        let s = self.as_ref();
+        let pad_len = width.saturating_sub(s.chars().count());
+        std::iter::repeat(pad_char)
+            .take(pad_len)
+            .chain(s.chars())
+            .collect()
+    }
+}
+
+
+#[allow(dead_code)]
 pub(crate) trait TryParse<T> {
     fn try_parse(&self) -> Option<T>;
 }

@@ -5,7 +5,7 @@ use crate::std::result::Result;
 use crate::templates::defaults::default_false;
 use crate::templates::OutboundFileEntryTemplate;
 use crate::templates::errors as err;
-use super::LayoutTemplate;
+use super::{LayoutTemplate, ControlRecord};
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;
@@ -77,5 +77,18 @@ impl OutboundLayoutTemplate {
             .find(|s| s.id() == *section_id)
             .map(|s| s.build_fixed_length_rows(field_values, record_size))
             .ok_or_else(|| err::missing_file_section_template(&section_id))
+    }
+
+
+    #[allow(dead_code)]
+    fn append_row_count(&self, field_values: &mut HashMap<&str, Option<String>>, row_count: usize) {
+        let included_headers = self.headers()
+            .filter(|h| h.include_to_row_count())
+            .count();
+        let included_trailers = self.trailers()
+            .filter(|t| t.include_to_row_count())
+            .count();
+        let row_count_value = row_count + included_headers + included_trailers;
+        field_values.insert(":row_count", Some(row_count_value.to_string()));
     }
 }

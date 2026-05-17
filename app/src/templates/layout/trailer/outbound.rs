@@ -5,6 +5,7 @@ use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::{Fields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false};
+use crate::templates::layout::ControlRecord;
 use super::{FileTrailerTemplate, FileTrailerTemplateBase};
 
 

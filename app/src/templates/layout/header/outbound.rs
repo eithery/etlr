@@ -5,7 +5,8 @@ use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::{Fields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false, default_date_format};
-use super::{FileHeaderTemplate, FileHeaderTemplateBase};
+use crate::templates::layout::ControlRecord;
+use super::FileHeaderTemplateBase;
 
 
 const FILE_VERSION: &str = "v1.0";

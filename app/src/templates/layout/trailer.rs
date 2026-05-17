@@ -4,41 +4,24 @@ mod row_count;
 
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::templates::defaults::{default_true, default_date_format};
+use crate::templates::defaults::default_date_format;
+use crate::templates::layout::control_record::ControlRecordTemplate;
+use super::ControlRecord;
 use row_count::RowCountTemplate;
 
 
-pub(crate) trait FileTrailerTemplate {
-    fn enabled(&self) -> bool;
-
-    fn tag(&self) -> Option<&str>;
-
+pub(crate) trait FileTrailerTemplate: ControlRecord {
     fn date_format(&self) -> &str;
 
+    #[allow(dead_code)]
     fn row_count(&self) -> Option<&RowCountTemplate>;
-
-
-    #[allow(dead_code)]
-    fn row_count_includes_header(&self) -> bool {
-        self.row_count()
-            .map_or(false, |rc| rc.include_header())
-    }
-
-
-    #[allow(dead_code)]
-    fn row_count_includes_trailer(&self) -> bool {
-        self.row_count()
-            .map_or(false, |rc| rc.include_trailer())
-    }
 }
 
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct FileTrailerTemplateBase {
-    #[serde(default = "default_true")]
-    enabled: bool,
-
-    tag: Option<String>,
+    #[serde(flatten)]
+    control_record: ControlRecordTemplate,
 
     #[serde(rename = "date", default = "default_date_format")]
     date_format: String,
@@ -51,22 +34,22 @@ pub(crate) struct FileTrailerTemplateBase {
 impl<T> FileTrailerTemplate for T
     where T: Deref<Target = FileTrailerTemplateBase>
 {
-    fn enabled(&self) -> bool {
-        self.enabled
-    }
-
-
-    fn tag(&self) -> Option<&str> {
-        self.tag.as_deref()
-    }
-
-
     fn date_format(&self) -> &str {
         &self.date_format
     }
 
 
+    #[allow(dead_code)]
     fn row_count(&self) -> Option<&RowCountTemplate> {
         self.row_count.as_ref()
+    }
+}
+
+
+impl Deref for FileTrailerTemplateBase {
+    type Target = ControlRecordTemplate;
+
+    fn deref(&self) -> &Self::Target {
+        &self.control_record
     }
 }

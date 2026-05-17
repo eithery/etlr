@@ -1,4 +1,5 @@
 mod base;
+pub(super) mod control_record;
 pub(crate) mod fields;
 pub(crate) mod files;
 mod header;
@@ -13,6 +14,7 @@ mod trailer;
 #[cfg(test)]
 mod tests;
 
+pub(crate) use control_record::ControlRecord;
 use files::FileEntry;
 use header::FileHeaderTemplate;
 use trailer::FileTrailerTemplate;
@@ -24,19 +26,23 @@ pub(crate) trait LayoutTemplate {
     type File: FileEntry;
 
 
-    fn header(&self) -> &Self::Header;
+    fn header(&self) -> Option<&Self::Header>;
+
+    fn headers(&self) -> impl Iterator<Item = &Self::Header>;
 
     #[allow(dead_code)]
     fn has_header(&self) -> bool {
-        self.header().enabled()
+        self.headers().any(|h| h.enabled())
     }
 
 
-    fn trailer(&self) -> &Self::Trailer;
+    fn trailer(&self) -> Option<&Self::Trailer>;
+
+    fn trailers(&self) -> impl Iterator<Item = &Self::Trailer>;
 
     #[allow(dead_code)]
     fn has_trailer(&self) -> bool {
-        self.trailer().enabled()
+        self.trailers().any(|t| t.enabled())
     }
 
 

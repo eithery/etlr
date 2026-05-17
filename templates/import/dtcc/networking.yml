@@ -23,12 +23,12 @@ layout:
       format: YYYYMMDD
     subheaders:
       - N0001
+    include_to_row_count: true
   trailer:
     tag: F54
     record_count:
       pos: 40..46
-      include_header: true
-      include_trailer: true
+    include_to_row_count: true
 
   records:
     - id: F5101

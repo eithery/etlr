@@ -16,7 +16,8 @@ pub(crate) struct FieldTemplate {
     source: Option<String>,
     exported: bool,
     discriminator: bool,
-    preserve_invalid: bool
+    preserve_invalid: bool,
+    leading_zeros: bool
 }
 
 
@@ -59,6 +60,12 @@ impl FieldTemplate {
     }
 
 
+    #[allow(dead_code)]
+    pub(crate) fn leading_zeros(&self) -> bool {
+        self.leading_zeros
+    }
+
+
     fn new(field_name: String, pos: FieldPosition) -> Self {
         Self {
             name: field_name,
@@ -67,7 +74,8 @@ impl FieldTemplate {
             source: None,
             exported: false,
             discriminator: false,
-            preserve_invalid: false
+            preserve_invalid: false,
+            leading_zeros: false
         }
     }
 }
@@ -96,7 +104,8 @@ impl TryFrom<&Value> for FieldTemplate {
                     source: m.get_opt_str("source")?,
                     exported: m.get_bool("exported", false)?,
                     discriminator: m.get_bool("discriminator", false)?,
-                    preserve_invalid: m.get_bool("preserve_invalid", false)?
+                    preserve_invalid: m.get_bool("preserve_invalid", false)?,
+                    leading_zeros: m.get_bool("leading_zeros", false)?
                 })
             }
             Value::String(_) | Value::Number(_) => Ok(Self::new(field_name, value.try_into()?)),

@@ -14,11 +14,34 @@ description: >
 
 layout:
   header:
-    enabled: false
-  trailer:
-    enabled: false
-  include_column_names: false
+    fields:
+      - literal:
+          pos: 1..5
+          value: HDR.S
+      - file_id:
+          pos: 6..10
+          value: '26599'
+      - literal_2:
+          pos: 11..16
+          value: E00.C
+      - originator_identifier:
+          pos: 17..20
+          value: '0092'
+      - literal_3:
+          pos: 21..22
+          value: .S
+      - sub_originator_identifier:
+          pos: 23..26
+          value: '0092'
+      - submission_date:
+          pos: 27..34
+          source: created_on
+      - data_description:
+          pos: 35..59
+          value: NETWORKING BRK CONV.INP
 
+  record_size: 100
+  include_column_names: false
   section_selector: record_type
   sections:
     - id: B50
@@ -240,6 +263,50 @@ layout:
                 pos: 38..46
                 source: office_code
                 required: true
+
+  trailers:
+    - record_count:
+        pos: 40..46
+      fields:
+        - system_code:
+            pos: 1
+            value: B
+        - record_type:
+            pos: 2..3
+            value: '54'
+        - clearing_settling_firm_number:
+            pos: 6..9
+            value: '0092'
+        - record_count:
+            pos: 40..46
+            source: :row_count
+            leading_zeros: true
+      include_to_row_count: true
+    - fields:
+      - literal:
+          pos: 1..5
+          value: END.S
+      - file_id:
+          pos: 6..10
+          value: '26599'
+      - literal_2:
+          pos: 11..16
+          value: E00.C
+      - originator_identifier:
+          pos: 17..20
+          value: '0092'
+      - literal_3:
+          pos: 21..22
+          value: .S
+      - sub_originator_identifier:
+          pos: 23..26
+          value: '0092'
+      - submission_date:
+          pos: 27..34
+          source: created_on
+      - data_description:
+          pos: 35..59
+          value: NETWORKING BRK CONV.INP
 
   dataset:
     id: :bnr

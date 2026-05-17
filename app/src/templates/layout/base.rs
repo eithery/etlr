@@ -10,9 +10,15 @@ use super::trailer::FileTrailerTemplate;
 #[derive(Debug, Deserialize)]
 #[serde(bound(deserialize = "H: Deserialize<'de>, T: Deserialize<'de>, F: Deserialize<'de>"))]
 pub(crate) struct LayoutTemplateBase<H, T, F: FileEntry> {
-    header: H,
+    header: Option<H>,
 
-    trailer: T,
+    #[serde(default)]
+    headers: Vec<H>,
+
+    trailer: Option<T>,
+
+    #[serde(default)]
+    trailers: Vec<T>,
 
     record_size: Option<usize>,
 
@@ -35,13 +41,27 @@ impl<L, H, T, F> LayoutTemplate for L
     type File = F;
 
 
-    fn header(&self) -> &Self::Header {
-        &self.header
+    fn header(&self) -> Option<&Self::Header> {
+        self.header.as_ref()
     }
 
 
-    fn trailer(&self) -> &Self::Trailer {
-        &self.trailer
+    fn headers(&self) -> impl Iterator<Item = &H> {
+        self.header()
+            .into_iter()
+            .chain(self.headers.iter())
+    }
+
+
+    fn trailer(&self) -> Option<&Self::Trailer> {
+        self.trailer.as_ref()
+    }
+
+
+    fn trailers(&self) -> impl Iterator<Item = &T> {
+        self.trailer()
+            .into_iter()
+            .chain(self.trailers.iter())
     }
 
 

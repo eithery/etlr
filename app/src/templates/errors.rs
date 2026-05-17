@@ -72,7 +72,21 @@ pub(crate) fn missing_file_section_template(section_id: &str) -> EtlError {
 
 pub(crate) fn record_size_not_defined() -> EtlError {
     EtlError::new(
-        format!("Missing `record_size` element in the outbound fixed-length file template."),
+        "Missing `record_size` element in the outbound fixed-length file template.",
         ErrorKind::InvalidTemplateFormat
     )
+}
+
+
+#[allow(dead_code)]
+pub(crate) fn missing_file_header_template(template_name: &str) -> EtlError {
+    let error_msg = format!("Missing `header` or `headers` element in `{template_name}` template.");
+    EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
+}
+
+
+#[allow(dead_code)]
+pub(crate) fn missing_file_trailer_template(template_name: &str) -> EtlError {
+    let error_msg = format!("Missing `trailer` or `trailers` element in `{template_name}` template.");
+    EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
 }
