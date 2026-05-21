@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::std::result::Result;
+use crate::std::string::Normalize;
 use crate::templates::defaults::default_false;
 use crate::templates::OutboundFileEntryTemplate;
 use crate::templates::errors as err;
@@ -63,7 +64,7 @@ impl OutboundLayoutTemplate {
 
 
     #[allow(dead_code)]
-    fn build_fixed_length_rows(&self, field_values: &HashMap<&str, Option<&str>>) -> Result<Vec<String>> {
+    fn build_fixed_length_rows(&self, field_values: &HashMap<&str, Option<&str>>) -> Result<(String, Vec<String>)> {
         let selector = self.section_selector()
             .ok_or_else(err::missing_section_selector)?;
         let record_size = self.record_size()
@@ -75,7 +76,7 @@ impl OutboundLayoutTemplate {
             .ok_or_else(|| err::blank_discriminator_field(selector))?;
         self.sections()
             .find(|s| s.id() == *section_id)
-            .map(|s| s.build_fixed_length_rows(field_values, record_size))
+            .map(|s| (section_id.normalize(), s.build_fixed_length_rows(field_values, record_size)))
             .ok_or_else(|| err::missing_file_section_template(&section_id))
     }
 

@@ -5,6 +5,7 @@ pub(crate) mod export;
 mod file;
 pub(crate) mod import;
 pub(crate) mod layout;
+mod workflow;
 
 pub(crate) use layout::fields::Fields;
 pub(crate) use layout::fields::column::ColumnTemplate;
@@ -13,6 +14,7 @@ pub(crate) use layout::fields::position::FieldPosition;
 pub(crate) use layout::files::FileEntry;
 pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
 pub(crate) use layout::files::outbound::OutboundFileEntryTemplate;
+pub(crate) use workflow::{WorkflowTemplate, WorkflowHookTemplate};
 
 use std::path::{Path, PathBuf};
 use either::Either;

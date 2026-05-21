@@ -60,8 +60,7 @@ impl FieldTemplate {
     }
 
 
-    #[allow(dead_code)]
-    pub(crate) fn leading_zeros(&self) -> bool {
+    pub(crate) fn has_leading_zeros(&self) -> bool {
         self.leading_zeros
     }
 

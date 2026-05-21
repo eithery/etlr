@@ -6,10 +6,12 @@ pub(crate) mod position;
 #[cfg(test)]
 mod tests;
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use serde::{Deserialize, Deserializer, de};
 use serde_yaml::Value;
 use crate::std::result::Result;
+use crate::std::string::PadLeft;
 use field::FieldTemplate;
 
 
@@ -38,14 +40,19 @@ pub(crate) trait Fields {
         let mut row = vec![b' '; record_size + 1];
         row[record_size] = b'\n';
         for field in self.fields() {
-            if let Some(val_bytes) = field.value()
+            if let Some(val) = field.value()
                 .or_else(|| {
                     field.source()
                         .and_then(|name| field_values.get(name))
                         .and_then(|opt| *opt)
                 })
-                .map(|s| s.as_bytes())
             {
+                let value = if field.has_leading_zeros() {
+                    Cow::Owned(val.leading_zeros(field.len()))
+                } else {
+                    Cow::Borrowed(val)
+                };
+                let val_bytes = value.as_bytes();
                 let start = field.pos().start() - 1;
                 let limit = val_bytes.len().min(field.len());
                 if start < record_size {

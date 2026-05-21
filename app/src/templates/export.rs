@@ -1,5 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
+use crate::templates::{WorkflowTemplate, WorkflowHookTemplate};
 use super::{FileTemplate, FileTemplateBase};
 use super::file::FileInfoTemplate;
 use super::file::format::FileFormat;
@@ -13,7 +14,10 @@ pub(crate) struct FileExportTemplate {
     base: FileTemplateBase,
 
     file: OutboundFileInfoTemplate,
-    layout: OutboundLayoutTemplate
+
+    layout: OutboundLayoutTemplate,
+
+    workflow: Option<WorkflowTemplate>
 }
 
 
@@ -53,5 +57,27 @@ impl FileExportTemplate {
     #[allow(dead_code)]
     fn file_format(&self) -> FileFormat {
         self.file.format()
+    }
+
+
+    #[allow(dead_code)]
+    fn workflow(&self) -> Option<&WorkflowTemplate> {
+        self.workflow.as_ref()
+    }
+
+
+    #[allow(dead_code)]
+    fn before_export_hooks(&self) -> impl Iterator<Item = &WorkflowHookTemplate> {
+        self.workflow()
+            .into_iter()
+            .flat_map(|wf| wf.hooks().before())
+    }
+
+
+    #[allow(dead_code)]
+    fn after_export_hooks(&self) -> impl Iterator<Item = &WorkflowHookTemplate> {
+        self.workflow()
+            .into_iter()
+            .flat_map(|wf| wf.hooks().after())
     }
 }

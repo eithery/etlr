@@ -8,7 +8,6 @@ pub(crate) trait ControlRecord {
 
     fn tag(&self) -> Option<&str>;
 
-    #[allow(dead_code)]
     fn include_to_row_count(&self) -> bool;
 }
 
@@ -36,7 +35,6 @@ impl ControlRecord for ControlRecordTemplate {
     }
 
 
-    #[allow(dead_code)]
     fn include_to_row_count(&self) -> bool {
         self.enabled && self.include_to_row_count
     }

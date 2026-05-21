@@ -26,7 +26,7 @@ impl<T> FileHeaderTemplate for T
 
 impl Deref for FileHeaderTemplateBase {
     type Target = ControlRecordTemplate;
-    
+
     fn deref(&self) -> &Self::Target {
         &self.control_record
     }

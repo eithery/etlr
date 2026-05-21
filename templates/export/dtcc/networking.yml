@@ -35,7 +35,7 @@ layout:
           value: '0092'
       - submission_date:
           pos: 27..34
-          source: created_on
+          source: :created_on
       - data_description:
           pos: 35..59
           value: NETWORKING BRK CONV.INP
@@ -277,6 +277,14 @@ layout:
         - clearing_settling_firm_number:
             pos: 6..9
             value: '0092'
+        - row_count_b50:
+            pos: 10..15
+            source: :row_count_b50
+            leading_zeros: true
+        - row_count_b51:
+            pos: 16..21
+            source: :row_count_b51
+            leading_zeros: true
         - record_count:
             pos: 40..46
             source: :row_count
@@ -303,7 +311,7 @@ layout:
           value: '0092'
       - submission_date:
           pos: 27..34
-          source: created_on
+          source: :created_on
       - data_description:
           pos: 35..59
           value: NETWORKING BRK CONV.INP
@@ -313,3 +321,11 @@ layout:
     source: dtcc.networking_b5051
     columns:
       include: :all
+
+workflow:
+  hooks:
+    before:
+    after:
+      - type: :sql
+        data_source: :bnr
+        run: dtcc.after_networking_exported
