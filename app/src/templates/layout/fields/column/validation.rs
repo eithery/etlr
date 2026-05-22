@@ -53,7 +53,7 @@ impl TryFrom<&Value> for ColumnValidationTemplate {
             Value::Mapping(m) => {
                 Ok(Self{
                     validate: true,
-                    rule: m.get_opt_str("rule")?,
+                    rule: m.get_opt_string("rule")?,
                     reject_invalid: m.get_opt_value("reject_invalid")?
                 })
             }

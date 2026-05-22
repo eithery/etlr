@@ -1,10 +1,13 @@
-use serde::{Deserialize, Deserializer, de};
+use etl_macros::DeserializeYaml;
+use serde::Deserialize;
 use serde_yaml::Value;
+use crate::errors::EtlError;
+use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
 use super::FileEntry;
 use super::dataset::DatasetTemplate;
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, DeserializeYaml)]
 pub(crate) struct OutboundFileEntryTemplate {
     file_type: String,
     file_name: String,
@@ -23,36 +26,6 @@ impl OutboundFileEntryTemplate {
     fn dataset(&self) -> &DatasetTemplate {
         &self.dataset
     }
-
-
-    #[allow(dead_code)]
-    fn from_yaml<'de, D>(payload: Value) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
-        match payload {
-            Value::Mapping(map) if map.len() == 1 => {
-                let (key, val) = map.iter().next().unwrap();
-                let file_type = key
-                    .as_str()
-                    .map(str::to_string)
-                    .ok_or_else(|| de::Error::custom("File type key element must be a string."))?;
-
-                let mapping = val
-                    .as_mapping()
-                    .ok_or_else(|| de::Error::custom("`files` metadata elements must be a map."))?;
-
-                let file_name = mapping
-                    .get("file_name")
-                    .and_then(Value::as_str)
-                    .map(str::to_string)
-                    .ok_or_else(|| de::Error::custom("Missing or invalid `file_name` metadata element."))?;
-
-                let dataset = DatasetTemplate::from_yaml::<D>(mapping)?;
-                Ok(Self { file_type, file_name, dataset })
-            }
-            _ => Err(de::Error::custom("`files` entries must be single-entry maps."))
-        }
-    }
 }
 
 
@@ -60,4 +33,28 @@ impl FileEntry for OutboundFileEntryTemplate {
     fn file_type(&self) -> &str {
         &self.file_type
     }
+}
+
+
+impl TryFrom<&Value> for OutboundFileEntryTemplate {
+    type Error = EtlError;
+
+    fn try_from(payload: &Value) -> Result<Self, Self::Error> {
+        let (file_type, value) = payload.to_name_value_map()?;
+        match value {
+            Value::Mapping(m) => {
+                Ok(Self {
+                    file_type,
+                    file_name: m.get_string("file_name")?,
+                    dataset: m.deserialize("dataset")?
+                })
+            }
+            _ => Err(invalid_file_entry_format())
+        }
+    }
+}
+
+
+fn invalid_file_entry_format() -> EtlError {
+    err::invalid_yaml_format("file entry", "Expected a mapping (object)")
 }

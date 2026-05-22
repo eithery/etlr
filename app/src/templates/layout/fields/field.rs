@@ -100,7 +100,7 @@ impl TryFrom<&Value> for FieldTemplate {
                     name: field_name,
                     base: DataElementTemplate::deserialize(value)?,
                     pos: m.get_value("pos")?,
-                    source: m.get_opt_str("source")?,
+                    source: m.get_opt_string("source")?,
                     exported: m.get_bool("exported", false)?,
                     discriminator: m.get_bool("discriminator", false)?,
                     preserve_invalid: m.get_bool("preserve_invalid", false)?,
@@ -108,12 +108,12 @@ impl TryFrom<&Value> for FieldTemplate {
                 })
             }
             Value::String(_) | Value::Number(_) => Ok(Self::new(field_name, value.try_into()?)),
-            _ => Err(invalid_field_format())
+            _ => Err(invalid_field_entry_format())
         }
     }
 }
 
 
-fn invalid_field_format() -> EtlError {
-    err::invalid_yaml_format("field", "Expected a mapping, string, or number")
+fn invalid_field_entry_format() -> EtlError {
+    err::invalid_yaml_format("field entry", "Expected a mapping, string, or number")
 }

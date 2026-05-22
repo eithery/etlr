@@ -1,11 +1,15 @@
+use serde::de::DeserializeOwned;
 use serde_yaml::{Value, Mapping};
-use crate::std::result::Result;
 use crate::errors::EtlError;
+use crate::std::result::Result;
+use crate::yaml::errors::invalid_yaml_value;
 use super::errors as err;
 
 
 pub(crate) trait YamlReader {
-    fn get_opt_str(&self, tag_name: &str) -> Result<Option<String>>;
+    fn get_string(&self, tag_name: &str) -> Result<String>;
+
+    fn get_opt_string(&self, tag_name: &str) -> Result<Option<String>>;
 
     #[allow(dead_code)]
     fn get_opt_usize(&self, tag_name: &str) -> Result<Option<usize>>;
@@ -23,11 +27,23 @@ pub(crate) trait YamlReader {
 
     fn get_vec<'a, T>(&'a self, tag_name: &str) -> Result<Vec<T>>
         where T: TryFrom<&'a Value, Error = EtlError>;
+
+    fn deserialize<T>(&self, tag_name: &str) -> Result<T>
+        where T: DeserializeOwned;
 }
 
 
 impl YamlReader for &Mapping {
-    fn get_opt_str(&self, tag_name: &str) -> Result<Option<String>> {
+    fn get_string(&self, tag_name: &str) -> Result<String> {
+        self.get(tag_name)
+            .ok_or_else(|| err::missing_required_yaml_value(tag_name))?
+            .as_str()
+            .map(String::from)
+            .ok_or_else(|| invalid_yaml_value(tag_name, "Expected string"))
+    }
+
+
+    fn get_opt_string(&self, tag_name: &str) -> Result<Option<String>> {
         self.get(tag_name)
             .map(|val| {
                 val.as_str()
@@ -61,7 +77,7 @@ impl YamlReader for &Mapping {
         where T: TryFrom<&'a Value, Error = EtlError>
     {
         self.get(tag_name)
-            .ok_or_else(|| err::missing_required_yaml_value("pos"))?
+            .ok_or_else(|| err::missing_required_yaml_value(tag_name))?
             .try_into()
     }
 
@@ -96,5 +112,14 @@ impl YamlReader for &Mapping {
             }
             _ => Err(err::invalid_yaml_format(tag_name, "Expected a sequence"))
         }
+    }
+
+
+    fn deserialize<T>(&self, tag_name: &str) -> Result<T>
+        where T: DeserializeOwned
+    {
+        let value = self.get(tag_name)
+            .ok_or_else(|| err::missing_required_yaml_value(tag_name))?;
+        T::deserialize(value).map_err(Into::into)
     }
 }

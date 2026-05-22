@@ -145,7 +145,7 @@ mod deserialize {
 
 
     #[rstest]
-    #[case(INVALID_FIELD_FORMAT, "Invalid format for `field`.")]
+    #[case(INVALID_FIELD_FORMAT, "Invalid format for `field entry`.")]
     #[case(MULTIENTRY_MAP, "YAML entries must be single-entry maps.")]
     #[case(INVALID_DATA_ELEMENT, "YAML deserialization. invalid type:")]
     #[case(MISSING_POSITION, "Missing required `pos` value.")]

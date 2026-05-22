@@ -1,5 +1,6 @@
-use serde::{Deserialize, Deserializer, de};
-use serde_yaml::Mapping;
+use serde::Deserialize;
+// use serde_yaml::Value;
+// use crate::errors::EtlError;
 use super::data_columns::DataColumnsTemplate;
 use super::join::DatasetJoinTemplate;
 
@@ -57,15 +58,12 @@ impl DatasetTemplate {
     fn labeled_columns(&self) -> impl Iterator<Item = (&str, &str)> {
         self.columns.labeled_columns()
     }
-
-
-    pub(super) fn from_yaml<'de, D>(payload: &Mapping) -> Result<Self, D::Error>
-        where D: Deserializer<'de>
-    {
-        let value = payload
-            .get("dataset")
-            .ok_or_else(|| de::Error::custom("Missing or invalid `dataset` metadata element."))?;
-
-        Ok(serde_yaml::from_value(value.clone()).map_err(de::Error::custom)?)
-    }
 }
+
+
+// impl TryFrom<&Value> for DatasetTemplate {
+//     type Error = EtlError;
+
+//     fn try_from(value: &Value) -> Result<Self, Self::Error> {
+//     }
+// }
