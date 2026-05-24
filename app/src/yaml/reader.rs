@@ -2,7 +2,6 @@ use serde::de::DeserializeOwned;
 use serde_yaml::{Value, Mapping};
 use crate::errors::EtlError;
 use crate::std::result::Result;
-use crate::yaml::errors::invalid_yaml_value;
 use super::errors as err;
 
 
@@ -28,8 +27,7 @@ pub(crate) trait YamlReader {
     fn get_vec<'a, T>(&'a self, tag_name: &str) -> Result<Vec<T>>
         where T: TryFrom<&'a Value, Error = EtlError>;
 
-    fn deserialize<T>(&self, tag_name: &str) -> Result<T>
-        where T: DeserializeOwned;
+    fn deserialize<T: DeserializeOwned>(&self, tag_name: &str) -> Result<T>;
 }
 
 
@@ -39,7 +37,7 @@ impl YamlReader for &Mapping {
             .ok_or_else(|| err::missing_required_yaml_value(tag_name))?
             .as_str()
             .map(String::from)
-            .ok_or_else(|| invalid_yaml_value(tag_name, "Expected string"))
+            .ok_or_else(|| err::invalid_yaml_value(tag_name, "Expected string"))
     }
 
 
@@ -115,9 +113,7 @@ impl YamlReader for &Mapping {
     }
 
 
-    fn deserialize<T>(&self, tag_name: &str) -> Result<T>
-        where T: DeserializeOwned
-    {
+    fn deserialize<T: DeserializeOwned>(&self, tag_name: &str) -> Result<T> {
         let value = self.get(tag_name)
             .ok_or_else(|| err::missing_required_yaml_value(tag_name))?;
         T::deserialize(value).map_err(Into::into)

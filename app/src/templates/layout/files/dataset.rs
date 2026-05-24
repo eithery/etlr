@@ -1,6 +1,4 @@
 use serde::Deserialize;
-// use serde_yaml::Value;
-// use crate::errors::EtlError;
 use super::data_columns::DataColumnsTemplate;
 use super::join::DatasetJoinTemplate;
 
@@ -59,11 +57,3 @@ impl DatasetTemplate {
         self.columns.labeled_columns()
     }
 }
-
-
-// impl TryFrom<&Value> for DatasetTemplate {
-//     type Error = EtlError;
-
-//     fn try_from(value: &Value) -> Result<Self, Self::Error> {
-//     }
-// }

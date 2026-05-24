@@ -1,5 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
+use crate::templates::{PostprocessTemplate, ProcessingTemplate};
 use super::{FileTemplate, FileTemplateBase};
 use super::file::FileInfoTemplate;
 use super::file::inbound::InboundFileInfoTemplate;
@@ -12,16 +13,9 @@ pub(crate) struct FileImportTemplate {
     base: FileTemplateBase,
 
     file: InboundFileInfoTemplate,
-    layout: InboundLayoutTemplate
-}
-
-
-impl Deref for FileImportTemplate {
-    type Target = FileTemplateBase;
-
-    fn deref(&self) -> &Self::Target {
-        &self.base
-    }
+    layout: InboundLayoutTemplate,
+    processing: ProcessingTemplate,
+    postprocess: PostprocessTemplate
 }
 
 
@@ -38,5 +32,28 @@ impl FileTemplate for FileImportTemplate {
 
     fn layout(&self) -> &InboundLayoutTemplate {
         &self.layout
+    }
+}
+
+
+impl FileImportTemplate {
+    #[allow(dead_code)]
+    fn processing(&self) -> &ProcessingTemplate {
+        &self.processing
+    }
+
+
+    #[allow(dead_code)]
+    fn postprocess(&self) -> &PostprocessTemplate {
+        &self.postprocess
+    }
+}
+
+
+impl Deref for FileImportTemplate {
+    type Target = FileTemplateBase;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
     }
 }

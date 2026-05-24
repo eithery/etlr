@@ -5,6 +5,8 @@ pub(crate) mod export;
 mod file;
 pub(crate) mod import;
 pub(crate) mod layout;
+mod postprocess;
+mod processing;
 mod workflow;
 
 pub(crate) use layout::fields::Fields;
@@ -14,6 +16,8 @@ pub(crate) use layout::fields::position::FieldPosition;
 pub(crate) use layout::files::FileEntry;
 pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
 pub(crate) use layout::files::outbound::OutboundFileEntryTemplate;
+pub(crate) use processing::ProcessingTemplate;
+pub(crate) use postprocess::PostprocessTemplate;
 pub(crate) use workflow::{WorkflowTemplate, WorkflowHookTemplate};
 
 use std::path::{Path, PathBuf};
