@@ -4,7 +4,10 @@ use crate::templates::defaults::{default_false, default_true};
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct PostprocessTemplate {
+    #[serde(rename = "stage_2")]
     stage2: PostprocessStage2Template,
+
+    #[serde(rename = "stage_3")]
     stage3: PostprocessStage3Template
 }
 

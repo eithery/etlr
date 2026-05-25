@@ -127,7 +127,7 @@ mod deserialize {
         #[case] pii: Option<&str>
     ) {
         let field = serde_yaml::from_str::<FieldTemplate>(yaml).unwrap();
-        expect(field.name()).to_equal(field_name);
+        expect(field.field_name()).to_equal(field_name);
         expect(field.pos().start()).to_equal(start_pos);
         expect(field.pos().end()).to_equal(end_pos);
         expect(field.len()).to_equal(len);

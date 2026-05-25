@@ -1,5 +1,4 @@
 //
-// (C) BRACS, 2026
 // PIC Decimal (Cobol) module
 // Provides utility and conversion methods to process Cobol decimal numbers (PIC format)
 //
@@ -9,8 +8,8 @@
 // 9(XX)V9(YY)  | 9(05)V9(04)
 // s9(XX)V99    | 9(05)V99
 // 9(XX)V99     | 9(05)V99
-// S9(XX)       | S9(12)             // noqa: ERA001
-// 9(XX)        | 9(12)              // noqa: ERA001
+// S9(XX)       | S9(12)
+// 9(XX)        | 9(12)
 //
 // - Optional leading S means that the last character will be overpunched (encoded digit and sign in one char).
 // - 9(XX) where XX means a number of digits of the whole part.

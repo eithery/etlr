@@ -4,7 +4,7 @@ use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
 use crate::templates::FieldPosition;
-use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
+use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 use super::data_element::DataElementTemplate;
 
 
@@ -22,7 +22,10 @@ pub(crate) struct FieldTemplate {
 
 
 impl FieldTemplate {
-    pub(crate) fn name(&self) -> &str {
+    const BLANK_FIELD_TAG: &str = ":blank";
+
+
+    pub(crate) fn field_name(&self) -> &str {
         &self.name
     }
 
@@ -77,6 +80,18 @@ impl FieldTemplate {
             leading_zeros: false
         }
     }
+
+
+    #[allow(dead_code)]
+    fn blank(pos: FieldPosition) -> Self {
+        Self::new(Self::BLANK_FIELD_TAG.to_string(), pos)
+    }
+
+
+    #[allow(dead_code)]
+    fn is_blank(&self) -> bool {
+        self.field_name() == Self::BLANK_FIELD_TAG
+    }
 }
 
 
@@ -93,11 +108,11 @@ impl TryFrom<&Value> for FieldTemplate {
     type Error = EtlError;
 
     fn try_from(payload: &Value) -> Result<Self, Self::Error> {
-        let (field_name, value) = payload.to_name_value_map()?;
+        let (field_name, value) = payload.to_name_value()?;
         match value {
             Value::Mapping(m) => {
                 Ok(Self {
-                    name: field_name,
+                    name: field_name.to_string(),
                     base: DataElementTemplate::deserialize(value)?,
                     pos: m.get_value("pos")?,
                     source: m.get_opt_string("source")?,
@@ -107,7 +122,7 @@ impl TryFrom<&Value> for FieldTemplate {
                     leading_zeros: m.get_bool("leading_zeros", false)?
                 })
             }
-            Value::String(_) | Value::Number(_) => Ok(Self::new(field_name, value.try_into()?)),
+            Value::String(_) | Value::Number(_) => Ok(Self::new(field_name.to_string(), value.try_into()?)),
             _ => Err(invalid_field_entry_format())
         }
     }

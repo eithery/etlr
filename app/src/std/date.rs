@@ -6,7 +6,7 @@ use super::errors as err;
 
 
 #[allow(dead_code)]
-pub(crate) const DEFAULT_DATE_FORMAT: &str = "CCYYMMDD";
+const DEFAULT_DATE_FORMAT: &str = "CCYYMMDD";
 
 
 pub(super) static DATE_FORMATS: Map<&'static str, (&'static str, &'static str)> = phf_map! {

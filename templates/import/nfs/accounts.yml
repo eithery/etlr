@@ -27,10 +27,8 @@ layout:
     record_count:
       pos: 41..55
   multitenant:
-    subheader:
-      tag: CH
-    subtrailer:
-      tag: CT
+    subheader: CH
+    subtrailer: CT
     trailer:
       record_count:
         pos: 43..57
@@ -2130,7 +2128,7 @@ layout:
 
 processing:
   staging: false
-  update_strategy: delete_insert
+  update_strategy: :delete_insert
   check_file_loaded: false
 
 postprocess:

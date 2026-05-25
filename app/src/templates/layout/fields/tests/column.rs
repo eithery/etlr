@@ -100,7 +100,7 @@ mod deserialize {
         #[case] pii: Option<&str>
     ) {
         let column = serde_yaml::from_str::<ColumnTemplate>(yaml).unwrap();
-        expect(column.name()).to_equal(column_name);
+        expect(column.column_name()).to_equal(column_name);
         expect(column.data_type()).to_equal(data_type);
         expect(column.data_format()).to_equal(data_format);
         expect(column.size()).to_equal(size);

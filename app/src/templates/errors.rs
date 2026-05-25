@@ -18,7 +18,7 @@ pub(crate) fn invalid_template_format(template_name: &str) -> EtlError {
 
 
 #[allow(dead_code)]
-pub(crate) fn invalid_dataset_template_format(template_name: &str) -> EtlError {
+fn invalid_dataset_template_format(template_name: &str) -> EtlError {
     EtlError::new(
         format!("Template `{template_name}` contains invalid or not properly defined `dataset` element."),
         ErrorKind::InvalidTemplateFormat
@@ -79,14 +79,14 @@ pub(crate) fn record_size_not_defined() -> EtlError {
 
 
 #[allow(dead_code)]
-pub(crate) fn missing_file_header_template(template_name: &str) -> EtlError {
+fn missing_file_header_template(template_name: &str) -> EtlError {
     let error_msg = format!("Missing `header` or `headers` element in `{template_name}` template.");
     EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
 }
 
 
 #[allow(dead_code)]
-pub(crate) fn missing_file_trailer_template(template_name: &str) -> EtlError {
+fn missing_file_trailer_template(template_name: &str) -> EtlError {
     let error_msg = format!("Missing `trailer` or `trailers` element in `{template_name}` template.");
     EtlError::new(error_msg, ErrorKind::InvalidTemplateFormat)
 }

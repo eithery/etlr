@@ -15,6 +15,7 @@ pub(crate) struct InboundLayoutTemplate {
     base: LayoutTemplateBase<InboundFileHeaderTemplate, InboundFileTrailerTemplate, InboundFileEntryTemplate>,
 
     record_id: Option<RecordIdTemplate>,
+
     multitenant: Option<MultitenantLayoutTemplate>,
 
     #[serde(default)]

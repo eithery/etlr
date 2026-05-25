@@ -3,7 +3,7 @@ use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
 use crate::templates::{FileEntry, ColumnTemplate};
-use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
+use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 
 
 #[derive(Debug, DeserializeYaml)]
@@ -39,11 +39,11 @@ impl TryFrom<&Value> for InboundFileEntryTemplate {
     type Error = EtlError;
 
     fn try_from(payload: &Value) -> Result<Self, Self::Error> {
-        let (file_type, value) = payload.to_name_value_map()?;
+        let (name, value) = payload.to_name_value()?;
         match value {
             Value::Mapping(m) => {
                 Ok(Self {
-                    file_type,
+                    file_type: name.to_string(),
                     columns: m.get_vec("columns")?,
                     allow_duplicates: m.get_bool("allow_duplicates", false)?
                 })

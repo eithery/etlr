@@ -2,7 +2,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
+use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 use super::FileEntry;
 use super::dataset::DatasetTemplate;
 
@@ -40,11 +40,11 @@ impl TryFrom<&Value> for OutboundFileEntryTemplate {
     type Error = EtlError;
 
     fn try_from(payload: &Value) -> Result<Self, Self::Error> {
-        let (file_type, value) = payload.to_name_value_map()?;
+        let (name, value) = payload.to_name_value()?;
         match value {
             Value::Mapping(m) => {
                 Ok(Self {
-                    file_type,
+                    file_type: name.to_string(),
                     file_name: m.get_string("file_name")?,
                     dataset: m.deserialize("dataset")?
                 })

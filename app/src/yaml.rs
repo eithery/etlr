@@ -4,7 +4,7 @@ mod name_value;
 mod reader;
 
 pub(crate) use columns::LabeledColumns;
-pub(crate) use name_value::YamlNameValueMap;
+pub(crate) use name_value::YamlNameValue;
 pub(crate) use reader::YamlReader;
 
 use std::fs::File;

@@ -9,8 +9,8 @@ mod postprocess;
 mod processing;
 mod workflow;
 
-pub(crate) use layout::fields::Fields;
 pub(crate) use layout::fields::column::ColumnTemplate;
+pub(crate) use layout::fields::exportable::ExportableFields;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
 pub(crate) use layout::files::FileEntry;

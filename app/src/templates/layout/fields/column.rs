@@ -6,7 +6,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::yaml::{YamlNameValueMap, YamlReader, errors as err};
+use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 use super::data_element::DataElementTemplate;
 use size::ColumnSize;
 use validation::ColumnValidationTemplate;
@@ -23,7 +23,7 @@ pub(crate) struct ColumnTemplate {
 
 impl ColumnTemplate {
     #[allow(dead_code)]
-    pub(crate) fn name(&self) -> &str {
+    pub(crate) fn column_name(&self) -> &str {
         &self.name
     }
 
@@ -64,17 +64,17 @@ impl TryFrom<&Value> for ColumnTemplate {
     type Error = EtlError;
 
     fn try_from(payload: &Value) -> Result<Self, Self::Error> {
-        let (column_name, value) = payload.to_name_value_map()?;
+        let (column_name, value) = payload.to_name_value()?;
         match value {
             Value::Mapping(m) => {
                 Ok(Self {
-                    name: column_name,
+                    name: column_name.to_string(),
                     base: DataElementTemplate::deserialize(value)?,
                     size: m.get_value_or_default("size")?,
                     validate: m.get_opt_value("validate")?
                 })
             }
-            Value::Null => Ok(Self::new(column_name)),
+            Value::Null => Ok(Self::new(column_name.to_string())),
             _ => Err(invalid_column_format())
         }
     }

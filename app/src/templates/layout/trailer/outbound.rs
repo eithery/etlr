@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
-use crate::templates::{Fields, FieldTemplate};
+use crate::templates::{ExportableFields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false};
 use crate::templates::layout::ControlRecord;
 use super::{FileTrailerTemplate, FileTrailerTemplateBase};
@@ -85,8 +85,8 @@ impl OutboundFileTrailerTemplate {
 }
 
 
-impl Fields for OutboundFileTrailerTemplate {
-    fn fields(&self) -> impl Iterator<Item = &FieldTemplate> {
+impl ExportableFields for OutboundFileTrailerTemplate {
+    fn exportable_fields(&self) -> impl Iterator<Item = &FieldTemplate> {
         self.fields.iter()
     }
 }

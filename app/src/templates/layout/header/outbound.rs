@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
-use crate::templates::{Fields, FieldTemplate};
+use crate::templates::{ExportableFields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false, default_date_format};
 use crate::templates::layout::ControlRecord;
 use super::FileHeaderTemplateBase;
@@ -84,8 +84,8 @@ impl OutboundFileHeaderTemplate {
 }
 
 
-impl Fields for OutboundFileHeaderTemplate {
-    fn fields(&self) -> impl Iterator<Item = &FieldTemplate> {
+impl ExportableFields for OutboundFileHeaderTemplate {
+    fn exportable_fields(&self) -> impl Iterator<Item = &FieldTemplate> {
         self.fields.iter()
     }
 }
