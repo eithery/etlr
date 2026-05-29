@@ -1,0 +1,61 @@
+etl_template: :import
+version: 2
+file:
+  type: rj.mutual_funds
+  format: :pipe 
+  nameless:
+    file_mask: \w+mutfund_trl_dir_(\d{8})\.txt
+    date_format: MMDDYYYY
+
+description: Contains mutual funds trails and direct data. Describes the file record layout including available column/field names (tags), column types, formats, maximum length for string values; and provides some valid examples.
+
+layout:
+  header:
+    enabled: false
+  trailer:
+    enabled: false
+  include_column_names: false
+
+  files:
+    - rj.mutual_funds:
+        columns:
+          - account_number:
+              size: 30
+              required: true
+          - client_short_name:
+              size: 100
+          - production_amount:
+              type: :money
+          - principal_amount:
+              type: :money
+          - posted_date:
+              type: :date
+              format: YYYY-MM-DD
+          - production_type:
+              size: 50
+          - cusip: 
+              size: 20
+              required: true
+          - fund_symbol:
+              size: 50
+          - fund_family:
+              size: 100
+          - fund_name:
+              size: 100
+          - file_date:
+              type: :date
+              format: YYYY-MM-DD
+              required: true
+          - fa_num:
+              size: 6
+
+processing:
+  update_strategy: :delete_insert
+  check_file_loaded: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: false

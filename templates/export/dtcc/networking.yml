@@ -23,7 +23,7 @@ layout:
           value: '26599'
       - literal_2:
           pos: 11..16
-          value: E00.C
+          value: .E00.C
       - originator_identifier:
           pos: 17..20
           value: '0092'
@@ -46,7 +46,6 @@ layout:
   sections:
     - id: B50
       description: Used to establish networking account at the fund
-      record_size: 100
       records:
         - id: B5001
           required: true
@@ -62,8 +61,7 @@ layout:
                 value: '01'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - reference_number:
                 pos: 10..20
             - network_control_indicator:
@@ -116,8 +114,7 @@ layout:
                 value: '02'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - account_name_address_line_1:
                 pos: 10..44
                 source: legal_address_line_1
@@ -125,6 +122,24 @@ layout:
             - account_name_address_line_2:
                 pos: 45..79
                 source: legal_address_line_2
+
+        - id: B5003
+          fields:
+            - system_code:
+                pos: 1
+                value: B
+            - record_type:
+                pos: 2..3
+                value: '50'
+            - sequence_number:
+                pos: 4..5
+                value: '03'
+            - clearing_settling_firm_number:
+                pos: 6..9
+                value: '0092'
+            - account_name:
+                pos: 10..44
+                source: primary_owner_name
 
         - id: B5004
           required: true
@@ -140,8 +155,7 @@ layout:
                 value: '04'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - account_city:
                 pos: 45..77
                 source: legal_address_city
@@ -165,8 +179,7 @@ layout:
                 value: '09'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - account_representative_number:
                 pos: 10..18
                 source: rep_code
@@ -179,10 +192,12 @@ layout:
                 pos: 38..46
                 source: office_code
                 required: true
+            - new_firm_identification:
+                pos: 47..66
+                source: master_account_number
 
     - id: B51
       description: Contains update info for existing networking accounts
-      record_size: 100
       records:
         - id: B5101
           required: true
@@ -198,8 +213,7 @@ layout:
                 value: '01'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - reference_number:
                 pos: 10..20
             - network_control_indicator:
@@ -249,8 +263,7 @@ layout:
                 value: '09'
             - clearing_settling_firm_number:
                 pos: 6..9
-                source: firm_id
-                required: true
+                value: '0092'
             - account_representative_number:
                 pos: 10..18
                 source: rep_code
@@ -263,6 +276,9 @@ layout:
                 pos: 38..46
                 source: office_code
                 required: true
+            - new_firm_identification:
+                pos: 47..66
+                source: master_account_number
 
   trailers:
     - record_count:
@@ -285,36 +301,37 @@ layout:
             pos: 16..21
             source: :row_count_b51
             leading_zeros: true
-        - record_count:
+        - row_count:
             pos: 40..46
             source: :row_count
             leading_zeros: true
       include_to_row_count: true
+
     - fields:
-      - literal:
-          pos: 1..5
-          value: END.S
-      - file_id:
-          pos: 6..10
-          value: '26599'
-      - literal_2:
-          pos: 11..16
-          value: E00.C
-      - originator_identifier:
-          pos: 17..20
-          value: '0092'
-      - literal_3:
-          pos: 21..22
-          value: .S
-      - sub_originator_identifier:
-          pos: 23..26
-          value: '0092'
-      - submission_date:
-          pos: 27..34
-          source: :created_on
-      - data_description:
-          pos: 35..59
-          value: NETWORKING BRK CONV.INP
+        - literal:
+            pos: 1..5
+            value: END.S
+        - file_id:
+            pos: 6..10
+            value: '26599'
+        - literal_2:
+            pos: 11..16
+            value: .E00.C
+        - originator_identifier:
+            pos: 17..20
+            value: '0092'
+        - literal_3:
+            pos: 21..22
+            value: .S
+        - sub_originator_identifier:
+            pos: 23..26
+            value: '0092'
+        - submission_date:
+            pos: 27..34
+            source: :created_on
+        - data_description:
+            pos: 35..59
+            value: NETWORKING BRK CONV.INP
 
   dataset:
     id: :bnr

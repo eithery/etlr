@@ -1,0 +1,135 @@
+etl_template: :import
+version: 2
+file:
+  type: rj.trade_activity
+  format: :pipe
+  nameless:
+    file_mask: \w+activity_(\d{6})\.txt
+    date_format: YYMMDD
+
+  description: Contains trade and non-trade activity data. Trade activity is identified as those records with a value in the trade number column. The data in this file in relation to commissions/fees/production is not intended for payroll use as it does not contain broker net data. This file does not contain trade/activity data for Annuities, RJ Trust Accounts, or RJ Bank check writing.
+
+layout:
+    header:
+      enabled: false
+    trailer:
+      enabled: false
+    include_column_names: false
+
+    files:
+      - rj.trade_activity:
+          columns:
+            - account_number:
+                size: 15
+                required: true
+            - fa_number:
+                size: 6
+                required: true
+            - cusip_number:
+                size: 20
+                required: true
+            - security_desc_1:
+                size: 30
+            - security_desc_2:
+                size: 30
+            - transaction_type_name:
+                size: 100
+            - trade_number:
+                size: 20
+            - trade_date:
+                type: :date
+                format: YYYY-MM-DD
+                required: true
+            - settlement_date:
+                type: :date
+                format: YYYY-MM-DD
+                required: true
+            - entry_date:
+                type: :date
+                format: YYYY-MM-DD
+            - business_date:
+                type: :date
+                format: YYYY-MM-DD
+            - transaction_description:
+                size: 30
+            - quantity:
+                type: :num(22,6)
+            - price:
+                type: :num(22,6)
+            - trade_factor_rate:
+                type: :num(9,8)
+            - offset_acct_number:
+                size: 8
+            - markup_rate:
+                type: :num(22,6)
+            - sales_load_rate:
+                type: :num(22,6)
+            - amount:
+                type: :num(22,6)
+            - net_amount:
+                type: :num(22,6)
+            - other_fee_amount:
+                type: :num(22,6)
+            - postage_fee_amount:
+                type: :num(22,6)
+            - principal_amount:
+                type: :num(22,6)
+            - roa_loi_amount:
+                type: :num(22,6)
+            - sec_fee_amount:
+                type: :num(22,6)
+            - tax_int_amount:
+                type: :num(22,6)
+            - cdsc_amount:
+                type: :num(22,6)
+            - concession_amount:
+                type: :num(22,6)
+            - addtnl_instr_code:
+                size: 5
+            - cancellation_code:
+                size: 1
+            - cancellation_ind:
+                size: 1
+            - market_name:
+                size: 100
+            - extract_date:
+                type: :date
+                format: YYYY-MM-DD
+                required: true
+            - account_type_code:
+                type: :int
+                required: true
+            - account_type_description:
+                size: 100
+                required: true
+            - discretionary_trade:
+                size: 1
+            - solicited:
+                size: 1
+            - symbol_code:
+                size: 50
+            - open_close_code:
+                size: 5
+            - quantity_sign:
+                size: 5
+            - execution_time:
+                size: 30
+            - firm_capacity:
+                size: 500
+            - trade_entry_time:
+                size: 30
+            - standard_commission:
+                type: :num(22,6)
+            - activity_id:
+                type: :bigint
+
+processing:
+  update_strategy: :default
+  check_file_loaded: false
+
+postprocess:
+  stage_2:
+    enabled: false
+
+  stage_3:
+    enabled: false

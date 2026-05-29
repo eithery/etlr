@@ -185,6 +185,9 @@ layout:
           - withdrawal_timeframe:
               type: :ref
               validate: true
+          - liquidity_need:
+              type: :ref
+              validate: true
           - active:
               type: :bool
           - restricted:

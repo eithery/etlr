@@ -76,7 +76,6 @@ layout:
           - zip_code:
               size: 10
           - country_code:
-              size: 2
               type: :country
           - company:
               size: 45
@@ -101,7 +100,7 @@ layout:
               size: 85
           - tax_lot_strategy:
               size: 4
-              VALUE: AVGC|LGHL|HGLL|FIFO|LSTG|WLFS|HLTG|HSTG|WGFS|LIFO|LLTG
+              value: AVGC|LGHL|HGLL|FIFO|LSTG|WLFS|HLTG|HSTG|WGFS|LIFO|LLTG
           - st_capital_gains_rate:
               size: 100
           - lt_capital_gains_rate:
@@ -156,11 +155,9 @@ layout:
               size: 3
               value: ^0[0-3][0-9]$
           - date_of_birth:
-              size: 10
               type: :date
               format: MM/DD/YYYY
           - account_open_date: 
-              size: 10
               type: :date
               format: MM/DD/YYYY
           - rmd_amount:
@@ -168,7 +165,6 @@ layout:
           - ytd_distribution:
               size: 24
           - rmd_date:
-              size: 10
               type: :date
               format: MM/DD/YYYY
           - broker_dealer:
@@ -180,9 +176,9 @@ layout:
           - statutory_trust:
               size: 1
           - country_of_organization:
-              size: 2
+              type: :country
           - state_of_organization:
-              size: 2
+              type: :us_state
           - account_category:
               size: 20
 

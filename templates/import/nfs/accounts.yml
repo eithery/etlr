@@ -27,8 +27,10 @@ layout:
     record_count:
       pos: 41..55
   multitenant:
-    subheader: CH
-    subtrailer: CT
+    subheader:
+      tag: CH
+    subtrailer:
+      tag: CT
     trailer:
       record_count:
         pos: 43..57

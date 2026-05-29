@@ -21,10 +21,24 @@ layout:
     subheaders:
       - H2
       - H3
+    fields:
+      - master_account_number:
+          pos: 13..22
+          pii: :account_number
+      - master_account_name:
+          pos: 24..53
+          pii: :company_name
   trailer:
     tag: T1\|SCHWAB
     record_count:
       pos: 73..80
+    fields:
+      - master_account_number:
+          pos: 13..22
+          pii: :account_number
+      - master_account_name:
+          pos: 24..53
+          pii: :company_name
 
   records:
     - id: D1
@@ -44,9 +58,11 @@ layout:
         - master_account_number:
             pos: 13..22
             exported: true
+            pii: :account_number
         - master_account_name:
             pos: 24..53
             exported: true
+            pii: :company_name
         - business_date:
             pos: 55..62
             type: :date
@@ -55,15 +71,19 @@ layout:
             pos: 64..73
             required: true
             key: true
+            pii: :account_number
         - account_title_line_1:
             pos: 75..119
             exported: true
+            pii: :account_title
         - account_title_line_2:
             pos: 121..165
             exported: true
+            pii: :account_title
         - account_title_line_3:
             pos: 167..211
             exported: true
+            pii: :account_title
         - account_status:
             pos: 213..220
             value: O|C|I
@@ -79,30 +99,38 @@ layout:
         - taxpayer_first_name:
             pos: 240..269
             exported: true
+            pii: :first_name
         - taxpayer_middle_name:
             pos: 271..300
             exported: true
+            pii: :first_name
         - taxpayer_last_name:
             pos: 302..331
             exported: true
+            pii: :last_name
         - taxpayer_suffix:
             pos: 333..337
             exported: true
         - tax_withhold_code:
             pos: 339..340
             value: AS|\d{2}
-        - primary_contact: 342..445
+        - primary_contact:
+            pos: 342..445
+            pii: :name
         - alias_name: 447..508
         - mailing_address_line_1:
             pos: 510..554
             exported: true
+            pii: :street
         - mailing_address_line_2:
             pos: 556..600
             exported: true
+            pii: :address_line_2
         - mailing_address_line_3: 602..646
-        - account_mailing_city: 
+        - account_mailing_city:
             pos: 648..677
             exported: true
+            pii: :city
         - account_mailing_state:
             pos: 679..680
             exported: true
@@ -115,12 +143,15 @@ layout:
         - email_address:
             pos: 716..843
             exported: true
+            pii: :email
         - phone:
             pos: 845..856
             exported: true
+            pii: :phone_number
         - business_phone:
             pos: 858..869
             exported: true
+            pii: :phone_number
         - date_opened:
             pos: 871..878
             type: :date
@@ -208,12 +239,13 @@ layout:
         - customer_type:
             pos: 1036..1043
             value: IND|TRUST|ORG
-            preserve_invalid : true
+            preserve_invalid: true
             exported: true
             required: true
         - organization_primary_name:
             pos: 1045..1104
             exported: true
+            pii: :company_name
         - version_marker_number_2: 1106..1113
         - restriction_reason_code_1:
             pos: 1115..1118
@@ -237,6 +269,7 @@ layout:
             pos: 1171..1181
             exported: true
             required: true
+            pii: :tax_id
         - version_marker_number_5: 1183..1190
         - prime_broker_enabled_indicator:
             pos: 1192
@@ -258,6 +291,7 @@ layout:
             type: :date
             format: CCYYMMDD
             exported: true
+            pii: :dob
         - jurisdiction_country: 1444..1446
         - jurisdiction_state: 1448..1449
 
