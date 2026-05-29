@@ -20,7 +20,7 @@ layout:
 
 processing:
   legacy: true
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:

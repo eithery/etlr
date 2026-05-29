@@ -2127,7 +2127,6 @@ layout:
         - :blank: 236..700
 
 processing:
-  staging: false
   update_strategy: :delete_insert
   check_file_loaded: false
 
@@ -2137,7 +2136,6 @@ postprocess:
 
   stage_3:
     enabled: true
-    default: false
     type: :python
     data_source: :bnr
     plugin: bnr/master_accounts

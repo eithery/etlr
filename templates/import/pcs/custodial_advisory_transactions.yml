@@ -91,8 +91,7 @@ layout:
               type: :money
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
   check_file_loaded: true
   multiple_daily_files: false
   fail_on_errors: true
@@ -103,7 +102,6 @@ postprocess:
 
   stage_3:
     enabled: true
-    default: false
     type: :python
     data_source: :bnr
     plugin: pcs/custodial_advisory_transactions

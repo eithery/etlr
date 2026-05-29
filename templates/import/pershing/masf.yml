@@ -284,13 +284,12 @@ layout:
             value: X
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:
     enabled: true
-    type: sql
+    type: :sql
     run: pershing.masf_process
 
   stage_3:

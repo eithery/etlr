@@ -1,10 +1,8 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::templates::{WorkflowTemplate, WorkflowHookTemplate};
+use crate::templates::{FileEntry, WorkflowTemplate, WorkflowHookTemplate};
 use super::{FileTemplate, FileTemplateBase};
-use super::file::FileInfoTemplate;
-use super::file::format::FileFormat;
-use super::file::outbound::OutboundFileInfoTemplate;
+use super::format::FileFormat;
 use super::layout::outbound::OutboundLayoutTemplate;
 
 
@@ -12,8 +10,6 @@ use super::layout::outbound::OutboundLayoutTemplate;
 pub(crate) struct FileExportTemplate {
     #[serde(flatten)]
     base: FileTemplateBase,
-
-    file: OutboundFileInfoTemplate,
 
     layout: OutboundLayoutTemplate,
 
@@ -30,15 +26,17 @@ impl Deref for FileExportTemplate {
 }
 
 
+impl FileEntry for FileExportTemplate {
+    fn file_type(&self) -> &str {
+        self.file.file_type()
+    }
+}
+
+
 impl FileTemplate for FileExportTemplate {
     const TEMPLATES_ROOT: &'static str = "export";
 
     type Layout = OutboundLayoutTemplate;
-
-
-    fn file_type(&self) -> &str {
-        self.file.file_type()
-    }
 
 
     fn layout(&self) -> &OutboundLayoutTemplate {

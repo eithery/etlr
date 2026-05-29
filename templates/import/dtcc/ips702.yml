@@ -108,8 +108,7 @@ layout:
             format: CCYYMMDD
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:

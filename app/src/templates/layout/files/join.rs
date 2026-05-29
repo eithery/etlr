@@ -34,7 +34,10 @@ impl DatasetJoinTemplate {
 
     #[allow(dead_code)]
     fn column_names(&self) -> impl Iterator<Item = &str> {
-        self.columns.column_names()
+        let key_column = self.foreign_key()
+            .unwrap_or(self.key());
+        std::iter::once(key_column)
+            .chain(self.columns.column_names())
     }
 }
 

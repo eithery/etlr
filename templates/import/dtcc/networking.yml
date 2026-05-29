@@ -934,8 +934,7 @@ layout:
         - :blank: 100
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:
@@ -943,7 +942,6 @@ postprocess:
 
   stage_3:
     enabled: true
-    default: false
     type: :python
     data_source: :bnr
     plugin: bnr/networking

@@ -200,8 +200,7 @@ layout:
             value: A|B|F|T
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:

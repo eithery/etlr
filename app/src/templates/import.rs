@@ -1,9 +1,7 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::templates::{PostprocessTemplate, ProcessingTemplate};
+use crate::templates::{FileEntry, PostprocessTemplate, ProcessingTemplate};
 use super::{FileTemplate, FileTemplateBase};
-use super::file::FileInfoTemplate;
-use super::file::inbound::InboundFileInfoTemplate;
 use super::layout::inbound::InboundLayoutTemplate;
 
 
@@ -12,10 +10,16 @@ pub(crate) struct FileImportTemplate {
     #[serde(flatten)]
     base: FileTemplateBase,
 
-    file: InboundFileInfoTemplate,
     layout: InboundLayoutTemplate,
     processing: ProcessingTemplate,
     postprocess: PostprocessTemplate
+}
+
+
+impl FileEntry for FileImportTemplate {
+    fn file_type(&self) -> &str {
+        self.file.file_type()
+    }
 }
 
 
@@ -23,11 +27,6 @@ impl FileTemplate for FileImportTemplate {
     const TEMPLATES_ROOT: &'static str = "import";
 
     type Layout = InboundLayoutTemplate;
-
-
-    fn file_type(&self) -> &str {
-        self.file.file_type()
-    }
 
 
     fn layout(&self) -> &InboundLayoutTemplate {

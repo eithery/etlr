@@ -15,7 +15,7 @@ mod trailer;
 mod tests;
 
 pub(crate) use control_record::ControlRecord;
-use files::FileEntry;
+use crate::templates::FileEntry;
 use header::FileHeaderTemplate;
 use trailer::FileTrailerTemplate;
 

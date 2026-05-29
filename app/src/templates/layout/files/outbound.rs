@@ -2,8 +2,8 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
+use crate::templates::FileEntry;
 use crate::yaml::{YamlNameValue, YamlReader, errors as err};
-use super::FileEntry;
 use super::dataset::DatasetTemplate;
 
 

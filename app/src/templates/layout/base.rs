@@ -1,8 +1,8 @@
 use std::ops::Deref;
 use serde::Deserialize;
+use crate::templates::FileEntry;
 use crate::templates::defaults::default_true;
 use super::LayoutTemplate;
-use super::files::FileEntry;
 use super::header::FileHeaderTemplate;
 use super::trailer::FileTrailerTemplate;
 

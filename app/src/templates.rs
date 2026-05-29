@@ -3,17 +3,18 @@ mod defaults;
 pub(crate) mod errors;
 pub(crate) mod export;
 mod file;
+mod format;
 pub(crate) mod import;
 pub(crate) mod layout;
 mod postprocess;
 mod processing;
 mod workflow;
 
+pub(crate) use file::FileInfoTemplate;
 pub(crate) use layout::fields::column::ColumnTemplate;
 pub(crate) use layout::fields::exportable::ExportableFields;
 pub(crate) use layout::fields::field::FieldTemplate;
 pub(crate) use layout::fields::position::FieldPosition;
-pub(crate) use layout::files::FileEntry;
 pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
 pub(crate) use layout::files::outbound::OutboundFileEntryTemplate;
 pub(crate) use processing::ProcessingTemplate;
@@ -40,13 +41,16 @@ static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/../template
 const ALL_YAML: &str = "**/*.yml";
 
 
-pub(crate) trait FileTemplate: Sized + DeserializeOwned {
+pub(crate) trait FileEntry {
+    fn file_type(&self) -> &str;
+}
+
+
+pub(crate) trait FileTemplate: Sized + DeserializeOwned + FileEntry {
     const TEMPLATES_ROOT: &'static str;
 
     type Layout: LayoutTemplate;
 
-
-    fn file_type(&self) -> &str;
 
     fn layout(&self) -> &Self::Layout;
 
@@ -173,7 +177,10 @@ pub(crate) struct FileTemplateBase {
     kind: TemplateCategory,
 
     version: u8,
-    description: Option<String>
+
+    description: Option<String>,
+
+    file: FileInfoTemplate
 }
 
 

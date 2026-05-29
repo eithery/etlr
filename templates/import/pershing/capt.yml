@@ -250,8 +250,7 @@ layout:
         - :blank: 126..133
 
 processing:
-  staging: false
-  update_strategy: default
+  update_strategy: :default
 
 postprocess:
   stage_2:

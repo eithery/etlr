@@ -463,8 +463,7 @@ layout:
           - secondary_answer:
 
 processing:
-  staging: false
-  update_strategy: delete_insert
+  update_strategy: :delete_insert
   check_file_loaded: false
 
 postprocess:
@@ -473,7 +472,6 @@ postprocess:
 
   stage_3:
     enabled: true
-    default: false
     type: :python
     data_source: :bnr
     plugin: bnr/master_accounts

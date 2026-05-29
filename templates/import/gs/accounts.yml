@@ -3,7 +3,7 @@ version: 2
 file:
   type: gs.accounts
   format: :tab
-  name:
+  nameless:
     file_mask: FN(\d{6})\.ID1
     date_format: MMDDYY
 
@@ -187,8 +187,7 @@ layout:
               size: 20
 
 processing:
-  staging: false
-  update_strategy: delete_insert
+  update_strategy: :delete_insert
   check_file_loaded: false
 
 postprocess:
@@ -197,4 +196,3 @@ postprocess:
 
   stage_3:
     enabled: false
-    default: false
