@@ -3,8 +3,8 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::templates::{ExportableFields, FieldTemplate};
 use crate::templates::defaults::default_false;
+use crate::templates::prelude::*;
 use crate::yaml::YamlNameValue;
 
 

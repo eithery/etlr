@@ -7,19 +7,9 @@ mod format;
 pub(crate) mod import;
 pub(crate) mod layout;
 mod postprocess;
+pub(crate) mod prelude;
 mod processing;
 mod workflow;
-
-pub(crate) use file::FileInfoTemplate;
-pub(crate) use layout::fields::column::ColumnTemplate;
-pub(crate) use layout::fields::exportable::ExportableFields;
-pub(crate) use layout::fields::field::FieldTemplate;
-pub(crate) use layout::fields::position::FieldPosition;
-pub(crate) use layout::files::inbound::InboundFileEntryTemplate;
-pub(crate) use layout::files::outbound::OutboundFileEntryTemplate;
-pub(crate) use processing::ProcessingTemplate;
-pub(crate) use postprocess::PostprocessTemplate;
-pub(crate) use workflow::{WorkflowTemplate, WorkflowHookTemplate};
 
 use std::path::{Path, PathBuf};
 use either::Either;
@@ -34,6 +24,7 @@ use crate::templates::layout::LayoutTemplate;
 use crate::yaml;
 use category::TemplateCategory;
 use errors as err;
+use file::FileInfoTemplate;
 
 
 static INTEGRATED_TEMPLATES: Dir = include_dir!("$CARGO_MANIFEST_DIR/../templates");

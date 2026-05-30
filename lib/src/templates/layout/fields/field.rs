@@ -3,7 +3,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::templates::FieldPosition;
+use crate::templates::prelude::FieldPosition;
 use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 use super::data_element::DataElementTemplate;
 

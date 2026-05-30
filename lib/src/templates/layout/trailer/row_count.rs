@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use crate::templates::FieldPosition;
+use crate::templates::prelude::FieldPosition;
 
 
 #[derive(Debug, Deserialize)]

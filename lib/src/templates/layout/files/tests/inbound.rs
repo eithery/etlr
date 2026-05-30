@@ -1,7 +1,7 @@
 use rstest::*;
 use rxpect::expect;
 use rxpect::expectations::*;
-use crate::templates::{FileEntry, InboundFileEntryTemplate};
+use crate::templates::prelude::*;
 
 
 const VALID_CUSTOMERS: &str = r#"

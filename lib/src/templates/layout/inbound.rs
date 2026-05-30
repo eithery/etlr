@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::templates::InboundFileEntryTemplate;
+use crate::templates::prelude::*;
 use super::base::LayoutTemplateBase;
 use super::header::inbound::InboundFileHeaderTemplate;
 use super::multitenant::MultitenantLayoutTemplate;

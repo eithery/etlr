@@ -1,7 +1,7 @@
 use rstest::*;
 use rxpect::expect;
 use rxpect::expectations::*;
-use crate::templates::FieldTemplate;
+use crate::templates::prelude::FieldTemplate;
 
 
 const STR_FIELD: &str = r#"

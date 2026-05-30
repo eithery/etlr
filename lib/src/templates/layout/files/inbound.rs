@@ -2,7 +2,7 @@ use etl_macros::DeserializeYaml;
 use serde::Deserialize;
 use serde_yaml::Value;
 use crate::errors::EtlError;
-use crate::templates::{FileEntry, ColumnTemplate};
+use crate::templates::prelude::*;
 use crate::yaml::{YamlNameValue, YamlReader, errors as err};
 
 

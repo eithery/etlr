@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use crate::templates::{FileEntry, WorkflowTemplate, WorkflowHookTemplate};
+use crate::templates::prelude::*;
 use super::{FileTemplate, FileTemplateBase};
 use super::format::FileFormat;
 use super::layout::outbound::OutboundLayoutTemplate;

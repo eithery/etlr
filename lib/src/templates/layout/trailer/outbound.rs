@@ -3,9 +3,9 @@ use chrono::NaiveDateTime;
 use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
-use crate::templates::{ExportableFields, FieldTemplate};
 use crate::templates::defaults::{default_true, default_false};
 use crate::templates::layout::ControlRecord;
+use crate::templates::prelude::*;
 use super::{FileTrailerTemplate, FileTrailerTemplateBase};
 
 

@@ -1,7 +1,7 @@
 use rstest::*;
 use rxpect::expect;
 use rxpect::expectations::*;
-use crate::templates::ColumnTemplate;
+use crate::templates::prelude::ColumnTemplate;
 use super::ColumnSize;
 
 
