@@ -1,6 +1,7 @@
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::{default_false, default_true};
+use crate::templates::prelude::FieldTemplate;
 
 
 pub(crate) trait ControlRecord {
@@ -9,6 +10,8 @@ pub(crate) trait ControlRecord {
     fn tag(&self) -> Option<&str>;
 
     fn include_to_row_count(&self) -> bool;
+
+    fn fields(&self) -> impl Iterator<Item = &FieldTemplate>;
 }
 
 
@@ -20,7 +23,10 @@ pub(crate) struct ControlRecordTemplate {
     tag: Option<String>,
 
     #[serde(default = "default_false")]
-    include_to_row_count: bool
+    include_to_row_count: bool,
+
+    #[serde(default)]
+    fields: Vec<FieldTemplate>
 }
 
 
@@ -37,6 +43,11 @@ impl ControlRecord for ControlRecordTemplate {
 
     fn include_to_row_count(&self) -> bool {
         self.enabled && self.include_to_row_count
+    }
+
+
+    fn fields(&self) -> impl Iterator<Item = &FieldTemplate> {
+        self.fields.iter()
     }
 }
 
@@ -56,5 +67,10 @@ impl<T> ControlRecord for T
 
     fn include_to_row_count(&self) -> bool {
         self.deref().include_to_row_count()
+    }
+
+
+    fn fields(&self) -> impl Iterator<Item = &FieldTemplate> {
+        self.deref().fields()
     }
 }

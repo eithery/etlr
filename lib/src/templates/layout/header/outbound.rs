@@ -4,9 +4,7 @@ use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::defaults::{default_true, default_false, default_date_format};
-use crate::templates::layout::ControlRecord;
 use crate::templates::prelude::*;
-use super::FileHeaderTemplateBase;
 
 
 const FILE_VERSION: &str = "v1.0";
@@ -16,7 +14,7 @@ const DEFAULT_TAG: &str = "H";
 #[derive(Debug, Deserialize)]
 pub(crate) struct OutboundFileHeaderTemplate {
     #[serde(flatten)]
-    base: FileHeaderTemplateBase,
+    base: ControlRecordTemplate,
 
     #[serde(rename = "date", default = "default_date_format")]
     date_format: String,
@@ -28,15 +26,12 @@ pub(crate) struct OutboundFileHeaderTemplate {
     include_file_name: bool,
 
     #[serde(default = "default_true")]
-    include_file_version: bool,
-
-    #[serde(default)]
-    fields: Vec<FieldTemplate>
+    include_file_version: bool
 }
 
 
 impl Deref for OutboundFileHeaderTemplate {
-    type Target = FileHeaderTemplateBase;
+    type Target = ControlRecordTemplate;
 
     fn deref(&self) -> &Self::Target {
         &self.base
@@ -86,6 +81,10 @@ impl OutboundFileHeaderTemplate {
 
 impl ExportableFields for OutboundFileHeaderTemplate {
     fn exportable_fields(&self) -> impl Iterator<Item = &FieldTemplate> {
-        self.fields.iter()
+        self.fields()
     }
+}
+
+
+impl FileHeaderTemplate for OutboundFileHeaderTemplate {
 }

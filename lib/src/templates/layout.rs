@@ -2,7 +2,7 @@ mod base;
 pub(super) mod control_record;
 pub(crate) mod fields;
 pub(crate) mod files;
-mod header;
+pub(super) mod header;
 pub(super) mod inbound;
 mod multitenant;
 pub(super) mod outbound;
@@ -14,8 +14,7 @@ mod trailer;
 #[cfg(test)]
 mod tests;
 
-pub(crate) use control_record::ControlRecord;
-use crate::templates::FileEntry;
+use crate::templates::prelude::*;
 use header::FileHeaderTemplate;
 use trailer::FileTrailerTemplate;
 

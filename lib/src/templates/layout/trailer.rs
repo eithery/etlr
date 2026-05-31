@@ -5,7 +5,7 @@ mod row_count;
 use std::ops::Deref;
 use serde::Deserialize;
 use crate::templates::defaults::default_date_format;
-use crate::templates::layout::control_record::ControlRecordTemplate;
+use crate::templates::prelude::ControlRecordTemplate;
 use super::ControlRecord;
 use row_count::RowCountTemplate;
 

@@ -6,7 +6,7 @@ use crate::std::string::Normalize;
 use crate::templates::defaults::default_false;
 use crate::templates::errors as err;
 use crate::templates::prelude::*;
-use super::{LayoutTemplate, ControlRecord};
+use super::LayoutTemplate;
 use super::base::LayoutTemplateBase;
 use super::files::dataset::DatasetTemplate;
 use super::header::outbound::OutboundFileHeaderTemplate;

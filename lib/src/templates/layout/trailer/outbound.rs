@@ -4,7 +4,6 @@ use serde::Deserialize;
 use crate::std::datetime::DateTime;
 use crate::std::result::Result;
 use crate::templates::defaults::{default_true, default_false};
-use crate::templates::layout::ControlRecord;
 use crate::templates::prelude::*;
 use super::{FileTrailerTemplate, FileTrailerTemplateBase};
 
@@ -27,10 +26,7 @@ pub(crate) struct OutboundFileTrailerTemplate {
     include_trailer_date: bool,
 
     #[serde(default = "default_true")]
-    include_record_count: bool,
-
-    #[serde(default)]
-    fields: Vec<FieldTemplate>
+    include_record_count: bool
 }
 
 
@@ -87,6 +83,6 @@ impl OutboundFileTrailerTemplate {
 
 impl ExportableFields for OutboundFileTrailerTemplate {
     fn exportable_fields(&self) -> impl Iterator<Item = &FieldTemplate> {
-        self.fields.iter()
+        self.fields()
     }
 }

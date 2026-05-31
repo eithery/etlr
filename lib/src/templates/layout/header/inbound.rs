@@ -1,6 +1,6 @@
 use std::ops::Deref;
 use serde::Deserialize;
-use super::FileHeaderTemplateBase;
+use crate::templates::prelude::*;
 use super::date::HeaderDateTemplate;
 use super::file_type::FileTypeTemplate;
 
@@ -8,7 +8,7 @@ use super::file_type::FileTypeTemplate;
 #[derive(Debug, Deserialize)]
 pub(crate) struct InboundFileHeaderTemplate {
     #[serde(flatten)]
-    base: FileHeaderTemplateBase,
+    base: ControlRecordTemplate,
 
     file_type: Option<FileTypeTemplate>,
 
@@ -21,7 +21,7 @@ pub(crate) struct InboundFileHeaderTemplate {
 
 
 impl Deref for InboundFileHeaderTemplate {
-    type Target = FileHeaderTemplateBase;
+    type Target = ControlRecordTemplate;
 
     fn deref(&self) -> &Self::Target {
         &self.base
@@ -46,4 +46,8 @@ impl InboundFileHeaderTemplate {
     fn subheaders(&self) -> impl Iterator<Item = &str> {
         self.subheaders.iter().map(String::as_str)
     }
+}
+
+
+impl FileHeaderTemplate for InboundFileHeaderTemplate {
 }
